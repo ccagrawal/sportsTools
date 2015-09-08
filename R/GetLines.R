@@ -1,7 +1,7 @@
 #' Betting lines.
 #'
 #' @param sport either "NBA" or "NFL"
-#' @param year season (e.g. 2008)
+#' @param year season (e.g. 2008 for 2007-08 season)
 #' @param type either "regular season" or "playoffs" or "both"
 #' @return data frame with schedule and line for each game in that season
 #' @keywords schedule, odds, line, betting
@@ -116,8 +116,8 @@ GetLines <- function(sport = "NBA", year, type = "both") {
 #' Betting lines (multi-year).
 #'
 #' @param sport either "NBA" or "NFL"
-#' @param year.start season (e.g. 2008)
-#' @param year.end season (e.g. 2014)
+#' @param year.start season (e.g. 2008 for 2007-08 season)
+#' @param year.end season (e.g. 2014 for 2013-14 season)
 #' @param type either "regular season" or "playoffs" or "both"
 #' @return data frame with schedule and line for each game in all the seasons
 #' @keywords schedule, odds, line, betting
