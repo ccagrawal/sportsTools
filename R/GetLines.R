@@ -1,7 +1,7 @@
 #' Betting lines.
 #'
 #' @param sport either "NBA" or "NFL"
-#' @param year season (e.g. 2008 for the 2007-08 season)
+#' @param year season (e.g. 2008)
 #' @param type either "regular season" or "playoffs" or "both"
 #' @return data frame with schedule and line for each game in that season
 #' @keywords schedule, odds, line, betting
@@ -111,4 +111,29 @@ GetLines <- function(sport = "NBA", year, type = "both") {
   full.lines <- full.lines[, c('date', 'type', 'home.team', 'away.team', 'home.score', 'away.score', 'home.line', 'over.under')]
   full.lines <- full.lines[order(full.lines$date), ]
   return(full.lines)
+}
+
+#' Betting lines (multi-year).
+#'
+#' @param sport either "NBA" or "NFL"
+#' @param year.start season (e.g. 2008)
+#' @param year.end season (e.g. 2014)
+#' @param type either "regular season" or "playoffs" or "both"
+#' @return data frame with schedule and line for each game in all the seasons
+#' @keywords schedule, odds, line, betting
+#' @importFrom XML readHTMLTable
+#' @export
+#' @examples
+#' GetLinesRange("NBA", 2012, 2015, "playoffs")
+
+GetLinesRange <- function(sport = "NBA", year.start, year.end, type = "both") {
+  lines <- data.frame()
+  
+  for (year in year.start:year.end) {
+    temp <- GetLines(sport, year, type)
+    temp$season <- year
+    lines <- rbind(lines, temp)
+  }
+  
+  return(lines)
 }

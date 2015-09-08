@@ -9,7 +9,7 @@ GetLines(sport = "NBA", year, type = "both")
 \arguments{
 \item{sport}{either "NBA" or "NFL"}
 
-\item{year}{season (e.g. 2008 for the 2007-08 season)}
+\item{year}{season (e.g. 2008)}
 
 \item{type}{either "regular season" or "playoffs" or "both"}
 }
