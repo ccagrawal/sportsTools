@@ -33,3 +33,27 @@ GetSchedule <- function(year, type = 'regular season') {
   colnames(schedule) <- c("date", "away.name", "away.points", "home.name", "home.points", "overtime", "notes")
   return(schedule)
 }
+
+#' Schedule and results (multi-year).
+#'
+#' @param year.start season (e.g. 2008 for 2007-08 season)
+#' @param year.end season (e.g. 2014 for 2013-14 season)
+#' @param type either "regular season" or "playoffs" or "both"
+#' @return data frame with schedule and results for each game in all the seasons
+#' @keywords schedul
+#' @importFrom XML readHTMLTable
+#' @export
+#' @examples
+#' GetLinesRange(2012, 2015, "playoffs")
+
+GetLinesRange <- function(year.start, year.end, type = "both") {
+  schedule <- data.frame()
+  
+  for (year in year.start:year.end) {
+    temp <- GetSchedule(year, type)
+    temp$season <- year
+    schedule <- rbind(schedule, temp)
+  }
+  
+  return(schedule)
+}
