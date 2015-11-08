@@ -18,19 +18,25 @@ GetSchedule <- function(year, type = 'regular season') {
   
   if (type == 'playoffs') {
     schedule <- tables[['games_playoffs']]
-  } else if (type == 'regular season') {
-    schedule <- tables[['games']]
+    schedule$type <- 'playoff'
   } else {
-    schedule <- rbind(tables[['games']], tables[['games_playoffs']])
+    schedule <- tables[['games']]
+    schedule$type <- 'regular season'
+  } 
+  
+  if (type == 'both') {
+    temp <- tables[['games_playoffs']]
+    temp$type <- 'playoff'
+    schedule <- rbind(schedule, temp)
   }
 
   # Remove extra columns
-  schedule <- schedule[, c(1, 3, 4, 5, 6, 7, 8)]
+  schedule <- schedule[, c(1, 4, 5, 6, 7, 8, 9, 10)]
   schedule$Date <- as.Date(strptime(schedule$Date, format = "%a, %b %d, %Y"))
   schedule[, 3] <- as.numeric(schedule[, 3])
   schedule[, 5] <- as.numeric(schedule[, 5])
   
-  colnames(schedule) <- c("date", "away.name", "away.points", "home.name", "home.points", "overtime", "notes")
+  colnames(schedule) <- c("date", "away.name", "away.points", "home.name", "home.points", "overtime", "notes", "type")
   return(schedule)
 }
 
