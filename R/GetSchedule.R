@@ -16,7 +16,7 @@ GetSchedule <- function(year, type = 'regular season') {
   url <- paste("http://www.basketball-reference.com/leagues/NBA_", year, "_games.html", sep = "")
   tables <- readHTMLTable(url)
   
-  if (type == 'playoffs') {
+  if (type == 'playoffs' & length(tables) > 1) {
     schedule <- tables[['games_playoffs']]
     schedule$type <- 'playoff'
   } else {
@@ -24,7 +24,7 @@ GetSchedule <- function(year, type = 'regular season') {
     schedule$type <- 'regular season'
   } 
   
-  if (type == 'both') {
+  if (type == 'both' & length(tables) > 1) {
     temp <- tables[['games_playoffs']]
     temp$type <- 'playoff'
     schedule <- rbind(schedule, temp)
