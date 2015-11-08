@@ -3,4 +3,5 @@
 export(GetLines)
 export(GetLinesRange)
 export(GetSchedule)
+export(GetScheduleRange)
 importFrom(XML,readHTMLTable)

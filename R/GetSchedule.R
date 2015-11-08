@@ -44,9 +44,9 @@ GetSchedule <- function(year, type = 'regular season') {
 #' @importFrom XML readHTMLTable
 #' @export
 #' @examples
-#' GetLinesRange(2012, 2015, "playoffs")
+#' GetScheduleRange(2012, 2015, "playoffs")
 
-GetLinesRange <- function(year.start, year.end, type = "both") {
+GetScheduleRange <- function(year.start, year.end, type = "both") {
   schedule <- data.frame()
   
   for (year in year.start:year.end) {
