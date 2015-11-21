@@ -1,8 +1,13 @@
 Package: sportsTools
 Title: Scraper for Sports Data
 Version: 0.1
-Authors@R: person("Chirag", "Agrawal", email = "ccagrawal@gmail.com", role = c("aut", "cre"))
-Description: This package will be used to scrape data on several sports (NBA, MLB, NFL, etc.) from several websites (Sports Reference, ESPN, SI, etc.).
-Depends: R (>= 3.2.1)
-License: The MIT License
+Authors@R: person("Chirag", "Agrawal", email = "ccagrawal@gmail.com", 
+	role = c("aut", "cre"))
+Description: This package will be used to scrape data on several sports 
+	(NBA, MLB, NFL, etc.) from several websites (Sports Reference, 
+	ESPN, SI, etc.).
+Depends: R (>= 3.1.0)
+Imports:
+	XML
+License: CC0
 LazyData: true

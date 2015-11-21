@@ -37,6 +37,7 @@ GetSchedule <- function(year, type = 'regular season') {
   schedule[, 5] <- as.numeric(schedule[, 5])
   
   colnames(schedule) <- c("date", "away.name", "away.points", "home.name", "home.points", "overtime", "notes", "type")
+  schedule$home.margin <- schedule$home.points - schedule$away.points
   return(schedule)
 }
 
