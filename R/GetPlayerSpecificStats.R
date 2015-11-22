@@ -1,4 +1,4 @@
-#' Player's stat in a season.
+#' Player specific stats in a season.
 #'
 #' @param player NBA player (e.g. "James Harden")
 #' @param year NBA season (e.g. 2008 for the 2007-08 season)
@@ -8,7 +8,7 @@
 #' @importFrom XML readHTMLTable
 #' @export
 #' @examples
-#' GetPlayerSpecificStats('Anthony Davis', 2015, 'on-off)
+#' GetPlayerSpecificStats('Anthony Davis', 2015, 'on-off')
 
 GetPlayerSpecificStats <- function(player, year, stat) {
   

@@ -2,7 +2,7 @@
 % Please edit documentation in R/GetPlayerSpecificStats.R
 \name{GetPlayerSpecificStats}
 \alias{GetPlayerSpecificStats}
-\title{Player's stat in a season.}
+\title{Player specific stats in a season.}
 \usage{
 GetPlayerSpecificStats(player, year, stat)
 }
@@ -17,10 +17,10 @@ GetPlayerSpecificStats(player, year, stat)
 data frame with player's stats
 }
 \description{
-Player's stat in a season.
+Player specific stats in a season.
 }
 \examples{
-GetPlayerSpecificStats('Anthony Davis', 2015, 'on-off)
+GetPlayerSpecificStats('Anthony Davis', 2015, 'on-off')
 }
 \keyword{player}
 
