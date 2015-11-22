@@ -2,6 +2,8 @@
 
 export(GetLines)
 export(GetLinesRange)
+export(GetPlayerIDs)
+export(GetPlayerStats)
 export(GetSchedule)
 export(GetScheduleRange)
 importFrom(XML,readHTMLTable)
