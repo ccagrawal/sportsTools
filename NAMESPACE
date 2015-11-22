@@ -3,6 +3,7 @@
 export(GetLines)
 export(GetLinesRange)
 export(GetPlayerIDs)
+export(GetPlayerSpecificStat)
 export(GetPlayerStats)
 export(GetSchedule)
 export(GetScheduleRange)
