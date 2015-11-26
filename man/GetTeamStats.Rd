@@ -9,6 +9,8 @@ GetTeamStats(year, stat.type = "regular", season.type = "regular")
 \arguments{
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
 
+\item{stat.type}{'regular' or 'advanced'}
+
 \item{season.type}{'regular' or 'playoffs'}
 }
 \value{
