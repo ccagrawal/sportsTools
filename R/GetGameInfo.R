@@ -2,7 +2,7 @@
 #'
 #' @param id Game ID that matches the src
 #' @param src currently only "basketball-reference"
-#' @param info desired information ('box scores', 'team scores', 'lineups')
+#' @param info desired information ('box scores', 'team scores', 'lineups', 'four factors')
 #' @return list of information requested
 #' @keywords boxscore
 #' @importFrom XML readHTMLTable
@@ -44,6 +44,7 @@ GetGameInfo <- function(id, src = 'basketball-reference', info = c('box scores')
     
     if ('four factors' %in% info) {
       temp <- tables[[table.num]]
+      temp[, -1] <- sapply(temp[, -1], as.numeric)
       results$four.factors <- temp
     }
   }
