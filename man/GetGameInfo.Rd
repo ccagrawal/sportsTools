@@ -9,9 +9,9 @@ GetGameInfo(id, source = "Basketball-Reference", info = c("box scores"))
 \arguments{
 \item{id}{Game ID that matches the source}
 
-\item{source}{currently only 'Basketball-Reference'}
+\item{source}{either 'Basketball-Reference' or 'NBA'}
 
-\item{info}{desired information ('box scores', 'team scores', 'lineups', 'four factors')}
+\item{info}{desired information ('box scores', 'team scores', 'lineups', 'four factors', 'play by play')}
 }
 \value{
 list of information requested

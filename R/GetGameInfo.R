@@ -1,11 +1,12 @@
 #' Get Game Info.
 #'
 #' @param id Game ID that matches the source
-#' @param source currently only 'Basketball-Reference'
-#' @param info desired information ('box scores', 'team scores', 'lineups', 'four factors')
+#' @param source either 'Basketball-Reference' or 'NBA'
+#' @param info desired information ('box scores', 'team scores', 'lineups', 'four factors', 'play by play')
 #' @return list of information requested
 #' @keywords boxscore
 #' @importFrom XML readHTMLTable
+#' @importFrom rjson fromJSON
 #' @export
 #' @examples
 #' GetGameInfo('201004170ATL', 'Basketball-Reference', c('box scores'))
@@ -47,9 +48,44 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
       temp[, -1] <- sapply(temp[, -1], as.numeric)
       results$four.factors <- temp
     }
+  } else if (source == 'NBA') {
+    if ('play by play' %in% info) {
+      results$play.by.play <- .GetNBAPlayByPlay(id)
+    }
   }
   
   return(results)
+}
+
+# Input:    Game ID (ex. '0021300359')
+# Output:   Data frame with play-by-play breakdown
+#           game.id, action, detail, quarter, time,
+#           action.home, action.neutral, action.away, score, margin
+.GetNBAPlayByPlay <- function(game.id) {
+  
+  # Create URL and scrape the JSON for the input game
+  url <- gsub('###', game.id, 'http://stats.nba.com/stats/playbyplay?GameID=###&StartPeriod=0&EndPeriod=0')
+  json <- fromJSON(file = url)[[3]]                       # (3) contains the actual info for the game
+  
+  # Check if plays exist for the given game
+  temp <- json[[1]]                                       # (1) contains play by play data
+  plays <- temp[[3]]                                      # (3) contains the actual rows
+  
+  if (length(plays) > 0) {
+    
+    # Create raw data frame
+    plays <- lapply(plays, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
+    plays <- data.frame(matrix(unlist(plays), nrow = length(plays), byrow = TRUE)) # Turn list to data frame
+    
+    # Clean data frame
+    colnames(plays) <- c('game.id', 'event.id', 'action', 'detail', 'quarter', 'real.time', 
+                         'time', 'action.home', 'action.neutral', 'action.away', 'score', 'margin')
+    
+    # Convert columns to proper types
+    plays[, c('action', 'detail', 'quarter')] <- sapply(plays[, c('action', 'detail', 'quarter')], as.numeric)
+    
+    return(plays)
+  }
 }
 
 # Get 5 man unit
