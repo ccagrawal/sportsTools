@@ -8,6 +8,7 @@ Description: This package will be used to scrape data on several sports
 	ESPN, SI, etc.).
 Depends: R (>= 3.1.0)
 Imports:
-	XML
+	XML,
+	rjson
 License: CC0
 LazyData: true

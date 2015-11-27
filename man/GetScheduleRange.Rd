@@ -4,14 +4,14 @@
 \alias{GetScheduleRange}
 \title{Schedule and results (multi-year).}
 \usage{
-GetScheduleRange(year.start, year.end, type = "both")
+GetScheduleRange(year.start, year.end, season.type = "both")
 }
 \arguments{
 \item{year.start}{season (e.g. 2008 for 2007-08 season)}
 
 \item{year.end}{season (e.g. 2014 for 2013-14 season)}
 
-\item{type}{either "regular season" or "playoffs" or "both"}
+\item{season.type}{either 'regular' or 'playoffs' or 'both'}
 }
 \value{
 data frame with schedule and results for each game in all the seasons
@@ -20,7 +20,7 @@ data frame with schedule and results for each game in all the seasons
 Schedule and results (multi-year).
 }
 \examples{
-GetScheduleRange(2012, 2015, "playoffs")
+GetScheduleRange(2012, 2015, 'playoffs')
 }
-\keyword{schedul}
+\keyword{schedule}
 

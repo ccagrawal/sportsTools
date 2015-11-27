@@ -1,21 +1,21 @@
 #' Get Game Info.
 #'
-#' @param id Game ID that matches the src
-#' @param src currently only "basketball-reference"
+#' @param id Game ID that matches the source
+#' @param source currently only 'Basketball-Reference'
 #' @param info desired information ('box scores', 'team scores', 'lineups', 'four factors')
 #' @return list of information requested
 #' @keywords boxscore
 #' @importFrom XML readHTMLTable
 #' @export
 #' @examples
-#' GetGameInfo('201004170ATL', 'basketball-reference', c('box scores'))
+#' GetGameInfo('201004170ATL', 'Basketball-Reference', c('box scores'))
 
-GetGameInfo <- function(id, src = 'basketball-reference', info = c('box scores')) {
+GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box scores')) {
   
   options(stringsAsFactors = FALSE)
   results <- list()
   
-  if (src == 'basketball-reference') {
+  if (source == 'Basketball-Reference') {
     url <- paste('http://www.basketball-reference.com/boxscores/', id, '.html', sep = '')
     tables <- readHTMLTable(url)
     table.num <- which(names(tables) == 'four_factors')
