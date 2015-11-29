@@ -17,7 +17,7 @@ GetGameIDs <- function(year, source = 'Basketball-Reference', season.type = 'reg
   if (source == 'Basketball-Reference') {
     ids <- .GetBRefGameIDs(year, season.type)
   } else if (source == 'NBA') {
-    ids <- .GetNBAGameIDs(year, season.type)
+    ids <- .GetNBAGameIDs(year, season.type, method = 'team')
   } else {
     return(NULL)
   }
@@ -62,6 +62,77 @@ GetGameIDs <- function(year, source = 'Basketball-Reference', season.type = 'reg
   }
   
   return(ids)
+}
+
+# Input:    Team (ex. '1610612745' or 'Houston')
+#           year (ex. 2008 for 2007-08 season)
+#           season.type either 'regular', 'playoffs', or 'both'
+# Output:   Data frame with info for games that day from stats.nba.com
+#           game.id, date, team
+.GetNBAGameIDsTeam <- function(team, year, season.type = 'regular') {
+  
+  # If team is name, convert it to team id
+  if (grepl('[a-z]', team)) {
+    team.ids <- GetTeamIDs(year, source = 'NBA')
+    if (team %in% team.ids$name) {
+      team <- team.ids[which(team.ids$name == team), 'id']
+    } else {
+      return(NULL)
+    }
+  }
+  
+  # Create "season" identifier from year
+  season <- paste0(year - 1, '-', year %% 100)
+  
+  # Start with base url
+  base.url <- 'http://stats.nba.com/stats/teamgamelog?LeagueID=00&Season=YYYY&SeasonType=TTTT&TeamID=IIII'
+  base.url <- gsub('IIII', team, base.url)
+  base.url <- gsub('YYYY', season, base.url)
+  
+  # Create NBA URL based on season type
+  if ((season.type == 'regular') | (season.type == 'both')) {
+    url <- gsub('TTTT', 'Regular+Season', base.url)
+  } else {
+    url <- gsub('TTTT', 'Playoffs', base.url)
+  }
+  
+  json <- fromJSON(file = url)[[3]]                  # (3) contains the actual info for the day
+  
+  # Check if games exist for the given day
+  temp <- json[[1]]                                  # (1) contains game list info
+  game.list <- temp[[3]]                             # (3) contains the actual rows
+  
+  # Also grab playoff games if both were requested
+  if (season.type == 'both') {
+    url <- gsub('TTTT', 'Playoffs', base.url)
+    json <- fromJSON(file = url)[[3]]                  # (3) contains the actual info for the day
+    temp <- json[[1]]                                  # (1) contains game list info
+    game.list <- c(game.list, temp[[3]])               # (3) contains the actual rows
+  }
+  
+  if (length(game.list) > 0) {
+    # Create raw data frame
+    game.list <- lapply(game.list, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
+    game.list <- data.frame(matrix(unlist(game.list), nrow = length(game.list), byrow = TRUE)) # Turn list to data frame
+    
+    # Clean data frame
+    game.list <- game.list[, c(3, 2, 4)]      # Drop useless columns
+    colnames(game.list) <- c('date', 'game.id', 'matchup')
+    game.list$date <- as.Date(game.list$date, format = '%b %d, %Y')
+    
+    # Figure out team and opponent
+    team <- gsub('([^ ]*).*', '\\1', game.list[1, 3])
+    game.list$opponent <- gsub('.*[\\.!@] (.*)', '\\1', game.list$matchup)
+    
+    # Create separate home and away columns
+    game.list[grep('@', game.list$matchup), 'home'] <- game.list[grep('@', game.list$matchup), 'opponent']
+    game.list[grep('vs', game.list$matchup), 'home'] <- team
+    game.list[grep('@', game.list$matchup), 'away'] <- team
+    game.list[grep('vs', game.list$matchup), 'away'] <- game.list[grep('vs', game.list$matchup), 'opponent']
+    
+    game.list <- game.list[, c(1, 2, 5, 6)]
+    return(game.list)
+  }
 }
 
 # Input:    Date (ex. '2013-11-23')
@@ -117,14 +188,27 @@ GetGameIDs <- function(year, source = 'Basketball-Reference', season.type = 'reg
 # Input:    year (e.g. 2008 for the 2007-08 season)
 #           season.type ('regular', 'playoffs', or 'both')
 # Output:   Data frame with info for games that day from stats.nba.com
-#           date, game.id, status, home.team.id, away.team.id, national.tv
-.GetNBAGameIDs <- function(year, season.type = 'regular') {
+#           date, game.id, status, home.team.id, away.team.id, national.tv if method = 'date'
+#           date, game.id, home, away if method = 'team'
+.GetNBAGameIDs <- function(year, season.type = 'regular', method = 'team') {
   
-  schedule <- GetSchedule(year, season.type)
-  start.date <- min(schedule$date)
-  end.date <- max(schedule$date)
-  
-  all.games <- .GetNBAGameIDsRange(start.date, end.date)
+  if (method == 'date') {
+    schedule <- GetSchedule(year, season.type)
+    start.date <- min(schedule$date)
+    end.date <- max(schedule$date)
+    
+    all.games <- .GetNBAGameIDsRange(start.date, end.date)
+  } else {
+    all.games <- data.frame()
+    
+    teams <- GetTeamIDs(year)$id
+    for (id in teams) {
+      temp <- .GetNBAGameIDsTeam(team = id, year, season.type)
+      all.games <- rbind(all.games, temp)
+    }
+    
+    all.games <- unique(all.games)
+  }
   
   return(all.games)
 }

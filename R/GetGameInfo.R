@@ -49,6 +49,7 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
       results$four.factors <- temp
     }
   } else if (source == 'NBA') {
+    
     if ('play by play' %in% info) {
       results$play.by.play <- .GetNBAPlayByPlay(id)
     }
@@ -92,7 +93,8 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
 .GetBRefLineups <- function(id) {
   
   url.pbp <- paste('http://www.basketball-reference.com/boxscores/pbp/', id, '.html', sep = '')
-  player.ids <- .GetBRefPlayerIDs(id)
+  year <- as.numeric(substr(id, 1, 4))
+  player.ids <- GetPlayerIDs(year, source = 'Basketball-Reference')
   
   # Replace names in play by play table with their IDs to solve M. Morris problem
   html <- readLines(url.pbp)
@@ -231,21 +233,6 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
   colnames(player.times)
   
   return(player.times)
-}
-
-# Get player IDs to help with players with same name (e.g. M. Morris and M. Morris)
-.GetBRefPlayerIDs <- function(id) {
-  
-  url.box <- paste('http://www.basketball-reference.com/boxscores/', id, '.html', sep = '')
-  
-  html <- readLines(url.box)
-  player.urls <- unique(html[grep('href=\"/players/[a-z]', html)])
-  player.urls <- player.urls[grep('csk', player.urls)]
-  player.urls <- gsub('.*href=\"/players([^\"]*)\">([^<]*).*', '\\1,\\2', player.urls)
-  player.ids <- data.frame(matrix(unlist(strsplit(player.urls, ',')), ncol = 2, byrow=T))
-  colnames(player.ids) <- c('id', 'name')
-  
-  return(player.ids)
 }
 
 # Get all the players in the lineups between the first and last indices
