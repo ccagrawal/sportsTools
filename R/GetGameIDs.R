@@ -81,8 +81,7 @@ GetGameIDs <- function(year, source = 'Basketball-Reference', season.type = 'reg
     }
   }
   
-  # Create "season" identifier from year
-  season <- paste0(year - 1, '-', year %% 100)
+  season <- paste0(year - 1, '-', year %% 100)    # e.g. 2015 becomes 2014-15
   
   # Start with base url
   base.url <- 'http://stats.nba.com/stats/teamgamelog?LeagueID=00&Season=YYYY&SeasonType=TTTT&TeamID=IIII'
