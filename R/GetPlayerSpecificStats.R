@@ -10,21 +10,29 @@
 #' @examples
 #' GetPlayerSpecificStats('Anthony Davis', 2015, 'on-off')
 
-GetPlayerSpecificStats <- function(player, year, stat) {
+GetPlayerSpecificStats <- function(player, stat, year) {
   
   options(stringsAsFactors = FALSE)
   
   player.ids <- GetPlayerIDs(year = year)
   id <- player.ids[which(player.ids$name == player), 'id']
   
-  base.url <- paste0("http://www.basketball-reference.com/players", id, "/")
+  base.url <- paste0('http://www.basketball-reference.com/players', id)
   
   # On-off stat ratings
   if (stat == 'on-off') {
-    url <- paste0(base.url, 'on-off/', year, '/')
+    url <- paste0(base.url, '/on-off/', year, '/')
     
     table <- readHTMLTable(url)[[1]]
     table[, -c(1, 2)] <- sapply(table[, -c(1, 2)], as.numeric)
+    
+    return(table)
+  } else if (stat == 'per game') {
+    url <- paste0(base.url, '.html')
+    
+    table <- readHTMLTable(url)[['per_game']]
+    table[, -c(1, 3, 4, 5)] <- sapply(table[, -c(1, 3, 4, 5)], as.numeric)
+    table$Season <- as.numeric(substr(table$Season, 1, 4)) + 1
     
     return(table)
   }
