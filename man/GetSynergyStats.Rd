@@ -7,7 +7,7 @@
 GetSynergyStats(stat, side = "offensive", type = "player")
 }
 \arguments{
-\item{stat}{statistic to pull (e.g. 'Postup', 'Isolation')}
+\item{stat}{statistic to pull (e.g. 'Postup', 'Isolation', 'PRRollMan')}
 
 \item{side}{either 'offensive' or 'defensive'}
 

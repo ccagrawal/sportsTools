@@ -1,6 +1,6 @@
 #' Synergy stats on players or teams
 #' 
-#' @param stat statistic to pull (e.g. 'Postup', 'Isolation')
+#' @param stat statistic to pull (e.g. 'Postup', 'Isolation', 'PRRollMan')
 #' @param side either 'offensive' or 'defensive'
 #' @param type either 'player' or 'team'
 #' @return data frame of stats
@@ -35,7 +35,7 @@ GetSynergyStats <- function(stat, side = 'offensive', type = 'player') {
   colnames(stats) <- json$headers
   
   # Clean data frame
-  if (stat.key == 'player_Postup') {
+  if (stat.key %in% c('player_Postup', 'player_PRRollMan')) {
     stats[, c(4, 10:31)] <- sapply(stats[, c(4, 10:31)], as.numeric)
   }
   
