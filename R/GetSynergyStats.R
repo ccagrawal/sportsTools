@@ -36,7 +36,9 @@ GetSynergyStats <- function(stat, side = 'offensive', type = 'player') {
   
   # Clean data frame
   if (stat.key %in% c('player_Postup', 'player_PRRollMan')) {
-    stats[, c(4, 10:31)] <- sapply(stats[, c(4, 10:31)], as.numeric)
+    char.cols <- c('PlayerFirstName', 'PlayerLastName', 'P', 'TeamName', 'TeamNameAbbreviation', 'TeamShortName')
+    char.cols <- which(colnames(stats) %in% char.cols)
+    stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   }
   
   return(stats)
