@@ -9,7 +9,7 @@ GetPlayerStats(year, type = "totals")
 \arguments{
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
 
-\item{type}{Either 'per game' or 'totals'}
+\item{type}{Either 'per game', 'totals', or 'advanced'}
 }
 \value{
 data frame with players stats
