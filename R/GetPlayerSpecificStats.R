@@ -19,21 +19,26 @@ GetPlayerSpecificStats <- function(player, stat, year) {
   
   base.url <- paste0('http://www.basketball-reference.com/players', id)
   
-  # On-off stat ratings
   if (stat == 'on-off') {
     url <- paste0(base.url, '/on-off/', year, '/')
     
     table <- readHTMLTable(url)[[1]]
     table[, -c(1, 2)] <- sapply(table[, -c(1, 2)], as.numeric)
-    
-    return(table)
   } else if (stat == 'per game') {
     url <- paste0(base.url, '.html')
     
     table <- readHTMLTable(url)[['per_game']]
     table[, -c(1, 3, 4, 5)] <- sapply(table[, -c(1, 3, 4, 5)], as.numeric)
     table$Season <- as.numeric(substr(table$Season, 1, 4)) + 1
+  } else if (stat == 'shooting') {
+    url <- paste0(base.url, '/shooting/', year, '/')
     
-    return(table)
+    table <- readHTMLTable(url)[[1]]
+    table <- table[3:nrow(table), ]
+    colnames(table) <- table[1, ]
+    table <- table[-which(table$Split == 'Split'), ]
+    table[, 3:11] <- sapply(table[, 3:11], as.numeric)
   }
+  
+  return(table)
 }
