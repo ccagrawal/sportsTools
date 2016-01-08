@@ -35,7 +35,7 @@ GetSynergyStats <- function(stat, side = 'offensive', type = 'player') {
   colnames(stats) <- json$headers
   
   # Clean data frame
-  if (type == 'Player') {
+  if (type == 'player') {
     
     char.cols <- c('PlayerFirstName', 'PlayerLastName', 'P', 'TeamName', 'TeamNameAbbreviation', 'TeamShortName')
     char.cols <- which(colnames(stats) %in% char.cols)
