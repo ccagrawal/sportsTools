@@ -1,6 +1,6 @@
 Package: sportsTools
 Title: Scraper for Sports Data
-Version: 0.1
+Version: 0.2
 Authors@R: person("Chirag", "Agrawal", email = "ccagrawal@gmail.com", 
 	role = c("aut", "cre"))
 Description: This package will be used to scrape data on several sports 
@@ -9,6 +9,7 @@ Description: This package will be used to scrape data on several sports
 Depends: R (>= 3.1.0)
 Imports:
 	XML,
-	rjson
+	rjson,
+	png
 License: CC0
 LazyData: true

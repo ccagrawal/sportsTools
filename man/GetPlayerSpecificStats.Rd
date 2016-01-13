@@ -4,7 +4,8 @@
 \alias{GetPlayerSpecificStats}
 \title{Player specific stats in a season.}
 \usage{
-GetPlayerSpecificStats(player, stat, year)
+GetPlayerSpecificStats(player, stat, year = as.numeric(format(Sys.Date(),
+  "\%Y")))
 }
 \arguments{
 \item{player}{NBA player (e.g. "James Harden")}
@@ -20,7 +21,7 @@ data frame with player's stats
 Player specific stats in a season.
 }
 \examples{
-GetPlayerSpecificStats('Anthony Davis', 2015, 'on-off')
+GetPlayerSpecificStats('Anthony Davis', 'on-off', 2015)
 }
 \keyword{player}
 

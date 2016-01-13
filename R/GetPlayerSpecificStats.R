@@ -8,9 +8,9 @@
 #' @importFrom XML readHTMLTable
 #' @export
 #' @examples
-#' GetPlayerSpecificStats('Anthony Davis', 2015, 'on-off')
+#' GetPlayerSpecificStats('Anthony Davis', 'on-off', 2015)
 
-GetPlayerSpecificStats <- function(player, stat, year) {
+GetPlayerSpecificStats <- function(player, stat, year = as.numeric(format(Sys.Date(), "%Y"))) {
   
   options(stringsAsFactors = FALSE)
   
@@ -28,6 +28,12 @@ GetPlayerSpecificStats <- function(player, stat, year) {
     url <- paste0(base.url, '.html')
     
     table <- readHTMLTable(url)[['per_game']]
+    table[, -c(1, 3, 4, 5)] <- sapply(table[, -c(1, 3, 4, 5)], as.numeric)
+    table$Season <- as.numeric(substr(table$Season, 1, 4)) + 1
+  } else if (stat == 'totals') {
+    url <- paste0(base.url, '.html')
+    
+    table <- readHTMLTable(url)[['totals']]
     table[, -c(1, 3, 4, 5)] <- sapply(table[, -c(1, 3, 4, 5)], as.numeric)
     table$Season <- as.numeric(substr(table$Season, 1, 4)) + 1
   } else if (stat == 'shooting') {
