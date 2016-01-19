@@ -44,6 +44,14 @@ GetPlayerSpecificStats <- function(player, stat, year = as.numeric(format(Sys.Da
     colnames(table) <- table[1, ]
     table <- table[-which(table$Split == 'Split'), ]
     table[, 3:11] <- sapply(table[, 3:11], as.numeric)
+  } else if (stat == 'play by play') {
+    url <- paste0(base.url, '.html')
+    
+    table <- readHTMLTable(url)[['advanced_pbp']]
+    table[, c(8:12)] <- sapply(table[, c(8:12)], function(x) gsub('%', '', x))
+    table[, -c(1, 3, 4, 5)] <- sapply(table[, -c(1, 3, 4, 5)], as.numeric)
+    table[, c(8:12)] <- table[, c(8:12)] / 100
+    table$Season <- as.numeric(substr(table$Season, 1, 4)) + 1
   }
   
   return(table)
