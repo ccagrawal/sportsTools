@@ -68,7 +68,6 @@ GetTeamStats <- function(year, stat.type = 'regular', season.type = 'regular', k
     stats <- stats[-which(is.na(stats$W)), ]
     
     stats[which(is.na(stats$GB)), 'GB'] <- 0
-    colnames(stats)[1] <- 'Team'
     stats$Seed <- as.numeric(gsub('[^(]*\\(([^)]*)\\)', '\\1', stats$Team))
     
     stats$Team <- gsub('[\\*|\\(].*', '', stats$Team)
@@ -76,10 +75,12 @@ GetTeamStats <- function(year, stat.type = 'regular', season.type = 'regular', k
     
   }
   
-  if (!keep.average) {
-    stats <- stats[-which(is.na(stats$Rk)), -1]   # Remove league average row and rank column
-  } else {
-    stats <- stats[, -1]
+  if (stat.type != 'standings') {
+    if (!keep.average) {
+      stats <- stats[-which(is.na(stats$Rk)), -1]   # Remove league average row and rank column
+    } else {
+      stats <- stats[, -1]
+    }
   }
   
   return(stats)
