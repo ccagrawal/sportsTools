@@ -14,7 +14,7 @@ GetTeamPicture <- function(team.id, source = 'ESPN') {
   url <- gsub('###', team.id, 'http://a.espncdn.com/combiner/i?img=/i/teamlogos/nba/500/###.png')
   temp <- tempfile()
   download.file(url, temp, mode = "wb")
-  pic <- readPNG(temp)
+  pic <- readPNG(temp, native = TRUE)
   file.remove(temp)
   
   return(pic)
