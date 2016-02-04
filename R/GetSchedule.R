@@ -40,8 +40,14 @@ GetSchedule <- function(year, season.type = 'regular', info = 'scores') {
     
     colnames(schedule) <- c('date', 'away.name', 'away.points', 'home.name', 'home.points', 'type')
     schedule$home.margin <- schedule$home.points - schedule$away.points
-  } else if (info == 'advanced') {
     
+  } else if (info == 'advanced') {
+    team.ids <- GetTeamIDs(year, 'Basketball-Reference')
+    
+    df <- data.frame()
+    for (team.id in team.ids$id) {
+      
+    }
   }
   
   return(schedule)
