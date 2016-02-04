@@ -44,10 +44,21 @@ GetSchedule <- function(year, season.type = 'regular', info = 'scores') {
   } else if (info == 'advanced') {
     team.ids <- GetTeamIDs(year, 'Basketball-Reference')
     
-    df <- data.frame()
+    schedule <- data.frame()
     for (team.id in team.ids$id) {
       temp <- GetTeamSpecificStats(team.id, 'advanced gamelog', year)
+      temp$Team <- team.id
+      schedule <- rbind(schedule, temp)
     }
+    
+    schedule <- schedule[schedule$Home == 1, c(2, 26, 4, 6:25)]
+    colnames(schedule) <- c('date', 'home.name', 'away.name', 'home.score', 'away.score',
+                      'home.ortg', 'away.ortg', 'pace', 'home.ftr', 'home.3par',
+                      'home.ts', 'home.trb', 'home.ast', 'home.stl', 'home.blk', 
+                      'home.efg', 'home.tov', 'home.orb', 'home.ft.fga', 'away.efg', 
+                      'away.tov', 'away.drb', 'away.ft.fga')
+    schedule$home.ortg <- schedule$home.score / schedule$pace * 100
+    schedule$away.ortg <- schedule$away.score / schedule$pace * 100
   }
   
   return(schedule)
@@ -58,6 +69,7 @@ GetSchedule <- function(year, season.type = 'regular', info = 'scores') {
 #' @param year.start season (e.g. 2008 for 2007-08 season)
 #' @param year.end season (e.g. 2014 for 2013-14 season)
 #' @param season.type either 'regular' or 'playoffs' or 'both'
+#' @param info either 'scores' or 'advanced'
 #' @return data frame with schedule and results for each game in all the seasons
 #' @keywords schedule
 #' @importFrom XML readHTMLTable
@@ -65,11 +77,11 @@ GetSchedule <- function(year, season.type = 'regular', info = 'scores') {
 #' @examples
 #' GetScheduleRange(2012, 2015, 'playoffs')
 
-GetScheduleRange <- function(year.start, year.end, season.type = 'both') {
+GetScheduleRange <- function(year.start, year.end, season.type = 'both', info = 'scores') {
   schedule <- data.frame()
   
   for (year in year.start:year.end) {
-    temp <- GetSchedule(year, type)
+    temp <- GetSchedule(year, type, info)
     temp$season <- year
     schedule <- rbind(schedule, temp)
   }
