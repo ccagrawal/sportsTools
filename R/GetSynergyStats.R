@@ -1,6 +1,6 @@
 #' Synergy stats on players or teams
 #' 
-#' @param stat statistic to pull (e.g. 'Postup', 'Isolation', 'PRRollMan', 'PRBallHandler', 'Cut')
+#' @param stat statistic to pull (e.g. 'Postup', 'Isolation', 'PRRollMan', 'PRBallHandler', 'Cut', 'OffRebound')
 #' @param side either 'offensive' or 'defensive'
 #' @param type either 'player' or 'team'
 #' @return data frame of stats
