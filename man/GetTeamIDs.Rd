@@ -9,7 +9,7 @@ GetTeamIDs(year = 2016, source = "NBA")
 \arguments{
 \item{year}{NBA season for which you want team IDs (e.g. 2008 for the 2007-08 season)}
 
-\item{source}{website that is being used (e.g. 'Basketball-Reference')}
+\item{source}{website that is being used ('NBA', 'ESPN', 'Basketball-Reference')}
 }
 \value{
 data frame of names and IDs

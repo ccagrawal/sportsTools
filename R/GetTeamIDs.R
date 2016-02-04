@@ -1,7 +1,7 @@
 #' Team IDs on websites
 #' 
 #' @param year NBA season for which you want team IDs (e.g. 2008 for the 2007-08 season)
-#' @param source website that is being used (e.g. 'Basketball-Reference')
+#' @param source website that is being used ('NBA', 'ESPN', 'Basketball-Reference')
 #' @return data frame of names and IDs
 #' @keywords team IDs
 #' @importFrom rjson fromJSON
@@ -29,6 +29,18 @@ GetTeamIDs <- function(year = 2016, source = 'NBA') {
     lines <- lines[grep('http://espn.go.com/nba/team/_/name', lines)]
     
     team.list <- gsub('.*team/_/name/([^/]*)/([^\"]*).*', '\\1~\\2', lines)
+    team.list <- strsplit(team.list, '~')
+    team.list <- data.frame(matrix(unlist(team.list), nrow = length(team.list), byrow = TRUE))
+    colnames(team.list) <- c('id', 'name')
+    
+    team.list$name <- gsub('-', ' ', team.list$name)
+    team.list$name <- sapply(team.list$name, .CapLetters)
+  } else if (source == 'Basketball-Reference') {
+    url <- gsub('YEAR', year, 'http://www.basketball-reference.com/leagues/NBA_YEAR.html')
+    lines <- readLines(url)
+    lines <- unique(lines[grep(' ><a href=\"/teams/', lines)])
+    
+    team.list <- gsub('.*teams/([^/]*)/[^>]*>([^<]*).*', '\\1~\\2', lines)
     team.list <- strsplit(team.list, '~')
     team.list <- data.frame(matrix(unlist(team.list), nrow = length(team.list), byrow = TRUE))
     colnames(team.list) <- c('id', 'name')
