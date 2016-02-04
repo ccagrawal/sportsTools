@@ -57,8 +57,6 @@ GetSchedule <- function(year, season.type = 'regular', info = 'scores') {
                       'home.ts', 'home.trb', 'home.ast', 'home.stl', 'home.blk', 
                       'home.efg', 'home.tov', 'home.orb', 'home.ft.fga', 'away.efg', 
                       'away.tov', 'away.drb', 'away.ft.fga')
-    schedule$home.ortg <- schedule$home.score / schedule$pace * 100
-    schedule$away.ortg <- schedule$away.score / schedule$pace * 100
   }
   
   return(schedule)
