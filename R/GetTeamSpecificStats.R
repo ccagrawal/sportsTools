@@ -14,7 +14,7 @@ GetTeamSpecificStats <- function(team, stat, year = as.numeric(format(Sys.Date()
   
   options(stringsAsFactors = FALSE)
 
-  base.url <- paste0('http://www.basketball-reference.com/teams/', id)
+  base.url <- paste0('http://www.basketball-reference.com/teams/', team)
   
   if (stat == 'advanced gamelog') {
     url <- paste0(base.url, '/', year, '/gamelog/')

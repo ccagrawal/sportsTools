@@ -46,7 +46,7 @@ GetSchedule <- function(year, season.type = 'regular', info = 'scores') {
     
     df <- data.frame()
     for (team.id in team.ids$id) {
-      
+      temp <- GetTeamSpecificStats(team.id, 'advanced gamelog', year)
     }
   }
   
