@@ -9,7 +9,7 @@ GetTeamSpecificStats(team, stat, year = as.numeric(format(Sys.Date(), "\%Y")))
 \arguments{
 \item{team}{Team ID (e.g. "HOU")}
 
-\item{stat}{Which stat do you want (e.g. "advanced gamelog")}
+\item{stat}{Which stat do you want (e.g. "advanced gamelog", "roster")}
 
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
 }

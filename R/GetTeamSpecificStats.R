@@ -1,7 +1,7 @@
 #' Team specific stats in a season.
 #'
 #' @param team Team ID (e.g. "HOU")
-#' @param stat Which stat do you want (e.g. "advanced gamelog")
+#' @param stat Which stat do you want (e.g. "advanced gamelog", "roster")
 #' @param year NBA season (e.g. 2008 for the 2007-08 season)
 #' @return data frame with team's stats
 #' @keywords team
@@ -40,6 +40,15 @@ GetTeamSpecificStats <- function(team, stat, year = as.numeric(format(Sys.Date()
     colnames(table)[3] <- 'Home'
     table[table$Home == '@', 'Home'] <- 0
     table[table$Home == '', 'Home'] <- 1
+  } else if (stat == 'roster') {
+    url <- paste0(base.url, '/', year, '.html')
+    
+    table <- readHTMLTable(url)[[1]]
+    table <- table[, -7]
+    
+    table[table$Exp == 'R', 'Exp'] <- 0
+    table[, c(1, 5, 7)] <- sapply(table[, c(1, 5, 7)], as.numeric)
+    table[, 6] <- as.Date(table[, 6], format = "%B %d, %Y")
   }
   
   return(table)
