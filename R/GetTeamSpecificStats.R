@@ -43,7 +43,7 @@ GetTeamSpecificStats <- function(team, stat, year = as.numeric(format(Sys.Date()
   } else if (stat == 'roster') {
     url <- paste0(base.url, '/', year, '.html')
     
-    table <- readHTMLTable(url)[[1]]
+    table <- readHTMLTable(url)[['roster']]
     table <- table[, -7]
     
     table[table$Exp == 'R', 'Exp'] <- 0
