@@ -10,35 +10,34 @@
 #' @examples
 #' GetShotDashboard('Defender Distance', 'team')
 
-GetShotDashboard <- function(stat, type = 'player', id) {
+GetShotDashboard <- function(stat, type = 'team', id, opponent.id = '0') {
   
   options(stringsAsFactors = FALSE)
   
   if (type == 'team') {
-    base.url <- paste0('http://stats.nba.com/stats/teamdashptshots?',
-                       'DateFrom=&',
-                       'DateTo=&', 
-                       'GameSegment=&', 
-                       'LastNGames=0&', 
-                       'LeagueID=00&', 
-                       'Location=&', 
-                       'MeasureType=Base&', 
-                       'Month=0&', 
-                       'OpponentTeamID=0&', 
-                       'Outcome=&',
-                       'PaceAdjust=N&',
-                       'PerMode=Totals&',
-                       'Period=0&',
-                       'PlusMinus=N&',
-                       'Rank=N&',
-                       'Season=2015-16&',
-                       'SeasonSegment=&',
-                       'SeasonType=Regular+Season&',
-                       'TeamID=##ID##&',
-                       'VsConference=&',
-                       'VsDivision=')
+    url <- paste0('http://stats.nba.com/stats/teamdashptshots?',
+                  'DateFrom=&',
+                  'DateTo=&', 
+                  'GameSegment=&', 
+                  'LastNGames=0&', 
+                  'LeagueID=00&', 
+                  'Location=&', 
+                  'MeasureType=Base&', 
+                  'Month=0&', 
+                  'OpponentTeamID=', opponent.id, '&', 
+                  'Outcome=&',
+                  'PaceAdjust=N&',
+                  'PerMode=Totals&',
+                  'Period=0&',
+                  'PlusMinus=N&',
+                  'Rank=N&',
+                  'Season=2015-16&',
+                  'SeasonSegment=&',
+                  'SeasonType=Regular+Season&',
+                  'TeamID=', id, '&',
+                  'VsConference=&',
+                  'VsDivision=')
     
-    url <- gsub('##ID##', id, base.url)
     json <- fromJSON(file = url)[[3]]
     
     if (stat == 'Defender Distance') {

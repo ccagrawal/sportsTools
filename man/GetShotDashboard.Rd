@@ -4,7 +4,7 @@
 \alias{GetShotDashboard}
 \title{Shot Dashboard stats on players or teams}
 \usage{
-GetShotDashboard(stat, type = "player", id)
+GetShotDashboard(stat, type = "team", id, opponent.id = "0")
 }
 \arguments{
 \item{stat}{statistic to pull (e.g. 'Defender Distance')}
