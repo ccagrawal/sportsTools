@@ -5,7 +5,7 @@
 \title{Player specific stats in a season.}
 \usage{
 GetPlayerSpecificStats(player, stat, year = as.numeric(format(Sys.Date(),
-  "\%Y")))
+  "\%Y")), player.ids)
 }
 \arguments{
 \item{player}{NBA player (e.g. "James Harden")}

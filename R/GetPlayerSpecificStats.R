@@ -10,13 +10,15 @@
 #' @examples
 #' GetPlayerSpecificStats('Anthony Davis', 'on-off', 2015)
 
-GetPlayerSpecificStats <- function(player, stat, year = as.numeric(format(Sys.Date(), "%Y"))) {
+GetPlayerSpecificStats <- function(player, stat, year = as.numeric(format(Sys.Date(), "%Y")), player.ids) {
   
   options(stringsAsFactors = FALSE)
   
-  player.ids <- GetPlayerIDs(year = year)
-  id <- player.ids[which(player.ids$name == player), 'id']
+  if (missing(player.ids)) {
+    player.ids <- GetPlayerIDs(year = year)
+  }
   
+  id <- player.ids[which(player.ids$name == player), 'id']
   base.url <- paste0('http://www.basketball-reference.com/players', id)
   
   if (stat == 'on-off') {
@@ -51,6 +53,13 @@ GetPlayerSpecificStats <- function(player, stat, year = as.numeric(format(Sys.Da
     table[, c(8:12)] <- sapply(table[, c(8:12)], function(x) gsub('%', '', x))
     table[, -c(1, 3, 4, 5)] <- sapply(table[, -c(1, 3, 4, 5)], as.numeric)
     table[, c(8:12)] <- table[, c(8:12)] / 100
+    table$Season <- as.numeric(substr(table$Season, 1, 4)) + 1
+  } else if (stat == 'advanced') {
+    url <- paste0(base.url, '.html')
+    
+    table <- readHTMLTable(url)[['advanced']]
+    table <- table[, -c(20, 25)]
+    table[, -c(1, 3, 4, 5)] <- sapply(table[, -c(1, 3, 4, 5)], as.numeric)
     table$Season <- as.numeric(substr(table$Season, 1, 4)) + 1
   }
   
