@@ -4,12 +4,14 @@
 \alias{GetPlayerStats}
 \title{Player stats per season.}
 \usage{
-GetPlayerStats(year, type = "totals")
+GetPlayerStats(year, type = "totals", source = "Basketball-Reference")
 }
 \arguments{
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
 
 \item{type}{Either 'per game', 'totals', or 'advanced'}
+
+\item{source}{Either 'Basketball-Reference' or 'NBA'}
 }
 \value{
 data frame with players stats
