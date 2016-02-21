@@ -12,6 +12,8 @@ GetShotDashboard(stat, type = "team", id, opponent.id = "0")
 \item{type}{either 'player' or 'team'}
 
 \item{id}{either player's ID or team's ID}
+
+\item{opponent.id}{opponent team's ID}
 }
 \value{
 data frame of stats
@@ -20,7 +22,7 @@ data frame of stats
 Shot Dashboard stats on players or teams
 }
 \examples{
-GetShotDashboard('Defender Distance', 'team')
+GetShotDashboard('Defender Distance', 'player', '201147')
 }
 \keyword{player}
 \keyword{shooting}
