@@ -96,7 +96,7 @@ GetShotDashboard <- function(stat, type = 'team', id, opponent.id = '0') {
     colnames(stats) <- json$headers
     
     if (stat == 'Defender Distance') {
-      char.cols <- c('PLAYER_ID', 'PLAYER_NAME', 'CLOSE_DEF_DIST_RANGE')
+      char.cols <- c('PLAYER_ID', 'PLAYER_NAME_LAST_FIRST', 'CLOSE_DEF_DIST_RANGE')
       char.cols <- which(colnames(stats) %in% char.cols)
       stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
     }
