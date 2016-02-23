@@ -4,12 +4,14 @@
 \alias{GetTeamIDs}
 \title{Team IDs on websites}
 \usage{
-GetTeamIDs(year = 2016, source = "NBA")
+GetTeamIDs(sport = "NBA", year = 2016, source = "NBA")
 }
 \arguments{
+\item{sport}{'NBA' or 'NCAAB'}
+
 \item{year}{NBA season for which you want team IDs (e.g. 2008 for the 2007-08 season)}
 
-\item{source}{website that is being used ('NBA', 'ESPN', 'Basketball-Reference')}
+\item{source}{website that is being used ('NBA', 'ESPN', 'Basketball-Reference', 'Sports-Reference')}
 }
 \value{
 data frame of names and IDs

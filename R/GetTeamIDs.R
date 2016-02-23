@@ -1,7 +1,8 @@
 #' Team IDs on websites
 #' 
+#' @param sport 'NBA' or 'NCAAB'
 #' @param year NBA season for which you want team IDs (e.g. 2008 for the 2007-08 season)
-#' @param source website that is being used ('NBA', 'ESPN', 'Basketball-Reference')
+#' @param source website that is being used ('NBA', 'ESPN', 'Basketball-Reference', 'Sports-Reference')
 #' @return data frame of names and IDs
 #' @keywords team IDs
 #' @importFrom rjson fromJSON
@@ -9,7 +10,16 @@
 #' @examples
 #' GetTeamIDs(2015)
 
-GetTeamIDs <- function(year = 2016, source = 'NBA') {
+GetTeamIDs <- function(sport = 'NBA', year = 2016, source = 'NBA') {
+  
+  if (sport == 'NBA') {
+    return(.GetTeamIDsNBA(year, source))
+  } else if (sport == 'NCAAB') {
+    return(.GetTeamIDsNCAAB(year, source))
+  }
+}
+
+.GetTeamIDsNBA <- function(year = 2016, source = 'NBA') {
   
   options(stringsAsFactors = FALSE)
   
@@ -47,6 +57,27 @@ GetTeamIDs <- function(year = 2016, source = 'NBA') {
     
     team.list$name <- gsub('-', ' ', team.list$name)
     team.list$name <- sapply(team.list$name, .CapLetters)
+  }
+  
+  return(team.list)
+}
+
+.GetTeamIDsNCAAB <- function(year = 2016, source = 'Sports-Reference') {
+  
+  options(stringsAsFactors = FALSE)
+  
+  if (source == 'Sports-Reference') {
+    url <- paste0('http://www.sports-reference.com/cbb/seasons/', year, '-school-stats.html')
+    
+    team.list <- readLines(url)
+    team.list <- team.list[grepl('/cbb/schools/[a-z]', team.list)]
+    team.list <- unique(gsub('.*/cbb/schools/([^/]*)[^>]*>([^<]*).*', '\\1~\\2', team.list))
+    
+    team.list <- strsplit(team.list, '~')
+    team.list <- data.frame(matrix(unlist(team.list), nrow = length(team.list), byrow = TRUE))
+    colnames(team.list) <- c('id', 'name')
+    
+    team.list$name <- gsub('&amp;', '&', team.list$name)
   }
   
   return(team.list)
