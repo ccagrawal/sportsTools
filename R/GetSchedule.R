@@ -111,8 +111,6 @@ GetScheduleRange <- function(sport = 'NBA', year.start, year.end, season.type = 
       temp <- readHTMLTable(url)[['schedule']]
       temp$team <- team.ids[i, 'name']
       schedule <- rbind(schedule, temp)
-      
-      cat(i, '\n')
     }
     
     schedule$Opponent <- gsub('\\([0-9]*)', '', schedule$Opponent)
@@ -142,6 +140,8 @@ GetScheduleRange <- function(sport = 'NBA', year.start, year.end, season.type = 
     # Clean up columns
     schedule <- schedule[, c(1, 9, 10, 11, 7, 8)]
     colnames(schedule) <- c('date', 'winner.name', 'loser.name', 'home', 'winner.points', 'loser.points')
+    schedule$winner.points <- as.numeric(schedule$winner.points)
+    schedule$loser.points <- as.numeric(schedule$loser.points)
     schedule$margin <- schedule$winner.points - schedule$loser.points
     
     # Remove duplicate rows
