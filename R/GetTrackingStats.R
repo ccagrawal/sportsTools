@@ -1,6 +1,7 @@
 #' NBA Player Tracking
 #' 
 #' @param stat statistic to pull (e.g. 'Passing', 'Possessions')
+#' @param type either 'Player' or 'Team'
 #' @return data frame of stats
 #' @keywords synergy
 #' @importFrom rjson fromJSON
@@ -8,7 +9,7 @@
 #' @examples
 #' GetTrackingStats('Postup')
 
-GetTrackingStats <- function(stat) {
+GetTrackingStats <- function(stat, type = 'Player') {
   
   options(stringsAsFactors = FALSE)
   
@@ -31,7 +32,7 @@ GetTrackingStats <- function(stat) {
                 'PORound=0&',
                 'PerMode=Totals&',
                 'PlayerExperience=&',
-                'PlayerOrTeam=Player&',
+                'PlayerOrTeam=', type, '&',
                 'PlayerPosition=&',
                 'PtMeasureType=', stat, '&',
                 'Season=2015-16&',
@@ -55,9 +56,15 @@ GetTrackingStats <- function(stat) {
   colnames(stats) <- json$headers
   
   # Clean data frame
-  char.cols <- c('PLAYER_ID', 'PLAYER_NAME', 'TEAM_ID', 'TEAM_ABBREVIATION')
-  char.cols <- which(colnames(stats) %in% char.cols)
-  stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
+  if (type == 'Player') {
+    char.cols <- c('PLAYER_ID', 'PLAYER_NAME', 'TEAM_ID', 'TEAM_ABBREVIATION')
+    char.cols <- which(colnames(stats) %in% char.cols)
+    stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
+  } else {
+    char.cols <- c('TEAM_ID', 'TEAM_ABBREVIATION', 'TEAM_NAME')
+    char.cols <- which(colnames(stats) %in% char.cols)
+    stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
+  }
   
   return(stats)
 }

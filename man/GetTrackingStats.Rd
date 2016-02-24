@@ -4,10 +4,12 @@
 \alias{GetTrackingStats}
 \title{NBA Player Tracking}
 \usage{
-GetTrackingStats(stat)
+GetTrackingStats(stat, type = "Player")
 }
 \arguments{
 \item{stat}{statistic to pull (e.g. 'Passing', 'Possessions')}
+
+\item{type}{either 'Player' or 'Team'}
 }
 \value{
 data frame of stats
