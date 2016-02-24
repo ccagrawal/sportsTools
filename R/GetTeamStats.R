@@ -16,7 +16,7 @@ GetTeamStats <- function(year, stat.type = 'regular', season.type = 'regular', k
   if (source == 'Basketball-Reference') {
     return(.GetTeamStatsBRef(year, stat.type, season.type, keep.average))
   } else if (source == 'NBA') {
-    return(.GetTeamStatsBRef(year, stat.type, season.type))
+    return(.GetTeamStatsNBA(year, stat.type, season.type))
   }
 }
 
