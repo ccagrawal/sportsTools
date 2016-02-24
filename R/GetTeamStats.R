@@ -6,11 +6,21 @@
 #' @return data frame with wins and losses for that season
 #' @keywords team
 #' @importFrom XML readHTMLTable
+#' @importFrom rjson fromJSON
 #' @export
 #' @examples
 #' GetTeamStats(2014)
 
-GetTeamStats <- function(year, stat.type = 'regular', season.type = 'regular', keep.average = FALSE) {
+GetTeamStats <- function(year, stat.type = 'regular', season.type = 'regular', keep.average = FALSE, source = 'Basketball-Reference') {
+  
+  if (source == 'Basketball-Reference') {
+    return(.GetTeamStatsBRef(year, stat.type, season.type, keep.average))
+  } else if (source == 'NBA') {
+    return(.GetTeamStatsBRef(year, stat.type, season.type))
+  }
+}
+
+.GetTeamStatsBRef <- function(year, stat.type = 'regular', season.type = 'regular', keep.average = FALSE) {
   
   options(stringsAsFactors = FALSE)
   
@@ -82,6 +92,59 @@ GetTeamStats <- function(year, stat.type = 'regular', season.type = 'regular', k
       stats <- stats[, -1]
     }
   }
+}
+
+.GetTeamStatsNBA <- function(year, stat.type = 'regular', season.type = 'regular') {
+  
+  options(stringsAsFactors = FALSE)
+  
+  season <- .YearToSeason(year)
+  
+  url <- paste0('http://stats.nba.com/stats/leaguedashteamstats?Conference=&',
+                'DateFrom=&',
+                'DateTo=&',
+                'Division=&',
+                'GameScope=&',
+                'GameSegment=&',
+                'LastNGames=0&',
+                'LeagueID=00&',
+                'Location=&',
+                'MeasureType=', stat.type, '&',
+                'Month=0&',
+                'OpponentTeamID=0&',
+                'Outcome=&',
+                'PORound=0&',
+                'PaceAdjust=N&',
+                'PerMode=Totals&',
+                'Period=0&',
+                'PlayerExperience=&',
+                'PlayerPosition=&',
+                'PlusMinus=N&',
+                'Rank=N&',
+                'Season=', season, '&',
+                'SeasonSegment=&',
+                'SeasonType=Regular+Season&',
+                'ShotClockRange=&',
+                'StarterBench=&',
+                'TeamID=0&',
+                'VsConference=&',
+                'VsDivision=')
+  
+  json <- fromJSON(file = url)[[3]][[1]]
+  
+  stats <- json$rowSet
+  
+  # Create raw data frame
+  stats <- lapply(stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
+  stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
+  
+  # Get column headers
+  colnames(stats) <- json$headers
+  
+  # Clean data frame
+  char.cols <- c('TEAM_ID', 'TEAM_NAME', 'CFID', 'CFPARAMS')
+  char.cols <- which(colnames(stats) %in% char.cols)
+  stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   
   return(stats)
 }
