@@ -24,14 +24,15 @@ GetTeamIDs <- function(sport = 'NBA', year = 2016, source = 'NBA') {
   options(stringsAsFactors = FALSE)
   
   if (source == 'NBA') {
-    url <- gsub('YEAR', year, 'http://stats.nba.com/stats/scoreboard?DayOffset=0&LeagueID=00&gameDate=03%2F20%2FYEAR')
+    year <- year - 1
+    url <- gsub('YEAR', year, 'http://stats.nba.com/stats/playoffpicture?LeagueID=00&SeasonID=2YEAR')
     json <- fromJSON(file = url)[[3]]                  # (3) contains the actual info for the day
-    team.list <- c(json[[5]]$rowSet, json[[6]]$rowSet)      # Combine standings from East and West
+    team.list <- c(json[[3]]$rowSet, json[[4]]$rowSet)      # Combine standings from East and West
     
     team.list <- lapply(team.list, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
     team.list <- data.frame(matrix(unlist(team.list), nrow = length(team.list), byrow = TRUE)) # Turn list to data frame
     
-    team.list <- team.list[, c(1, 6)]      # Drop useless columns
+    team.list <- team.list[, c(4, 3)]      # Drop useless columns
     colnames(team.list) <- c('id', 'name')
   } else if (source == 'ESPN') {
     url <- 'http://espn.go.com/nba/teams'
