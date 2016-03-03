@@ -1,5 +1,6 @@
 #' NBA Player Tracking
 #' 
+#' @param year 2015 for 2014-15 season
 #' @param stat statistic to pull (e.g. 'Passing', 'Possessions')
 #' @param type either 'Player' or 'Team'
 #' @return data frame of stats
@@ -9,7 +10,7 @@
 #' @examples
 #' GetTrackingStats('Postup')
 
-GetTrackingStats <- function(stat, type = 'Player') {
+GetTrackingStats <- function(year = 2016, stat, type = 'Player') {
   
   options(stringsAsFactors = FALSE)
   
@@ -35,7 +36,7 @@ GetTrackingStats <- function(stat, type = 'Player') {
                 'PlayerOrTeam=', type, '&',
                 'PlayerPosition=&',
                 'PtMeasureType=', stat, '&',
-                'Season=2015-16&',
+                'Season=', .YearToSeason(year), '&',
                 'SeasonSegment=&',
                 'SeasonType=Regular+Season&',
                 'StarterBench=&',

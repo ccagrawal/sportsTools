@@ -4,9 +4,11 @@
 \alias{GetTrackingStats}
 \title{NBA Player Tracking}
 \usage{
-GetTrackingStats(stat, type = "Player")
+GetTrackingStats(year = 2016, stat, type = "Player")
 }
 \arguments{
+\item{year}{2015 for 2014-15 season}
+
 \item{stat}{statistic to pull (e.g. 'Passing', 'Possessions')}
 
 \item{type}{either 'Player' or 'Team'}
