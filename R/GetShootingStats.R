@@ -4,7 +4,7 @@
 #' @param stat which stat ('Shot Type Detail')
 #' @return data frame of stats
 #' @keywords shooting player
-#' @importFrom httr GET content
+#' @importFrom httr GET content add_headers
 #' @export
 #' @examples
 #' GetShootingStats(id = '201147', stat = 'Shot Type Detail')
