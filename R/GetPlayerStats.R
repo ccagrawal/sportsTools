@@ -1,84 +1,139 @@
 #' Player stats per season.
 #'
 #' @param year NBA season (e.g. 2008 for the 2007-08 season)
-#' @param type Either 'per game', 'totals', or 'advanced'
+#' @param type Either 'Basic' or 'Advanced'
+#' @param per.mode Either 'Per Game', 'Totals', or '100 Possessions'
 #' @param source Either 'Basketball-Reference' or 'NBA'
 #' @return data frame with players stats
 #' @keywords player
 #' @importFrom XML readHTMLTable
-#' @importFrom rjson fromJSON
+#' @importFrom httr GET content add_headers
 #' @export
 #' @examples
-#' GetPlayerStats(2014, 'totals')
+#' GetPlayerStats(2014, 'Basic')
 
-GetPlayerStats <- function(year, type = 'totals', source = 'Basketball-Reference') {
+GetPlayerStats <- function(year, type = 'Basic', per.mode = 'Per Game', source = 'Basketball-Reference') {
   
   options(stringsAsFactors = FALSE)
   
   if (source == 'Basketball-Reference') {
-    base.url <- paste0("http://www.basketball-reference.com/leagues/NBA_", year, "_TYPE.html")
-    
-    if (type == 'totals') {
-      url <- gsub("TYPE", "totals", base.url)
-    } else if (type == 'per game') {
-      url <- gsub("TYPE", "per_game", base.url)
-    } else if (type == 'advanced') {
-      url <- gsub("TYPE", "advanced", base.url)
-    }
-    
-    table <- readHTMLTable(url)[[1]]
-    
-    # Remove repeat header rows
-    table <- table[-which(table$Rk == 'Rk'), ]
-    
-    if (type %in% c('totals', 'per game')) {
-      # Remove the useless columns
-      table <- table[, c(2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 19, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30)]
-      
-      # Fix the column types
-      table[, -c(1, 2, 4)] <- lapply(table[, -c(1, 2, 4)], as.numeric)
-      
-      # Add percentages
-      table$'FG%' <- table$FG / table$FGA
-      table$'3P%' <- table$'3P' / table$'3PA'
-      table$'FT%' <- table$FT / table$FTA
-      
-      # Rearrange columns
-      table <- table[, c(1, 2, 3, 4, 5, 6, 7, 8, 9, 23, 10, 11, 24, 12, 13, 25, 14, 15, 16, 17, 18, 19, 20, 21, 22)]
-    } else if (type %in% c('advanced')) {
-      # Remove the useless columns
-      table <- table[, -c(1, 20, 25)]
-      
-      # Fix the column types
-      table[, -c(1, 2, 4)] <- lapply(table[, -c(1, 2, 4)], as.numeric)
-    }
-    
-    # Remove astericks from player name
-    table$Player <- gsub('\\*', '', table$Player)
+    return(.GetPlayerStatsBRef(year, type, per.mode))
   } else if (source == 'NBA') {
-    url <- paste0('http://stats.nba.com/stats/leagueleaders?',
-                  'LeagueID=00&', 
-                  'PerMode=Totals&',
-                  'Scope=S&',
-                  'Season=', .YearToSeason(year), '&',
-                  'SeasonSegment=&',
-                  'SeasonType=Regular+Season&',
-                  'StatCategory=MIN')
-    
-    json <- fromJSON(file = url)[[3]]
-    table <- json$rowSet
-    
-    # Create raw data frame
-    table <- lapply(table, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-    table <- data.frame(matrix(unlist(table), nrow = length(table), byrow = TRUE)) # Turn list to data frame
-    
-    # Get column headers
-    colnames(table) <- json$headers
-    
-    char.cols <- c('PLAYER_ID', 'PLAYER', 'TEAM')
-    char.cols <- which(colnames(table) %in% char.cols)
-    table[, -char.cols] <- sapply(table[, -char.cols], as.numeric)
+    return(.GetPlayerStatsNBA(year, type, per.mode))
+  }
+}
+
+.GetPlayerStatsBRef <- function(year, type = 'Basic', per.mode = 'Per Game') {
+  
+  base.url <- paste0("http://www.basketball-reference.com/leagues/NBA_", year, "_TYPE.html")
+  
+  if (type == 'Advanced') {
+    url <- gsub("TYPE", "advanced", base.url)
+  } else if (per.mode == 'Per Game') {
+    url <- gsub("TYPE", "per_game", base.url)
+  } else if (per.mode == 'Totals') {
+    url <- gsub("TYPE", "totals", base.url)
   }
   
+  table <- readHTMLTable(url)[[1]]
+  
+  # Remove repeat header rows
+  table <- table[-which(table$Rk == 'Rk'), ]
+  
+  if (per.mode %in% c('Totals', 'Per Game')) {
+    # Remove the useless columns
+    table <- table[, c(2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 19, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30)]
+    
+    # Fix the column types
+    table[, -c(1, 2, 4)] <- lapply(table[, -c(1, 2, 4)], as.numeric)
+    
+    # Add percentages
+    table$'FG%' <- table$FG / table$FGA
+    table$'3P%' <- table$'3P' / table$'3PA'
+    table$'FT%' <- table$FT / table$FTA
+    
+    # Rearrange columns
+    table <- table[, c(1, 2, 3, 4, 5, 6, 7, 8, 9, 23, 10, 11, 24, 12, 13, 25, 14, 15, 16, 17, 18, 19, 20, 21, 22)]
+  } else if (type %in% c('Advanced')) {
+    # Remove the useless columns
+    table <- table[, -c(1, 20, 25)]
+    
+    # Fix the column types
+    table[, -c(1, 2, 4)] <- lapply(table[, -c(1, 2, 4)], as.numeric)
+  }
+  
+  # Remove astericks from player name
+  table$Player <- gsub('\\*', '', table$Player)
+  
   return(table)
+}
+
+.GetPlayerStatsNBA <- function(year, type = 'Basic', per.mode = '100 Possessions') {
+  
+  if (type == 'Basic') {
+    type <- 'Base'
+  }
+  
+  if (per.mode == '100 Possessions') {
+    per.mode <- 'Per100Possessions'
+  }
+  
+  request = GET(
+    "http://stats.nba.com/stats/leaguedashplayerstats",
+    query = list(
+      College = "",
+      Conference = "",
+      Country = "",
+      DateFrom = "",
+      DateTo = "",
+      Division = "",
+      DraftPick = "",
+      DraftYear = "",
+      GameScope = "",
+      GameSegment = "",
+      Height = "",
+      LastNGames = 0,
+      LeagueID = "00",
+      Location = "",
+      MeasureType = type,
+      Month = 0,
+      OpponentTeamID = 0,
+      Outcome = "",
+      PORound = 0,
+      PaceAdjust = "N",
+      PerMode = per.mode,
+      Period = 0,
+      PlayerExperience = "",
+      PlayerPosition = "",
+      PlusMinus = "N",
+      Rank = "N",
+      Season = .YearToSeason(year),
+      SeasonSegment = "",
+      SeasonType = "Regular Season",
+      ShotClockRange = "",
+      StarterBench = "",
+      TeamID = 0,
+      VsConference = "",
+      VsDivision = "",
+      Weight = ""
+    ),
+    add_headers('Referer' = 'http://stats.nba.com/player/')
+  )
+  
+  content <- content(request, 'parsed')[[3]][[1]]
+
+  stats <- content$rowSet
+  
+  # Create raw data frame
+  stats <- lapply(stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
+  stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
+  
+  # Get column headers
+  colnames(stats) <- content$headers
+  
+  char.cols <- c('PLAYER_ID', 'PLAYER_NAME', 'TEAM_ID', 'TEAM_ABBREVIATION', 'CFPARAMS')
+  char.cols <- which(colnames(stats) %in% char.cols)
+  stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
+  
+  return(stats)
 }
