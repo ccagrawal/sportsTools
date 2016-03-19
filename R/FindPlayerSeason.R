@@ -1,23 +1,33 @@
 #' Player Season Finder
 #'
-#' @param type currently just 'advanced'
+#' @param type either 'Advanced' or 'Per Game'
 #' @param year.min Earliest year to search
 #' @param season.start Earliest year of players' careers to search
 #' @param season.end Latest year of players' careers to search
 #' @param c1.stat Statistic for criteria 1
 #' @param c1.val Value for criteria 1
+#' @param c2.stat Statistic for criteria 2
+#' @param c2.val Value for criteria 2
+#' @param c3.stat Statistic for criteria 3
+#' @param c3.val Value for criteria 3
 #' @param order.by Statistic to order results by
 #' @return data frame with player seasons that fit criteria
 #' @keywords finder player season
 #' @importFrom XML readHTMLTable
 #' @export
 #' @examples
-#' FindPlayerSeason(type = 'advanced', year.min = 1980, season.start = 1, season.end = 1, c1.stat = 'mp_per_g', c1.val = 24, order.by = 'ts_pct')
+#' FindPlayerSeason(type = 'Advanced', year.min = 1980, season.start = 1, season.end = 1, c1.stat = 'mp_per_g', c1.val = 24, order.by = 'ts_pct')
 
-FindPlayerSeason <- function(type = 'advanced', year.min = '', season.start = '', season.end = '', 
-                             c1.stat = '', c1.val = '', order.by = '') {
+FindPlayerSeason <- function(type = 'Advanced', year.min = '', season.start = 1, season.end = -1, 
+                             c1.stat = '', c1.val = '', c2.stat = '', c2.val = '', c3.stat = '', c3.val = '', order.by = '') {
   
   options(stringsAsFactors = FALSE)
+  
+  if (type == 'Advanced') {
+    type <- 'advanced'
+  } else if (type == 'Per Game') {
+    type <- 'per_game'
+  }
   
   search.url <- paste0('http://www.basketball-reference.com/play-index/psl_finder.cgi?',
                        'request=1&',
@@ -63,12 +73,12 @@ FindPlayerSeason <- function(type = 'advanced', year.min = '', season.start = ''
                        'c1stat=', c1.stat, '&',
                        'c1comp=gt&',
                        'c1val=', c1.val, '&',
-                       'c2stat=&',
+                       'c2stat=', c2.stat, '&',
                        'c2comp=gt&',
-                       'c2val=&',
-                       'c3stat=&',
+                       'c2val=', c2.val, '&',
+                       'c3stat=', c3.stat, '&',
                        'c3comp=gt&',
-                       'c3val=&',
+                       'c3val=', c3.val, '&',
                        'c4stat=&',
                        'c4comp=gt&',
                        'c4val=&',
