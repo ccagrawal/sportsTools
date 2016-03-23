@@ -4,12 +4,12 @@
 \alias{FindPlayerSeason}
 \title{Player Season Finder}
 \usage{
-FindPlayerSeason(type = "Advanced", year.min = "", season.start = 1,
-  season.end = -1, c1.stat = "", c1.val = "", c2.stat = "",
-  c2.val = "", c3.stat = "", c3.val = "", order.by = "")
+FindPlayerSeason(type = "Advanced", per.poss.base = 70, year.min = "",
+  season.start = 1, season.end = -1, c1.stat = "", c1.val = "",
+  c2.stat = "", c2.val = "", c3.stat = "", c3.val = "", order.by = "")
 }
 \arguments{
-\item{type}{either 'Advanced' or 'Per Game'}
+\item{type}{either 'Advanced', 'Per Game', or 'Per Possessions'}
 
 \item{year.min}{Earliest year to search}
 

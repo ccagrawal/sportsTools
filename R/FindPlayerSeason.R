@@ -1,6 +1,6 @@
 #' Player Season Finder
 #'
-#' @param type either 'Advanced' or 'Per Game'
+#' @param type either 'Advanced', 'Per Game', or 'Per Possessions'
 #' @param year.min Earliest year to search
 #' @param season.start Earliest year of players' careers to search
 #' @param season.end Latest year of players' careers to search
@@ -18,7 +18,7 @@
 #' @examples
 #' FindPlayerSeason(type = 'Advanced', year.min = 1980, season.start = 1, season.end = 1, c1.stat = 'mp_per_g', c1.val = 24, order.by = 'ts_pct')
 
-FindPlayerSeason <- function(type = 'Advanced', year.min = '', season.start = 1, season.end = -1, 
+FindPlayerSeason <- function(type = 'Advanced', per.poss.base = 70, year.min = '', season.start = 1, season.end = -1, 
                              c1.stat = '', c1.val = '', c2.stat = '', c2.val = '', c3.stat = '', c3.val = '', order.by = '') {
   
   options(stringsAsFactors = FALSE)
@@ -27,13 +27,15 @@ FindPlayerSeason <- function(type = 'Advanced', year.min = '', season.start = 1,
     type <- 'advanced'
   } else if (type == 'Per Game') {
     type <- 'per_game'
+  } else if (type == 'Per Possessions') {
+    type <- 'per_poss'
   }
   
   search.url <- paste0('http://www.basketball-reference.com/play-index/psl_finder.cgi?',
                        'request=1&',
                        'match=single&',
                        'per_minute_base=36&',
-                       'per_poss_base=100&',
+                       'per_poss_base=', per.poss.base, '&',
                        'type=', type, '&',
                        'lg_id=NBA&',
                        'is_playoffs=N&',
