@@ -12,21 +12,9 @@
 #' @examples
 #' GetLineupStats(year = 2016, players = 5, type = 'Advanced')
 
-GetLineupStats <- function(year, players = 5, type = 'Advanced', date.from, date.to) {
+GetLineupStats <- function(year, players = 5, type = 'Advanced', date.from = '', date.to = '') {
   
   options(stringsAsFactors = FALSE)
-  
-  if (missing(date.from)) {
-    date.from <- ''
-  } else {
-    date.from <- format(date.from, format = '%m%%2F%d%%2F%Y')
-  }
-  
-  if (missing(date.to)) {
-    date.to <- ''
-  } else {
-    date.to <- format(date.to, format = '%m%%2F%d%%2F%Y')
-  }
 
   request = GET(
     "http://stats.nba.com/stats/leaguedashlineups",
