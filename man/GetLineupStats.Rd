@@ -4,7 +4,7 @@
 \alias{GetLineupStats}
 \title{Lineup stats}
 \usage{
-GetLineupStats(year, players = 5, type = "Advanced")
+GetLineupStats(year, players = 5, type = "Advanced", date.from, date.to)
 }
 \arguments{
 \item{year}{e.g. 2015 for 2014-15 season}
@@ -12,6 +12,10 @@ GetLineupStats(year, players = 5, type = "Advanced")
 \item{players}{Number of players to get lineup stats on (2-5)}
 
 \item{type}{'Advanced'}
+
+\item{date.from}{starting date}
+
+\item{date.to}{ending date}
 }
 \value{
 data frame of stats

@@ -3,6 +3,8 @@
 #' @param year e.g. 2015 for 2014-15 season
 #' @param players Number of players to get lineup stats on (2-5)
 #' @param type 'Advanced'
+#' @param date.from starting date
+#' @param date.to ending date
 #' @return data frame of stats
 #' @keywords lineup stats
 #' @importFrom httr GET content add_headers
@@ -10,16 +12,28 @@
 #' @examples
 #' GetLineupStats(year = 2016, players = 5, type = 'Advanced')
 
-GetLineupStats <- function(year, players = 5, type = 'Advanced') {
+GetLineupStats <- function(year, players = 5, type = 'Advanced', date.from, date.to) {
   
   options(stringsAsFactors = FALSE)
+  
+  if (missing(date.from)) {
+    date.from <- ''
+  } else {
+    date.from <- format(date.from, format = '%m%%2F%d%%2F%Y')
+  }
+  
+  if (missing(date.to)) {
+    date.to <- ''
+  } else {
+    date.to <- format(date.to, format = '%m%%2F%d%%2F%Y')
+  }
 
   request = GET(
     "http://stats.nba.com/stats/leaguedashlineups",
     query = list(
       Conference = "",
-      DateFrom = "",
-      DateTo = "",
+      DateFrom = date.from,
+      DateTo = date.to,
       Division = "",
       GameID = "",
       GameSegment = "",
