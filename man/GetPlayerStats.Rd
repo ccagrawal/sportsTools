@@ -10,11 +10,11 @@ GetPlayerStats(year, type = "Basic", per.mode = "Per Game",
 \arguments{
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
 
-\item{type}{Either 'Basic' or 'Advanced'}
+\item{type}{Either 'Basic', 'Advanced', or 'RPM'}
 
 \item{per.mode}{Either 'Per Game', 'Totals', or '100 Possessions'}
 
-\item{source}{Either 'Basketball-Reference' or 'NBA'}
+\item{source}{Either 'Basketball-Reference', 'NBA', or 'ESPN'}
 }
 \value{
 data frame with players stats

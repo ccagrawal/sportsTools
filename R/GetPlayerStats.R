@@ -1,9 +1,9 @@
 #' Player stats per season.
 #'
 #' @param year NBA season (e.g. 2008 for the 2007-08 season)
-#' @param type Either 'Basic' or 'Advanced'
+#' @param type Either 'Basic', 'Advanced', or 'RPM'
 #' @param per.mode Either 'Per Game', 'Totals', or '100 Possessions'
-#' @param source Either 'Basketball-Reference' or 'NBA'
+#' @param source Either 'Basketball-Reference', 'NBA', or 'ESPN'
 #' @return data frame with players stats
 #' @keywords player
 #' @importFrom XML readHTMLTable
@@ -20,6 +20,8 @@ GetPlayerStats <- function(year, type = 'Basic', per.mode = 'Per Game', source =
     return(.GetPlayerStatsBRef(year, type, per.mode))
   } else if (source == 'NBA') {
     return(.GetPlayerStatsNBA(year, type, per.mode))
+  } else if (source == 'ESPN') {
+    return(.GetPlayerStatsESPN(year, type, per.mode))
   }
 }
 
@@ -136,4 +138,38 @@ GetPlayerStats <- function(year, type = 'Basic', per.mode = 'Per Game', source =
   stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   
   return(stats)
+}
+
+.GetPlayerStatsESPN <- function(year, type = 'RPM', per.mode = 'Per Game') {
+  
+  if (type == 'RPM') {
+    base.url <- paste0('http://espn.go.com/nba/statistics/rpm/_/year/', year, '/page/PPPP/sort/RPM')
+    
+    continue <- TRUE
+    i <- 1
+    df <- data.frame()
+    
+    # Loop through pages until we get to an empty page
+    while(continue) {
+      url <- gsub('PPPP', i, base.url)
+      table <- readHTMLTable(url)[[1]]
+      
+      if (is.null(table)) {
+        continue <- FALSE
+      } else {
+        df <- rbind(df, table)
+        i <- i + 1
+      }
+    }
+    
+    # Split up Name into Name and Position
+    df$POS <- gsub('.*, (.*)', '\\1', df$NAME)
+    df$NAME <- gsub('(.*),.*', '\\1', df$NAME)
+    df <- df[, c(2, 3, 10, 4:9)]
+    
+    # Fix the column types
+    df[, -c(1:3)] <- lapply(df[, -c(1:3)], as.numeric)
+  }
+  
+  return(df)
 }
