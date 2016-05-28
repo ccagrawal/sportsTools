@@ -25,3 +25,11 @@
 .YearToSeason <- function(x) {
   paste0(x - 1, '-', substring(x, 3, 4))
 }
+
+.CurrentYear <- function() {
+  if (as.numeric(format(Sys.Date(), "%m")) >= 11) {
+    return(as.numeric(format(Sys.Date(), "%Y")) + 1)
+  } else {
+    return(as.numeric(format(Sys.Date(), "%Y")))
+  }
+}

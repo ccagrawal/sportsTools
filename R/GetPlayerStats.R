@@ -1,8 +1,10 @@
 #' Player stats per season.
 #'
 #' @param year NBA season (e.g. 2008 for the 2007-08 season)
-#' @param type Either 'Basic', 'Advanced', or 'RPM'
+#' @param season.type Either 'Regular Season' or 'Playoffs'
+#' @param measure.type Either 'Basic', 'Advanced', or 'RPM'
 #' @param per.mode Either 'Per Game', 'Totals', or '100 Possessions'
+#' @param position Either 'Guard', 'Forward', or 'Center'
 #' @param source Either 'Basketball-Reference', 'NBA', or 'ESPN'
 #' @return data frame with players stats
 #' @keywords player
@@ -10,26 +12,31 @@
 #' @importFrom httr GET content add_headers
 #' @export
 #' @examples
-#' GetPlayerStats(2014, 'Basic')
+#' GetPlayerStats(2014, measure.type = 'Basic')
 
-GetPlayerStats <- function(year, type = 'Basic', per.mode = 'Per Game', source = 'Basketball-Reference') {
+GetPlayerStats <- function(year = .CurrentYear(), 
+                           season.type = 'Regular Season', 
+                           measure.type = 'Basic', 
+                           per.mode = 'Per Game',
+                           position = '',
+                           source = 'Basketball-Reference') {
   
   options(stringsAsFactors = FALSE)
   
   if (source == 'Basketball-Reference') {
-    return(.GetPlayerStatsBRef(year, type, per.mode))
+    return(.GetPlayerStatsBRef(year, measure.type, per.mode))
   } else if (source == 'NBA') {
-    return(.GetPlayerStatsNBA(year, type, per.mode))
+    return(.GetPlayerStatsNBA(year, season.type, measure.type, per.mode, position))
   } else if (source == 'ESPN') {
-    return(.GetPlayerStatsESPN(year, type, per.mode))
+    return(.GetPlayerStatsESPN(year, measure.type, per.mode))
   }
 }
 
-.GetPlayerStatsBRef <- function(year, type = 'Basic', per.mode = 'Per Game') {
+.GetPlayerStatsBRef <- function(year, measure.type, per.mode) {
   
   base.url <- paste0("http://www.basketball-reference.com/leagues/NBA_", year, "_TYPE.html")
   
-  if (type == 'Advanced') {
+  if (measure.type == 'Advanced') {
     url <- gsub("TYPE", "advanced", base.url)
   } else if (per.mode == 'Per Game') {
     url <- gsub("TYPE", "per_game", base.url)
@@ -56,7 +63,7 @@ GetPlayerStats <- function(year, type = 'Basic', per.mode = 'Per Game', source =
     
     # Rearrange columns
     table <- table[, c(1, 2, 3, 4, 5, 6, 7, 8, 9, 23, 10, 11, 24, 12, 13, 25, 14, 15, 16, 17, 18, 19, 20, 21, 22)]
-  } else if (type %in% c('Advanced')) {
+  } else if (measure.type %in% c('Advanced')) {
     # Remove the useless columns
     table <- table[, -c(1, 20, 25)]
     
@@ -70,10 +77,10 @@ GetPlayerStats <- function(year, type = 'Basic', per.mode = 'Per Game', source =
   return(table)
 }
 
-.GetPlayerStatsNBA <- function(year, type = 'Basic', per.mode = '100 Possessions') {
+.GetPlayerStatsNBA <- function(year, season.type, measure.type, per.mode, position) {
   
-  if (type == 'Basic') {
-    type <- 'Base'
+  if (measure.type == 'Basic') {
+    measure.type <- 'Base'
   }
   
   if (per.mode == '100 Possessions') {
@@ -97,7 +104,7 @@ GetPlayerStats <- function(year, type = 'Basic', per.mode = 'Per Game', source =
       LastNGames = 0,
       LeagueID = "00",
       Location = "",
-      MeasureType = type,
+      MeasureType = measure.type,
       Month = 0,
       OpponentTeamID = 0,
       Outcome = "",
@@ -106,12 +113,12 @@ GetPlayerStats <- function(year, type = 'Basic', per.mode = 'Per Game', source =
       PerMode = per.mode,
       Period = 0,
       PlayerExperience = "",
-      PlayerPosition = "",
+      PlayerPosition = position,
       PlusMinus = "N",
       Rank = "N",
       Season = .YearToSeason(year),
       SeasonSegment = "",
-      SeasonType = "Regular Season",
+      SeasonType = season.type,
       ShotClockRange = "",
       StarterBench = "",
       TeamID = 0,
@@ -140,9 +147,9 @@ GetPlayerStats <- function(year, type = 'Basic', per.mode = 'Per Game', source =
   return(stats)
 }
 
-.GetPlayerStatsESPN <- function(year, type = 'RPM', per.mode = 'Per Game') {
+.GetPlayerStatsESPN <- function(year, measure.type = 'RPM', per.mode = 'Per Game') {
   
-  if (type == 'RPM') {
+  if (measure.type == 'RPM') {
     base.url <- paste0('http://espn.go.com/nba/statistics/rpm/_/year/', year, '/page/PPPP/sort/RPM')
     
     continue <- TRUE
