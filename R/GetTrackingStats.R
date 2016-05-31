@@ -2,7 +2,7 @@
 #' 
 #' @param year 2015 for 2014-15 season
 #' @param season.type Either 'Regular Season' or 'Playoffs'
-#' @param per.mode Either 'Per Game', 'Totals', or '100 Possessions'
+#' @param per.mode Either 'Per Game' or 'Totals'
 #' @param stat Statistic to pull (e.g. 'Passing', 'Possessions')
 #' @param player.or.team Either 'Player' or 'Team'
 #' @param position Either 'G', 'F', or 'C'
@@ -22,8 +22,8 @@ GetTrackingStats <- function(year = .CurrentYear(),
   
   options(stringsAsFactors = FALSE)
   
-  if (per.mode == '100 Possessions') {
-    per.mode <- 'Per100Possessions'
+  if (per.mode == 'Per Game') {
+    per.mode <- 'PerGame'
   }
   
   request = GET(

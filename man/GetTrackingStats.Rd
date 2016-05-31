@@ -12,7 +12,7 @@ GetTrackingStats(year = .CurrentYear(), season.type = "Regular Season",
 
 \item{season.type}{Either 'Regular Season' or 'Playoffs'}
 
-\item{per.mode}{Either 'Per Game', 'Totals', or '100 Possessions'}
+\item{per.mode}{Either 'Per Game' or 'Totals'}
 
 \item{stat}{Statistic to pull (e.g. 'Passing', 'Possessions')}
 
