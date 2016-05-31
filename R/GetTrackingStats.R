@@ -75,7 +75,7 @@ GetTrackingStats <- function(year = .CurrentYear(),
   colnames(stats) <- content$headers
   
   # Clean data frame
-  if (type == 'Player') {
+  if (player.or.team == 'Player') {
     char.cols <- c('PLAYER_ID', 'PLAYER_NAME', 'TEAM_ID', 'TEAM_ABBREVIATION')
     char.cols <- which(colnames(stats) %in% char.cols)
     stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
