@@ -72,7 +72,7 @@ GetTrackingStats <- function(year = .CurrentYear(),
   stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
   
   # Get column headers
-  colnames(stats) <- json$headers
+  colnames(stats) <- content$headers
   
   # Clean data frame
   if (type == 'Player') {
