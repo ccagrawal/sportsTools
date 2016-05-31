@@ -1,53 +1,71 @@
 #' NBA Player Tracking
 #' 
 #' @param year 2015 for 2014-15 season
-#' @param stat statistic to pull (e.g. 'Passing', 'Possessions')
-#' @param type either 'Player' or 'Team'
+#' @param season.type Either 'Regular Season' or 'Playoffs'
+#' @param per.mode Either 'Per Game', 'Totals', or '100 Possessions'
+#' @param stat Statistic to pull (e.g. 'Passing', 'Possessions')
+#' @param player.or.team Either 'Player' or 'Team'
+#' @param position Either 'G', 'F', or 'C'
 #' @return data frame of stats
 #' @keywords synergy
-#' @importFrom rjson fromJSON
+#' @importFrom httr GET content add_headers
 #' @export
 #' @examples
-#' GetTrackingStats('Postup')
+#' GetTrackingStats(stat = 'Postup')
 
-GetTrackingStats <- function(year = 2016, stat, type = 'Player') {
+GetTrackingStats <- function(year = .CurrentYear(), 
+                             season.type = 'Regular Season', 
+                             per.mode = 'Per Game', 
+                             stat, 
+                             player.or.team = 'Player', 
+                             position = '') {
   
   options(stringsAsFactors = FALSE)
   
-  url <- paste0('http://stats.nba.com/stats/leaguedashptstats?College=&',
-                'Conference=&',
-                'Country=&',
-                'DateFrom=&',
-                'DateTo=&',
-                'Division=&',
-                'DraftPick=&',
-                'DraftYear=&',
-                'GameScope=&',
-                'Height=&',
-                'LastNGames=0&',
-                'LeagueID=00&',
-                'Location=&',
-                'Month=0&',
-                'OpponentTeamID=0&',
-                'Outcome=&',
-                'PORound=0&',
-                'PerMode=Totals&',
-                'PlayerExperience=&',
-                'PlayerOrTeam=', type, '&',
-                'PlayerPosition=&',
-                'PtMeasureType=', stat, '&',
-                'Season=', .YearToSeason(year), '&',
-                'SeasonSegment=&',
-                'SeasonType=Regular+Season&',
-                'StarterBench=&',
-                'TeamID=0&',
-                'VsConference=&',
-                'VsDivision=&',
-                'Weight=')
+  if (per.mode == '100 Possessions') {
+    per.mode <- 'Per100Possessions'
+  }
   
-  json <- fromJSON(file = url)[[3]][[1]]
+  request = GET(
+    "http://stats.nba.com/stats/leaguedashptstats",
+    query = list(
+      College = "",
+      Conference = "",
+      Country = "",
+      DateFrom = "",
+      DateTo = "",
+      Division = "",
+      DraftPick = "",
+      DraftYear = "",
+      GameScope = "",
+      Height = "",
+      LastNGames = 0,
+      LeagueID = "00",
+      Location = "",
+      Month = 0,
+      OpponentTeamID = 0,
+      Outcome = "",
+      PORound = 0,
+      PerMode = per.mode,
+      PlayerExperience = "",
+      PlayerOrTeam = player.or.team,
+      PlayerPosition = position,
+      PtMeasureType = stat,
+      Season = .YearToSeason(year),
+      SeasonSegment = "",
+      SeasonType = season.type,
+      StarterBench = "",
+      TeamID = 0,
+      VsConference = "",
+      VsDivision = "",
+      Weight = ""
+    ),
+    add_headers('Referer' = 'http://stats.nba.com/tracking/')
+  )
   
-  stats <- json$rowSet
+  content <- content(request, 'parsed')[[3]][[1]]
+  
+  stats <- content$rowSet
   
   # Create raw data frame
   stats <- lapply(stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs

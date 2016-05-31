@@ -4,14 +4,21 @@
 \alias{GetTrackingStats}
 \title{NBA Player Tracking}
 \usage{
-GetTrackingStats(year = 2016, stat, type = "Player")
+GetTrackingStats(year = .CurrentYear(), season.type = "Regular Season",
+  per.mode = "Per Game", stat, player.or.team = "Player", position = "")
 }
 \arguments{
 \item{year}{2015 for 2014-15 season}
 
-\item{stat}{statistic to pull (e.g. 'Passing', 'Possessions')}
+\item{season.type}{Either 'Regular Season' or 'Playoffs'}
 
-\item{type}{either 'Player' or 'Team'}
+\item{per.mode}{Either 'Per Game', 'Totals', or '100 Possessions'}
+
+\item{stat}{Statistic to pull (e.g. 'Passing', 'Possessions')}
+
+\item{player.or.team}{Either 'Player' or 'Team'}
+
+\item{position}{Either 'G', 'F', or 'C'}
 }
 \value{
 data frame of stats
@@ -20,7 +27,7 @@ data frame of stats
 NBA Player Tracking
 }
 \examples{
-GetTrackingStats('Postup')
+GetTrackingStats(stat = 'Postup')
 }
 \keyword{synergy}
 

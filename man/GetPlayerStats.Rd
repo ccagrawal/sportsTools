@@ -17,7 +17,7 @@ GetPlayerStats(year = .CurrentYear(), season.type = "Regular Season",
 
 \item{per.mode}{Either 'Per Game', 'Totals', or '100 Possessions'}
 
-\item{position}{Either 'Guard', 'Forward', or 'Center'}
+\item{position}{Either 'G', 'F', or 'C'}
 
 \item{source}{Either 'Basketball-Reference', 'NBA', or 'ESPN'}
 }

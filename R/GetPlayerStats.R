@@ -4,7 +4,7 @@
 #' @param season.type Either 'Regular Season' or 'Playoffs'
 #' @param measure.type Either 'Basic', 'Advanced', or 'RPM'
 #' @param per.mode Either 'Per Game', 'Totals', or '100 Possessions'
-#' @param position Either 'Guard', 'Forward', or 'Center'
+#' @param position Either 'G', 'F', or 'C'
 #' @param source Either 'Basketball-Reference', 'NBA', or 'ESPN'
 #' @return data frame with players stats
 #' @keywords player
