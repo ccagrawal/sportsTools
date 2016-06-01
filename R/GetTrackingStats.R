@@ -26,7 +26,7 @@ GetTrackingStats <- function(year = .CurrentYear(),
     per.mode <- 'PerGame'
   }
   
-  request = GET(
+  request <- GET(
     "http://stats.nba.com/stats/leaguedashptstats",
     query = list(
       College = "",

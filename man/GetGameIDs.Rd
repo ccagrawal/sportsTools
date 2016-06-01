@@ -4,14 +4,15 @@
 \alias{GetGameIDs}
 \title{Get Game IDs.}
 \usage{
-GetGameIDs(year, source = "Basketball-Reference", season.type = "regular")
+GetGameIDs(year = .CurrentYear(), source = "Basketball-Reference",
+  season.type = "Regular Season")
 }
 \arguments{
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
 
 \item{source}{either 'Basketball-Reference' or 'NBA'}
 
-\item{type}{either "regular season" or "playoffs"}
+\item{type}{either "Regular Season", "Playoffs", or "Both"}
 }
 \value{
 vector if from 'Basketball-Reference' or data frame if from 'NBA'

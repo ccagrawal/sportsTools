@@ -1,17 +1,17 @@
 #' Schedule and Results.
 #'
 #' @param sport 'NBA' or 'NCAAB'
-#' @param year season (e.g. 2008 for the 2007-08 season)
-#' @param season.type either 'regular', 'playoffs', or 'both'
-#' @param info either 'scores' or 'advanced'
+#' @param year Season (e.g. 2008 for the 2007-08 season)
+#' @param season.type Either 'Regular Season', 'Playoffs', or 'Both'
+#' @param info Either 'scores' or 'advanced'
 #' @return data frame with schedule and results for each game in that season
 #' @keywords schedule
 #' @importFrom XML readHTMLTable
 #' @export
 #' @examples
-#' GetSchedule(2014, 'playoffs')
+#' GetSchedule(year = 2014, season.type = 'playoffs')
 
-GetSchedule <- function(sport = 'nba', year, season.type = 'regular', info = 'scores') {
+GetSchedule <- function(sport = 'NBA', year = .CurrentYear(), season.type = 'Regular Season', info = 'scores') {
   if (sport == 'NBA') {
     return(.GetScheduleNBA(year, season.type, info))
   } else if (sport == 'NCAAB') {
@@ -22,10 +22,10 @@ GetSchedule <- function(sport = 'nba', year, season.type = 'regular', info = 'sc
 #' Schedule and results (multi-year).
 #'
 #' @param sport 'NBA' or 'NCAAB'
-#' @param year.start season (e.g. 2008 for 2007-08 season)
-#' @param year.end season (e.g. 2014 for 2013-14 season)
-#' @param season.type either 'regular' or 'playoffs' or 'both'
-#' @param info either 'scores' or 'advanced'
+#' @param year.start Season (e.g. 2008 for 2007-08 season)
+#' @param year.end Season (e.g. 2014 for 2013-14 season)
+#' @param season.type Either 'Regular Season', 'Playoffs', or 'Both'
+#' @param info Either 'scores' or 'advanced'
 #' @return data frame with schedule and results for each game in all the seasons
 #' @keywords schedule
 #' @importFrom XML readHTMLTable
@@ -33,7 +33,7 @@ GetSchedule <- function(sport = 'nba', year, season.type = 'regular', info = 'sc
 #' @examples
 #' GetScheduleRange(2012, 2015, 'playoffs')
 
-GetScheduleRange <- function(sport = 'NBA', year.start, year.end, season.type = 'both', info = 'scores') {
+GetScheduleRange <- function(sport = 'NBA', year.start, year.end, season.type = 'Both', info = 'scores') {
   schedule <- data.frame()
   
   for (year in year.start:year.end) {
@@ -45,7 +45,7 @@ GetScheduleRange <- function(sport = 'NBA', year.start, year.end, season.type = 
   return(schedule)
 }
 
-.GetScheduleNBA <- function(year, season.type = 'regular', info = 'scores') {
+.GetScheduleNBA <- function(year, season.type, info) {
   
   options(stringsAsFactors = FALSE)
   
@@ -97,7 +97,7 @@ GetScheduleRange <- function(sport = 'NBA', year.start, year.end, season.type = 
   return(schedule)
 }
 
-.GetScheduleNCAAB <- function(year, season.type = 'regular', info = 'scores') {
+.GetScheduleNCAAB <- function(year, season.type, info) {
   
   options(stringsAsFactors = FALSE)
   

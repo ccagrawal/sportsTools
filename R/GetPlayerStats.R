@@ -87,7 +87,7 @@ GetPlayerStats <- function(year = .CurrentYear(),
     per.mode <- 'Per100Possessions'
   }
   
-  request = GET(
+  request <- GET(
     "http://stats.nba.com/stats/leaguedashplayerstats",
     query = list(
       College = "",
