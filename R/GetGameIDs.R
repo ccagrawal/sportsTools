@@ -188,7 +188,7 @@ GetGameIDs <- function(year = .CurrentYear(),
   } else {
     all.games <- data.frame()
     
-    teams <- GetTeamIDs(year)
+    teams <- GetTeamIDs(year = year)
     for (id in teams$id) {
       temp <- .GetNBAGameIDsTeam(team = id, year, season.type)
       all.games <- rbind(all.games, temp)
