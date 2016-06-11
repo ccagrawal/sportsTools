@@ -65,7 +65,7 @@ GetPlayerSpecificStats <- function(player, stat, year = as.numeric(format(Sys.Da
     url <- paste0(base.url, '.html')
     
     table <- readHTMLTable(url)[['playoffs_totals']]
-    table[, -c(1, 3, 4, 5)] <- playoffs_totals(table[, -c(1, 3, 4, 5)], as.numeric)
+    table[, -c(1, 3, 4, 5)] <- sapply(table[, -c(1, 3, 4, 5)], as.numeric)
     table$Season <- as.numeric(substr(table$Season, 1, 4)) + 1
   }
   
