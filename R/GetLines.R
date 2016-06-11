@@ -48,7 +48,7 @@ GetLines <- function(sport = "NBA", year, type = "both") {
       
     } else if (type == 'playoffs') {
       
-      if (length(tables) == 1) {  # If the team didn't make the playoffs, make an empty df
+      if (length(tables) < 2) {  # If the team didn't make the playoffs, make an empty df
         temp <- data.frame(matrix(nrow = 1, ncol = 6, data = 0))
         temp <- temp[-1, ]
       } else {
