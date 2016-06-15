@@ -1,6 +1,6 @@
 #' Schedule and Results.
 #'
-#' @param sport 'NBA' or 'NCAAB'
+#' @param sport 'NBA', 'NCAAB', 'WNBA'
 #' @param year Season (e.g. 2008 for the 2007-08 season)
 #' @param season.type Either 'Regular Season', 'Playoffs', or 'Both'
 #' @param info Either 'scores' or 'advanced'
@@ -16,12 +16,14 @@ GetSchedule <- function(sport = 'NBA', year = .CurrentYear(), season.type = 'Reg
     return(.GetScheduleNBA(year, season.type, info))
   } else if (sport == 'NCAAB') {
     return(.GetScheduleNCAAB(year, season.type, info))
+  } else if (sport == 'WNBA') {
+    return(.GetScheduleWNBA(year, season.type, info))
   }
 }
 
 #' Schedule and results (multi-year).
 #'
-#' @param sport 'NBA' or 'NCAAB'
+#' @param sport 'NBA', 'NCAAB', or 'WNBA'
 #' @param year.start Season (e.g. 2008 for 2007-08 season)
 #' @param year.end Season (e.g. 2014 for 2013-14 season)
 #' @param season.type Either 'Regular Season', 'Playoffs', or 'Both'
@@ -37,7 +39,7 @@ GetScheduleRange <- function(sport = 'NBA', year.start, year.end, season.type = 
   schedule <- data.frame()
   
   for (year in year.start:year.end) {
-    temp <- GetSchedule(sport, year, type, info)
+    temp <- GetSchedule(sport, year, season.type, info)
     temp$season <- year
     schedule <- rbind(schedule, temp)
   }
@@ -96,6 +98,41 @@ GetScheduleRange <- function(sport = 'NBA', year.start, year.end, season.type = 
   
   return(schedule)
 }
+
+# .GetScheduleWNBA <- function(year, season.type, info) {
+#   
+#   options(stringsAsFactors = FALSE)
+#   
+#   if (info == 'scores') {
+#     url <- paste('http://www.basketball-reference.com/leagues/NBA_', year, '_games.html', sep = '')
+#     tables <- readHTMLTable(url)
+#     
+#     if (season.type == 'playoffs' & length(tables) > 1) {
+#       schedule <- tables[['games_playoffs']]
+#       schedule$type <- 'playoff'
+#     } else {
+#       schedule <- tables[['games']]
+#       schedule$type <- 'regular season'
+#     } 
+#     
+#     if (season.type == 'both' & length(tables) > 1) {
+#       temp <- tables[['games_playoffs']]
+#       temp$type <- 'playoff'
+#       schedule <- rbind(schedule, temp)
+#     }
+#     
+#     # Remove extra columns
+#     schedule <- schedule[, c(1, 4, 5, 6, 7, 10)]
+#     schedule$Date <- as.Date(strptime(schedule$Date, format = '%a, %b %d, %Y'))
+#     schedule[, 3] <- as.numeric(schedule[, 3])
+#     schedule[, 5] <- as.numeric(schedule[, 5])
+#     
+#     colnames(schedule) <- c('date', 'away.name', 'away.points', 'home.name', 'home.points', 'type')
+#     schedule$home.margin <- schedule$home.points - schedule$away.points
+#   }
+#   
+#   return(schedule)
+# }
 
 .GetScheduleNCAAB <- function(year, season.type, info) {
   

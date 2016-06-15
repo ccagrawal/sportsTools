@@ -8,7 +8,7 @@ GetSchedule(sport = "NBA", year = .CurrentYear(),
   season.type = "Regular Season", info = "scores")
 }
 \arguments{
-\item{sport}{'NBA' or 'NCAAB'}
+\item{sport}{'NBA', 'NCAAB', 'WNBA'}
 
 \item{year}{Season (e.g. 2008 for the 2007-08 season)}
 

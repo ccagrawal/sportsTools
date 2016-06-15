@@ -8,7 +8,7 @@ GetScheduleRange(sport = "NBA", year.start, year.end, season.type = "Both",
   info = "scores")
 }
 \arguments{
-\item{sport}{'NBA' or 'NCAAB'}
+\item{sport}{'NBA', 'NCAAB', or 'WNBA'}
 
 \item{year.start}{Season (e.g. 2008 for 2007-08 season)}
 
