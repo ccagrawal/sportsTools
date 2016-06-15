@@ -99,7 +99,11 @@ GetLines <- function(sport = "NBA", year, type = "Both") {
   }
   
   # Format date
-  full.lines$date <- as.Date(full.lines$date, format = '%m/%d/%y')
+  if (nchar(gsub('.*/', '', temp$date)[1]) == 4) {
+    full.lines$date <- as.Date(full.lines$date, format = '%m/%d/%Y')
+  } else {
+    full.lines$date <- as.Date(full.lines$date, format = '%m/%d/%y')
+  }
   
   # Remove away games (the odds exist for home team already)
   full.lines <- full.lines[-grep('@', full.lines$away.team), ]
