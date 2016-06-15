@@ -4,14 +4,14 @@
 \alias{GetLines}
 \title{Betting lines.}
 \usage{
-GetLines(sport = "NBA", year, type = "both")
+GetLines(sport = "NBA", year, type = "Both")
 }
 \arguments{
-\item{sport}{either "NBA" or "NFL"}
+\item{sport}{either "NBA", "NFL", or "WNBA"}
 
 \item{year}{season (e.g. 2008 for 2007-08 season)}
 
-\item{type}{either "regular season" or "playoffs" or "both"}
+\item{type}{either "Regular Season" or "Playoffs" or "Both"}
 }
 \value{
 data frame with schedule and line for each game in that season

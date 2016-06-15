@@ -1,8 +1,8 @@
 #' Betting lines.
 #'
-#' @param sport either "NBA" or "NFL"
+#' @param sport either "NBA", "NFL", or "WNBA"
 #' @param year season (e.g. 2008 for 2007-08 season)
-#' @param type either "regular season" or "playoffs" or "both"
+#' @param type either "Regular Season" or "Playoffs" or "Both"
 #' @return data frame with schedule and line for each game in that season
 #' @keywords schedule, odds, line, betting
 #' @importFrom XML readHTMLTable
@@ -10,10 +10,11 @@
 #' @examples
 #' GetLines("NBA", 2014, "playoffs")
 
-GetLines <- function(sport = "NBA", year, type = "both") {
+GetLines <- function(sport = "NBA", year, type = "Both") {
   
   options(stringsAsFactors = FALSE)
   sport <- tolower(sport)
+  type <- tolower(type)
   
   # Get team urls and names
   url <- gsub("SPORT", sport, "http://www.covers.com/pageLoader/pageLoader.aspx?page=/data/SPORT/teams/teams.html")
@@ -23,7 +24,12 @@ GetLines <- function(sport = "NBA", year, type = "both") {
   links <- strsplit(links, ',')
   
   # Create URL stems for getting team records
-  url.base <- paste(gsub("SPORT", sport, "http://www.covers.com/pageLoader/pageLoader.aspx?page=/data/SPORT/teams/pastresults/"), year - 1, '-', year, '/', sep = '')
+  if (sport == 'wnba') {
+    url.base <- paste(gsub("SPORT", sport, "http://www.covers.com/pageLoader/pageLoader.aspx?page=/data/SPORT/teams/pastresults/"), year, '/', sep = '')
+  } else {
+    url.base <- paste(gsub("SPORT", sport, "http://www.covers.com/pageLoader/pageLoader.aspx?page=/data/SPORT/teams/pastresults/"), year - 1, '-', year, '/', sep = '')
+  }
+  
   full.lines <- data.frame()
   
   # Put all team records in one data frame
@@ -67,7 +73,7 @@ GetLines <- function(sport = "NBA", year, type = "both") {
           } else {
             temp <- rbind(tables[[1]], tables[[2]])
           }
-        } else if (sport == 'nba') {
+        } else if (sport %in% c('nba', 'wnba')) {
           if (length(tables) == 1) {
             temp <- tables[[1]]
           } else {
@@ -75,7 +81,6 @@ GetLines <- function(sport = "NBA", year, type = "both") {
           }
         }
       }
-      
     }
     
     colnames(temp) <- c("date", "away.team", "score", "type", "home.line", "over.under")
@@ -115,7 +120,7 @@ GetLines <- function(sport = "NBA", year, type = "both") {
 
 #' Betting lines (multi-year).
 #'
-#' @param sport either "NBA" or "NFL"
+#' @param sport either "NBA", "NFL", "WNBA"
 #' @param year.start season (e.g. 2008 for 2007-08 season)
 #' @param year.end season (e.g. 2014 for 2013-14 season)
 #' @param type either "regular season" or "playoffs" or "both"

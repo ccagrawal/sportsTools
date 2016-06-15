@@ -7,7 +7,7 @@
 GetLinesRange(sport = "NBA", year.start, year.end, type = "both")
 }
 \arguments{
-\item{sport}{either "NBA" or "NFL"}
+\item{sport}{either "NBA", "NFL", "WNBA"}
 
 \item{year.start}{season (e.g. 2008 for 2007-08 season)}
 
