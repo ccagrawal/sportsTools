@@ -1,46 +1,61 @@
 #' Synergy stats on players or teams
 #' 
+#' @param season 2015 for 2014-15 season
 #' @param stat statistic to pull (e.g. 'Postup', 'Isolation', 'PRRollMan', 'PRBallHandler', 'Cut', 'OffRebound')
-#' @param side either 'offensive' or 'defensive'
-#' @param type either 'player' or 'team'
+#' @param side either 'Offensive' or 'Defensive'
+#' @param type either 'Player' or 'Team'
+#' @param season.type either 'Regular Season' or 'Playoffs'
 #' @return data frame of stats
 #' @keywords synergy
-#' @importFrom rjson fromJSON
+#' @importFrom httr GET content add_headers
 #' @export
 #' @examples
 #' GetSynergyStats('Postup')
 
-GetSynergyStats <- function(stat, side = 'offensive', type = 'player') {
+GetSynergyStats <- function(season = .CurrentYear(), stat, side = 'Offensive', type = 'Player', season.type = 'Regular Season') {
   
   options(stringsAsFactors = FALSE)
   
-  stat.key <- paste0(type, '_', stat)
-  url <- paste0('http://stats.nba.com/js/data/playtype/', stat.key, '.js')
+  side <- tolower(side)
+  type <- tolower(type)
+  season.type <- tolower(season.type)
   
-  json <- fromJSON(file = url)[[3]]
-  
-  if (side == 'offensive') {
-    json <- json[[1]]
+  if (season.type == 'playoffs') {
+    season.type <- 'Post'
   } else {
-    json <- json[[2]]
+    season.type <- 'Reg'
   }
   
-  stats <- json$rowSet
+  request <- GET(
+    paste0('http://stats-prod.nba.com/wp-json/statscms/v1/synergy/', type, '/'),
+    query = list(
+      category = stat,
+      limit = 500,
+      name = side,
+      q = 1,
+      season = season,
+      seasonType = season.type
+    ),
+    add_headers('Referer' = paste0('http://stats.nba.com/league/', type, '/'))
+  )
+  
+  json <- content(request, 'parsed')[[2]]
   
   # Create raw data frame
-  stats <- lapply(stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
+  stats <- lapply(json, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
   stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
   
   # Get column headers
-  colnames(stats) <- json$headers
+  colnames(stats) <- names(json[[1]])
   
   # Clean data frame
   if (type == 'player') {
-    char.cols <- c('PlayerFirstName', 'PlayerLastName', 'P', 'TeamName', 'TeamNameAbbreviation', 'TeamShortName')
+    colnames(stats) <- c(colnames(stats)[2:31], colnames(stats)[1], colnames(stats)[32:34])
+    char.cols <- c('PlayerIDSID', 'PlayerFirstName', 'PlayerLastName', 'P', 'TeamIDSID', 'TeamName', 'TeamNameAbbreviation', 'TeamShortName', 'name', 'seasonType')
     char.cols <- which(colnames(stats) %in% char.cols)
     stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   } else {
-    char.cols <- c('TeamName', 'TeamNameAbbreviation', 'TeamShortName')
+    char.cols <- c('TeamIDSID', 'TeamName', 'TeamNameAbbreviation', 'TeamShortName', 'name', 'seasonType')
     char.cols <- which(colnames(stats) %in% char.cols)
     stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   }

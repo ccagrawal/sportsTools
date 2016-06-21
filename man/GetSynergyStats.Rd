@@ -4,14 +4,19 @@
 \alias{GetSynergyStats}
 \title{Synergy stats on players or teams}
 \usage{
-GetSynergyStats(stat, side = "offensive", type = "player")
+GetSynergyStats(season = .CurrentYear(), stat, side = "Offensive",
+  type = "Player", season.type = "Regular Season")
 }
 \arguments{
+\item{season}{2015 for 2014-15 season}
+
 \item{stat}{statistic to pull (e.g. 'Postup', 'Isolation', 'PRRollMan', 'PRBallHandler', 'Cut', 'OffRebound')}
 
-\item{side}{either 'offensive' or 'defensive'}
+\item{side}{either 'Offensive' or 'Defensive'}
 
-\item{type}{either 'player' or 'team'}
+\item{type}{either 'Player' or 'Team'}
+
+\item{season.type}{either 'Regular Season' or 'Playoffs'}
 }
 \value{
 data frame of stats
