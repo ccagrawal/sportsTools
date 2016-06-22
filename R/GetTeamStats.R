@@ -1,8 +1,10 @@
 #' Team Stats.
 #'
 #' @param year NBA season (e.g. 2008 for the 2007-08 season)
-#' @param stat.type 'regular' or 'advanced'
-#' @param season.type 'regular' or 'playoffs'
+#' @param stat.type Either 'Regular', 'Advanced', 'Team', 'Opponent', 'Shooting', 'Shooting Opponent', 'Standings'
+#' @param season.type 'Regular Season' or 'Playoffs'
+#' @param keep.average TRUE or FALSE, depending on whether you want to keep League Average info
+#' @param source 'Basketball-Reference' or 'NBA'
 #' @return data frame with wins and losses for that season
 #' @keywords team
 #' @importFrom XML readHTMLTable
@@ -11,7 +13,13 @@
 #' @examples
 #' GetTeamStats(2014)
 
-GetTeamStats <- function(year, stat.type = 'regular', season.type = 'regular', keep.average = FALSE, source = 'Basketball-Reference') {
+GetTeamStats <- function(year = .CurrentYear(), 
+                         stat.type = 'Regular', 
+                         season.type = 'Regular Season', 
+                         keep.average = FALSE, 
+                         source = 'Basketball-Reference') {
+  
+  options(stringsAsFactors = FALSE)
   
   if (source == 'Basketball-Reference') {
     return(.GetTeamStatsBRef(year, stat.type, season.type, keep.average))
@@ -20,11 +28,9 @@ GetTeamStats <- function(year, stat.type = 'regular', season.type = 'regular', k
   }
 }
 
-.GetTeamStatsBRef <- function(year, stat.type = 'regular', season.type = 'regular', keep.average = FALSE) {
+.GetTeamStatsBRef <- function(year, stat.type, season.type, keep.average) {
   
-  options(stringsAsFactors = FALSE)
-  
-  if (season.type == 'playoffs') {
+  if (season.type == 'Playoffs') {
     url <- 'http://www.basketball-reference.com/playoffs/NBA_YYYY.html'
   } else {
     url <- 'http://www.basketball-reference.com/leagues/NBA_YYYY.html'
@@ -34,38 +40,38 @@ GetTeamStats <- function(year, stat.type = 'regular', season.type = 'regular', k
   tables <- readHTMLTable(url)
   
   # Get table, convert appropriate columns to numeric, remove asterisks from team names
-  if (stat.type == 'advanced') {
+  if (stat.type == 'Advanced') {
     
     stats <- tables[['misc']]
     stats[, -c(2, 23, 24)] <- lapply(stats[, -c(2, 23, 24)], as.numeric)
     stats$Attendance <- as.numeric(gsub(',', '', stats$Attendance))
     stats$Team <- gsub('\\*', '', stats$Team)
     
-  } else if (stat.type == 'team') {
+  } else if (stat.type == 'Team') {
     
     stats <- tables[['team']]
     stats[, -2] <- lapply(stats[, -2], as.numeric)
     stats$Team <- gsub('\\*', '', stats$Team)
     
-  } else if (stat.type == 'opponent') {
+  } else if (stat.type == 'Opponent') {
     
     stats <- tables[['opponent']]
     stats[, -2] <- lapply(stats[, -2], as.numeric)
     stats$Team <- gsub('\\*', '', stats$Team)
     
-  } else if (stat.type == 'shooting') {
+  } else if (stat.type == 'Shooting') {
     
     stats <- tables[['shooting']]
     stats[, -2] <- lapply(stats[, -2], as.numeric)
     stats$Team <- gsub('\\*', '', stats$Team)
     
-  } else if (stat.type == 'shooting opponent') {
+  } else if (stat.type == 'Shooting Opponent') {
     
     stats <- tables[['shooting_opp']]
     stats[, -2] <- lapply(stats[, -2], as.numeric)
     stats$Team <- gsub('\\*', '', stats$Team)
     
-  } else if (stat.type == 'standings') {
+  } else if (stat.type == 'Standings') {
     
     indices <- c(which(names(tables) == 'E_standings')[1], which(names(tables) == 'W_standings')[1])
     temp.east <- tables[[indices[1]]]
@@ -85,7 +91,7 @@ GetTeamStats <- function(year, stat.type = 'regular', season.type = 'regular', k
     
   }
   
-  if (stat.type != 'standings') {
+  if (stat.type != 'Standings') {
     if (!keep.average) {
       stats <- stats[-which(is.na(stats$Rk)), -1]   # Remove league average row and rank column
     } else {
@@ -94,45 +100,46 @@ GetTeamStats <- function(year, stat.type = 'regular', season.type = 'regular', k
   }
 }
 
-.GetTeamStatsNBA <- function(year, stat.type = 'regular', season.type = 'regular') {
+.GetTeamStatsNBA <- function(year, stat.type, season.type) {
   
-  options(stringsAsFactors = FALSE)
+  request <- GET(
+    "http://stats.nba.com/stats/leaguedashteamstats",
+    query = list(
+      Conference = "",
+      DateFrom = "",
+      DateTo = "",
+      Division = "",
+      GameScope = "",
+      GameSegment = "",
+      LastNGames = 0,
+      LeagueID = "00",
+      Location = "",
+      MeasureType = stat.type,
+      Month = 0,
+      OpponentTeamID = 0,
+      Outcome = "",
+      PORound = 0,
+      PaceAdjust = 'N',
+      PerMode = 'Totals',
+      Period = 0,
+      PlayerExperience = "",
+      PlayerPosition = "",
+      PlusMinus = "N",
+      Rank = "N",
+      Season = .YearToSeason(year),
+      SeasonSegment = "",
+      SeasonType = season.type,
+      ShotClockRange = "",
+      StarterBench = "",
+      TeamID = 0,
+      VsConference = "",
+      VsDivision = ""
+    )
+  )
   
-  season <- .YearToSeason(year)
+  content <- content(request, 'parsed')[[3]][[1]]
   
-  url <- paste0('http://stats.nba.com/stats/leaguedashteamstats?Conference=&',
-                'DateFrom=&',
-                'DateTo=&',
-                'Division=&',
-                'GameScope=&',
-                'GameSegment=&',
-                'LastNGames=0&',
-                'LeagueID=00&',
-                'Location=&',
-                'MeasureType=', stat.type, '&',
-                'Month=0&',
-                'OpponentTeamID=0&',
-                'Outcome=&',
-                'PORound=0&',
-                'PaceAdjust=N&',
-                'PerMode=Totals&',
-                'Period=0&',
-                'PlayerExperience=&',
-                'PlayerPosition=&',
-                'PlusMinus=N&',
-                'Rank=N&',
-                'Season=', season, '&',
-                'SeasonSegment=&',
-                'SeasonType=Regular+Season&',
-                'ShotClockRange=&',
-                'StarterBench=&',
-                'TeamID=0&',
-                'VsConference=&',
-                'VsDivision=')
-  
-  json <- fromJSON(file = url)[[3]][[1]]
-  
-  stats <- json$rowSet
+  stats <- content$rowSet
   
   # Create raw data frame
   stats <- lapply(stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
