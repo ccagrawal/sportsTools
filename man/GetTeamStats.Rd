@@ -4,15 +4,20 @@
 \alias{GetTeamStats}
 \title{Team Stats.}
 \usage{
-GetTeamStats(year, stat.type = "regular", season.type = "regular",
-  keep.average = FALSE, source = "Basketball-Reference")
+GetTeamStats(year = .CurrentYear(), stat.type = "Regular",
+  season.type = "Regular Season", keep.average = FALSE,
+  source = "Basketball-Reference")
 }
 \arguments{
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
 
-\item{stat.type}{'regular' or 'advanced'}
+\item{stat.type}{Either 'Regular', 'Advanced', 'Team', 'Opponent', 'Shooting', 'Shooting Opponent', 'Standings'}
 
-\item{season.type}{'regular' or 'playoffs'}
+\item{season.type}{'Regular Season' or 'Playoffs'}
+
+\item{keep.average}{TRUE or FALSE, depending on whether you want to keep League Average info}
+
+\item{source}{'Basketball-Reference' or 'NBA'}
 }
 \value{
 data frame with wins and losses for that season
