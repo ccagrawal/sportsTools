@@ -8,7 +8,7 @@
 #' @return data frame with wins and losses for that season
 #' @keywords team
 #' @importFrom XML readHTMLTable
-#' @importFrom rjson fromJSON
+#' @importFrom httr GET content add_headers
 #' @export
 #' @examples
 #' GetTeamStats(2014)
@@ -146,7 +146,7 @@ GetTeamStats <- function(year = .CurrentYear(),
   stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
   
   # Get column headers
-  colnames(stats) <- json$headers
+  colnames(stats) <- content$headers
   
   # Clean data frame
   char.cols <- c('TEAM_ID', 'TEAM_NAME', 'CFID', 'CFPARAMS')
