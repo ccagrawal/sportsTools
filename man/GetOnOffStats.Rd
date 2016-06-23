@@ -4,12 +4,17 @@
 \alias{GetOnOffStats}
 \title{On-Off stats for each player on a team}
 \usage{
-GetOnOffStats(id, year, stat = "Advanced")
+GetOnOffStats(id, year = .CurrentYear(), season.type = "Regular Season",
+  measure.type = "Base")
 }
 \arguments{
 \item{id}{team's ID}
 
-\item{stat}{which stat ('Advanced')}
+\item{year}{2015 for 2014-15 season}
+
+\item{season.type}{Either 'Regular Season' or 'Playoffs'}
+
+\item{measure.type}{Either 'Base', 'Advanced', 'Misc', 'Four Factors', 'Scoring', 'Opponent', 'Usage', or 'Defense'}
 }
 \value{
 data frame of stats
@@ -18,7 +23,7 @@ data frame of stats
 On-Off stats for each player on a team
 }
 \examples{
-GetOnOffStats(id = '1610612745', stat = 'Advanced')
+GetOnOffStats(id = '1610612745', measure.type = 'Advanced')
 }
 \keyword{onoff}
 \keyword{team}
