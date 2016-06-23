@@ -4,6 +4,7 @@
 #' @param year 2015 for 2014-15 season
 #' @param season.type Either 'Regular Season' or 'Playoffs'
 #' @param measure.type Either 'Base', 'Advanced', 'Misc', 'Four Factors', 'Scoring', 'Opponent', 'Usage', or 'Defense'
+#' @param per.mode Either 'Totals', 'PerGame', 'MinutesPer', 'Per48', 'Per40', 'PerMinute', 'PerPossession', 'PerPlay', 'Per100Possessions', or 'Per100Plays'
 #' @return data frame of stats
 #' @keywords onoff team
 #' @importFrom httr GET content add_headers
@@ -11,7 +12,7 @@
 #' @examples
 #' GetOnOffStats(id = '1610612745', measure.type = 'Advanced')
 
-GetOnOffStats <- function(id, year = .CurrentYear(), season.type = 'Regular Season', measure.type = 'Base') {
+GetOnOffStats <- function(id, year = .CurrentYear(), season.type = 'Regular Season', measure.type = 'Base', per.mode = 'Totals') {
   
   options(stringsAsFactors = FALSE)
   

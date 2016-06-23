@@ -5,7 +5,7 @@
 \title{On-Off stats for each player on a team}
 \usage{
 GetOnOffStats(id, year = .CurrentYear(), season.type = "Regular Season",
-  measure.type = "Base")
+  measure.type = "Base", per.mode = "Totals")
 }
 \arguments{
 \item{id}{team's ID}
@@ -15,6 +15,8 @@ GetOnOffStats(id, year = .CurrentYear(), season.type = "Regular Season",
 \item{season.type}{Either 'Regular Season' or 'Playoffs'}
 
 \item{measure.type}{Either 'Base', 'Advanced', 'Misc', 'Four Factors', 'Scoring', 'Opponent', 'Usage', or 'Defense'}
+
+\item{per.mode}{Either 'Totals', 'PerGame', 'MinutesPer', 'Per48', 'Per40', 'PerMinute', 'PerPossession', 'PerPlay', 'Per100Possessions', or 'Per100Plays'}
 }
 \value{
 data frame of stats
