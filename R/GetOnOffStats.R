@@ -1,15 +1,17 @@
 #' On-Off stats for each player on a team
 #' 
 #' @param id team's ID
-#' @param stat which stat ('Advanced')
+#' @param year 2015 for 2014-15 season
+#' @param season.type Either 'Regular Season' or 'Playoffs'
+#' @param measure.type Either 'Base', 'Advanced', 'Misc', 'Four Factors', 'Scoring', 'Opponent', 'Usage', or 'Defense'
 #' @return data frame of stats
 #' @keywords onoff team
 #' @importFrom httr GET content add_headers
 #' @export
 #' @examples
-#' GetOnOffStats(id = '1610612745', stat = 'Advanced')
+#' GetOnOffStats(id = '1610612745', measure.type = 'Advanced')
 
-GetOnOffStats <- function(id, year, stat = 'Advanced') {
+GetOnOffStats <- function(id, year = .CurrentYear(), season.type = 'Regular Season', measure.type = 'Base') {
   
   options(stringsAsFactors = FALSE)
   
