@@ -30,7 +30,7 @@ GetOnOffStats <- function(id, year = .CurrentYear(), season.type = 'Regular Seas
       OpponentTeamID = 0,
       Outcome = "",
       PaceAdjust = "N",
-      PerMode = "Totals",
+      PerMode = per.mode,
       Period = 0,
       PlusMinus = "N",
       Rank = "N",
