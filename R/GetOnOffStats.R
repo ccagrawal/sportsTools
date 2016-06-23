@@ -24,7 +24,7 @@ GetOnOffStats <- function(id, year = .CurrentYear(), season.type = 'Regular Seas
       LastNGames = 0,
       LeagueID = "00",
       Location = "",
-      MeasureType = stat,
+      MeasureType = measure.type,
       Month = 0,
       OpponentTeamID = 0,
       Outcome = "",
