@@ -23,7 +23,7 @@ GetPlayerStatsByTeam <- function(year = .CurrentYear(),
   options(stringsAsFactors = FALSE)
   
   if (source == 'NBA') {
-    return(.GetPlayerStatsByTeamNBA(year, season.type, measure.type, per.mode))
+    return(.GetPlayerStatsByTeamNBA(year, team.id, season.type, measure.type, per.mode))
   }
 }
 
