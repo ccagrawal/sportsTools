@@ -19,7 +19,7 @@ GetGameIDs <- function(year = .CurrentYear(),
   if (source == 'Basketball-Reference') {
     ids <- .GetBRefGameIDs(year, season.type)
   } else if (source == 'NBA') {
-    ids <- .GetNBAGameIDs(year, season.type, method = 'team')
+    ids <- .GetNBAGameIDs(year, season.type, method = 'Team')
   } else {
     return(NULL)
   }
@@ -169,9 +169,9 @@ GetGameIDs <- function(year = .CurrentYear(),
 # Output:   Data frame with info for games that day from stats.nba.com
 #           date, game.id, status, home.team.id, away.team.id, national.tv if method = 'date'
 #           date, game.id, home, away if method = 'team'
-.GetNBAGameIDs <- function(year = .CurrentYear(), season.type = 'Regular Season', method = 'team') {
+.GetNBAGameIDs <- function(year, season.type, method) {
   
-  if (method == 'date') {
+  if (method == 'Date') {
     schedule <- GetSchedule(year, season.type)
     start.date <- min(schedule$date)
     end.date <- max(schedule$date)
