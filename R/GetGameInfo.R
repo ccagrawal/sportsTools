@@ -57,6 +57,10 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
     if ('lineups' %in% info) {
       results$lineups <- .GetNBALineups(id)
     }
+    
+    if ('box score' %in% info) {
+      results$box.score <- .GetNBABoxScore(id)
+    }
   }
   
   return(results)
@@ -166,7 +170,13 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
     
     # Get box score for period and split into home and away
     box.score <- .GetNBABoxScore(id, start.period = i, end.period = i)
-    box.score <- box.score[box.score$MIN == '12:00', ]
+    
+    if (i <= 4) {
+      box.score <- box.score[box.score$MIN == '12:00', ]
+    } else {
+      box.score <- box.score[box.score$MIN == '5:00', ]
+    }
+    
     home.add <- box.score[box.score$TEAM_ID == home.id, 'PLAYER_ID']
     away.add <- box.score[box.score$TEAM_ID == away.id, 'PLAYER_ID']
     
@@ -234,7 +244,6 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
     # Remove the player subbed out for the remainder of the quarter, and add the guy subbed in
     players <- .RemovePlayer(player.out, players, group + 1, group.last)
     players <- .AddPlayers(player.in, players, group + 1, group.last)
-    cat(i, '\n')
   }
 
   return(players)
