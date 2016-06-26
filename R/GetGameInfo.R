@@ -97,6 +97,43 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
   return(actions)
 }
 
+# Input:    Game ID (ex. '0021300359')
+#           start.period - starting quarter
+#           end.period - ending quarter
+# Output:   Data frame with box score from NBA.com
+.GetNBABoxScore <- function(id, start.period = 1, end.period = 14) {
+  
+  request <- GET(
+    "http://stats.nba.com/stats/boxscoretraditionalv2",
+    query = list(
+      EndPeriod = end.period,
+      EndRange = 28800,
+      GameID = id,
+      RangeType = 1,
+      Season = "",
+      SeasonType = "",
+      StartPeriod = start.period,
+      StartRange = 0
+    ),
+    add_headers('Referer' = 'http://stats.nba.com/game/')
+  )
+  
+  content <- content(request, 'parsed')[[3]][[1]]
+  stats <- content$rowSet
+  
+  # Create raw data frame
+  stats <- lapply(stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
+  stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
+  
+  # Get column headers
+  colnames(stats) <- content$headers
+  
+  # Clean data frame
+  stats[, 10:28] <- sapply(stats[, 10:28], as.numeric)
+  
+  return(stats)
+}
+
 # Input:    NBA Game ID (ex. '0021300359')
 # Output:   Data frame with 5 man lineups with play-by-play from NBA.com
 .GetNBALineups <- function(id) {
@@ -105,32 +142,64 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
   pbp <- .GetNBAPlayByPlay(id)
   
   # Add markers for when the 10 man lineups can change
-  mark.periods <- which(pbp$EVENTMSGTYPE == 12 & pbp$EVENTMSGACTIONTYPE == 0)   # Start of period
+  mark.periods <- c(1, which(pbp$EVENTMSGTYPE == 13 & pbp$EVENTMSGACTIONTYPE == 0))   # End of period
   markers <- c(mark.periods, which(pbp$EVENTMSGTYPE == 8 & pbp$EVENTMSGACTIONTYPE == 0))  # Subs
   markers <- markers[order(markers)]
   
   # Remove consecutive markers at the same timestamp
   for (i in length(markers):2) {
     if (markers[i] == (markers[i - 1] + 1)) {
-      markers <- markers[-i]
+      markers <- markers[-(i - 1)]
     }
   }
+  
+  # Get team IDs
+  home.id <- pbp[pbp$EVENTMSGTYPE == 8 & pbp$EVENTMSGACTIONTYPE == 0 & !is.na(pbp$HOMEDESCRIPTION), 'PLAYER1_TEAM_ID'][1]
+  away.id <- pbp[pbp$EVENTMSGTYPE == 8 & pbp$EVENTMSGACTIONTYPE == 0 & !is.na(pbp$VISITORDESCRIPTION), 'PLAYER1_TEAM_ID'][1]
   
   # Go through substitutions and get preliminary lineups
   home.players <- .ProcessNBASubs(pbp, markers, mark.periods, 'Home')
   away.players <- .ProcessNBASubs(pbp, markers, mark.periods, 'Away')
   
-  # Load up plus minus data for filling in missing players
-  plus.minus <- .GetBRefPlusMinus(id)
-  plus.minus <- plus.minus[plus.minus$in.game, ]
-  plus.minus <- merge(plus.minus, player.ids, by.x = 'player', by.y = 'name')
+  # Fill in missing players using box score
+  for (i in 1:(length(mark.periods) - 1)) {
+    
+    # Get box score for period and split into home and away
+    box.score <- .GetNBABoxScore(id, start.period = i, end.period = i)
+    box.score <- box.score[box.score$MIN == '12:00', ]
+    home.add <- box.score[box.score$TEAM_ID == home.id, 'PLAYER_ID']
+    away.add <- box.score[box.score$TEAM_ID == away.id, 'PLAYER_ID']
+    
+    # Get range corresponding to period in players list
+    group.first <- length(markers[markers <= mark.periods[i]])
+    group.last <- length(markers[markers <= mark.periods[i + 1]]) - 1
+    
+    # Add home players
+    for (player in home.add) {
+      home.players <- .AddPlayers(player, home.players, group.first, group.last)
+    }
+    
+    # Add away players
+    for (player in away.add) {
+      away.players <- .AddPlayers(player, away.players, group.first, group.last)
+    }
+  }
   
-  # Go back and add the players that played an entire period without being subbed
-  home.players <- .FinishBRefLineups(plus.minus, home.players, mark.periods, markers, 'home')
-  away.players <- .FinishBRefLineups(plus.minus, away.players, mark.periods, markers, 'away')
+  pbp[, c('H1', 'H2', 'H3', 'H4', 'H5', 'A1', 'A2', 'A3', 'A4', 'A5')] <- NA
+  
+  # Add player ids into pbp
+  for (i in 1:length(home.players)) {
+    length <- markers[i + 1] - markers[i] + 1
+    pbp[markers[i]:markers[i + 1], c('H1', 'H2', 'H3', 'H4', 'H5')] <- rep(home.players[[i]], each = length)
+    pbp[markers[i]:markers[i + 1], c('A1', 'A2', 'A3', 'A4', 'A5')] <- rep(away.players[[i]], each = length)
+  }
 }
- 
-# Process player substitutions and create preliminary lineups
+
+# Input:    pbp - NBA play by play data frame
+#           markers - rows of pbp that signify changes
+#           mark.periods - rows of pbp for start and end of quarters
+#           team - either 'Home' or 'Away'
+# Output:   List of arrays of players at each time
 .ProcessNBASubs <- function(pbp, markers, mark.periods, team) {
 
   # Keep track of players that are in the lineup between each marker
@@ -138,12 +207,12 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
 
   # Create act column corresponding to home or away team
   if (team == 'Home') {
-    pbp$act <- pbp$HOMEDESCRIPTION
+    actions <- pbp$HOMEDESCRIPTION
   } else {
-    pbp$act <- pbp$VISITORDESCRIPTION
+    actions <- pbp$VISITORDESCRIPTION
   }
 
-  subs <- grep('SUB:', pbp$act)
+  subs <- grep('SUB:', actions)
   for (i in subs) {
 
     # Compute the group this sub happened between, and the first and last group of the period
@@ -165,43 +234,14 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
     # Remove the player subbed out for the remainder of the quarter, and add the guy subbed in
     players <- .RemovePlayer(player.out, players, group + 1, group.last)
     players <- .AddPlayers(player.in, players, group + 1, group.last)
+    cat(i, '\n')
   }
 
   return(players)
 }
- 
-# # Combine preliminary lineups with the plus/minus lineups
-# .FinishBRefLineups <- function(plus.minus, lineups, mark.periods, markers, team) {
-#   
-#   for (i in 1:(length(mark.periods) - 1)) {
-#     
-#     # In each period, get the first and last markers
-#     i.first <- length(markers[markers <= mark.periods[i]])
-#     i.last <- length(markers[markers <= mark.periods[i+1]]) - 1
-#     
-#     # If we have 5 players, then we're good
-#     if (length(lineups[[i.first]]) < 5) {
-#       
-#       # Make vectors of players that were in during the period
-#       already.in <- .GetPlayers(lineups, i.first, i.last)
-#       
-#       # Get the players in the plus minus data but not in our groups
-#       pm.in <- plus.minus[plus.minus$team == team & plus.minus$period == i, 'id']
-#       if (length(already.in) > 0) {
-#         missing <- pm.in[-which(pm.in %in% already.in)]
-#       } else {
-#         missing <- pm.in
-#       }
-#       
-#       # Add missing players
-#       lineups <- .AddPlayers(missing, lineups, i.first, i.last)
-#     }
-#   }
-#   
-#   return(lineups)
-# }
 
-# Get 5 man unit
+# Input:    Basketball Reference Game ID
+# Output:   Data frame with 5 man lineups with play-by-play from Basketball Reference
 .GetBRefLineups <- function(id) {
   
   url.pbp <- paste('http://www.basketball-reference.com/boxscores/pbp/', id, '.html', sep = '')
@@ -260,6 +300,8 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
   
 }
 
+# Input:    Basketball Reference Game ID
+# Output:   Data frame with plus minus information to help complete 5 man lineups
 .GetBRefPlusMinus <- function(id) {
   
   url.pm <- paste('http://www.basketball-reference.com/boxscores/plus-minus/', id, '.html', sep = '')  
@@ -347,7 +389,11 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
   return(player.times)
 }
 
-# Process player substitutions and create preliminary lineups
+# Input:    pbp - Basketball Reference play by play data frame
+#           markers - rows of pbp that signify changes
+#           mark.periods - rows of pbp for start and end of quarters
+#           team - either 'Home' or 'Away'
+# Output:   List of arrays of players at each time
 .ProcessBRefSubs <- function(pbp, markers, mark.periods, team) {
   
   # Keep track of players that are in the lineup between each marker
