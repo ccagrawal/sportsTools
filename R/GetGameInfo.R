@@ -153,7 +153,7 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
   # Remove consecutive markers at the same timestamp
   for (i in length(markers):2) {
     if (markers[i] == (markers[i - 1] + 1)) {
-      markers <- markers[-(i - 1)]
+      markers <- markers[-i]
     }
   }
   
