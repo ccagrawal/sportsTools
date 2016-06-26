@@ -203,6 +203,8 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
     pbp[markers[i]:markers[i + 1], c('H1', 'H2', 'H3', 'H4', 'H5')] <- rep(home.players[[i]], each = length)
     pbp[markers[i]:markers[i + 1], c('A1', 'A2', 'A3', 'A4', 'A5')] <- rep(away.players[[i]], each = length)
   }
+  
+  return(pbp)
 }
 
 # Input:    pbp - NBA play by play data frame
