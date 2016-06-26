@@ -232,8 +232,12 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
     actions <- pbp$VISITORDESCRIPTION
   }
 
-  subs <- grep('SUB:', actions)
-  for (i in subs) {
+  subs <- grep('SUB:', actions)                               # Find plays with subs
+  breaks <- c(0, which(diff(subs) != 1), length(subs)) + 1    # Group the subs
+  for (j in 1:(length(breaks) - 1)) {
+    
+    # Get one sub in that break
+    i <- subs[breaks[j]]
 
     # Compute the group this sub happened between, and the first and last group of the period
     group <- length(markers[markers <= i]) - 1
@@ -242,18 +246,35 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
     i.first <- max(mark.periods[mark.periods <= i])
     group.first <- length(markers[markers <= i.first])
 
-    # Get the player subbed in and the player subbed out
-    player.in <- pbp[i, 'PLAYER2_ID']
-    player.out <- pbp[i, 'PLAYER1_ID']
-
-    # If we don't have the player that subbed out at all, add him in the whole quarter up to now
-    if (!(player.out %in% .GetPlayers(players, group.first, group))) {
-      players <- .AddPlayers(player.out, players, group.first, group)
+    # Get the players subbed in and the players subbed out
+    break.subs <- breaks[j]:(breaks[j + 1] - 1)
+    players.in <- pbp[subs[break.subs], 'PLAYER2_ID']
+    players.out <- pbp[subs[break.subs], 'PLAYER1_ID']
+    
+    # Remove players subbed in and out
+    overlap <- intersect(players.in, players.out)
+    for (player in overlap) {
+      players.in <- players.in[-match(player, players.in)]
+      players.out <- players.out[-match(player, players.out)]
     }
-
-    # Remove the player subbed out for the remainder of the quarter, and add the guy subbed in
-    players <- .RemovePlayer(player.out, players, group + 1, group.last)
-    players <- .AddPlayers(player.in, players, group + 1, group.last)
+    
+    # Loop through subs
+    for (k in length(players.in)) {
+      
+      player.in <- players.in[k]
+      player.out <- players.out[k]
+      
+      # If we don't have the player that subbed out at all, add him in the whole quarter up to now
+      if (!(player.out %in% .GetPlayers(players, group.first, group))) {
+        players <- .AddPlayers(player.out, players, group.first, group)
+      }
+      
+      # Remove the player subbed out for the remainder of the quarter, and add the guy subbed in
+      players <- .RemovePlayer(player.out, players, group + 1, group.last)
+      players <- .AddPlayers(player.in, players, group + 1, group.last)
+    }
+    
+    cat(j, '\n')
   }
 
   return(players)
