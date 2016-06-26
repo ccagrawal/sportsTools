@@ -150,6 +150,16 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
   markers <- which(pbp$EVENTMSGTYPE == 8 & pbp$EVENTMSGACTIONTYPE == 0)  # Subs
   markers <- markers[order(markers)]
   
+  # Group subs based on consecutive actions
+  ranges <- list(c(markers[1]))
+  for (i in 2:length(markers)) {
+    if (markers[i] == ranges[[length(ranges)]][length(ranges[[length(ranges)]])] + 1) {
+      ranges[[length(ranges)]] <- c(ranges[[length(ranges)]], markers[i])
+    } else {
+      ranges[[length(ranges) + 1]] <- markers[i]
+    }
+  }
+  
   # Remove consecutive markers at the same timestamp
   for (i in length(markers):2) {
     if (markers[i] == (markers[i - 1] + 1)) {
@@ -166,8 +176,8 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
   away.id <- pbp[pbp$EVENTMSGTYPE == 8 & pbp$EVENTMSGACTIONTYPE == 0 & !is.na(pbp$VISITORDESCRIPTION), 'PLAYER1_TEAM_ID'][1]
   
   # Go through substitutions and get preliminary lineups
-  home.players <- .ProcessNBASubs(pbp, markers, mark.periods, 'Home')
-  away.players <- .ProcessNBASubs(pbp, markers, mark.periods, 'Away')
+  home.players <- .ProcessNBASubs(pbp, markers, mark.periods, ranges, 'Home')
+  away.players <- .ProcessNBASubs(pbp, markers, mark.periods, ranges, 'Away')
   
   # Fill in missing players using box score
   for (i in 1:(length(mark.periods) - 1)) {
@@ -218,9 +228,10 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
 # Input:    pbp - NBA play by play data frame
 #           markers - rows of pbp that signify changes
 #           mark.periods - rows of pbp for start and end of quarters
+#           ranges - list of consecutive subs
 #           team - either 'Home' or 'Away'
 # Output:   List of arrays of players at each time
-.ProcessNBASubs <- function(pbp, markers, mark.periods, team) {
+.ProcessNBASubs <- function(pbp, markers, mark.periods, ranges, team) {
 
   # Keep track of players that are in the lineup between each marker
   players <- lapply(markers[-1], function(x) NULL)
@@ -233,45 +244,52 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
   }
 
   subs <- grep('SUB:', actions)                               # Find plays with subs
-  breaks <- c(0, which(diff(subs) != 1), length(subs)) + 1    # Group the subs
-  for (j in 1:(length(breaks) - 1)) {
+  for (j in 1:length(ranges)) {
     
-    # Get one sub in that break
-    i <- subs[breaks[j]]
-
-    # Compute the group this sub happened between, and the first and last group of the period
-    group <- length(markers[markers <= i]) - 1
-    i.last <- min(mark.periods[mark.periods > i])
-    group.last <- length(markers[markers <= i.last]) - 1
-    i.first <- max(mark.periods[mark.periods <= i])
-    group.first <- length(markers[markers <= i.first])
-
-    # Get the players subbed in and the players subbed out
-    break.subs <- breaks[j]:(breaks[j + 1] - 1)
-    players.in <- pbp[subs[break.subs], 'PLAYER2_ID']
-    players.out <- pbp[subs[break.subs], 'PLAYER1_ID']
+    # Get subs in that range
+    current.subs <- subs[subs %in% ranges[[j]]]
     
-    # Remove players subbed in and out
-    overlap <- intersect(players.in, players.out)
-    for (player in overlap) {
-      players.in <- players.in[-match(player, players.in)]
-      players.out <- players.out[-match(player, players.out)]
-    }
-    
-    # Loop through subs
-    for (k in 1:length(players.in)) {
+    # Only proceed if there was at least 1 sub
+    if (length(current.subs) > 0) {
       
-      player.in <- players.in[k]
-      player.out <- players.out[k]
+      # Get one sub
+      i <- current.subs[1]
       
-      # If we don't have the player that subbed out at all, add him in the whole quarter up to now
-      if (!(player.out %in% .GetPlayers(players, group.first, group))) {
-        players <- .AddPlayers(player.out, players, group.first, group)
+      # Compute the group this sub happened between, and the first and last group of the period
+      group <- length(markers[markers <= i]) - 1
+      i.last <- min(mark.periods[mark.periods > i])
+      group.last <- length(markers[markers <= i.last]) - 1
+      i.first <- max(mark.periods[mark.periods <= i])
+      group.first <- length(markers[markers <= i.first])
+      
+      # Get the players subbed in and the players subbed out
+      players.in <- pbp[current.subs, 'PLAYER2_ID']
+      players.out <- pbp[current.subs, 'PLAYER1_ID']
+      
+      # Remove players subbed in and out
+      overlap <- intersect(players.in, players.out)
+      for (player in overlap) {
+        players.in <- players.in[-match(player, players.in)]
+        players.out <- players.out[-match(player, players.out)]
       }
       
-      # Remove the player subbed out for the remainder of the quarter, and add the guy subbed in
-      players <- .RemovePlayer(player.out, players, group + 1, group.last)
-      players <- .AddPlayers(player.in, players, group + 1, group.last)
+      # Loop through subs
+      if (length(players.in) > 0) {
+        for (k in 1:length(players.in)) {
+          
+          player.in <- players.in[k]
+          player.out <- players.out[k]
+          
+          # If we don't have the player that subbed out at all, add him in the whole quarter up to now
+          if (!(player.out %in% .GetPlayers(players, group.first, group))) {
+            players <- .AddPlayers(player.out, players, group.first, group)
+          }
+          
+          # Remove the player subbed out for the remainder of the quarter, and add the guy subbed in
+          players <- .RemovePlayer(player.out, players, group + 1, group.last)
+          players <- .AddPlayers(player.in, players, group + 1, group.last)
+        }
+      }
     }
   }
 
