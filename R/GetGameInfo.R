@@ -147,7 +147,7 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
   
   # Add markers for when the 10 man lineups can change
   mark.periods <- c(1, which(pbp$EVENTMSGTYPE == 13 & pbp$EVENTMSGACTIONTYPE == 0))   # End of period
-  markers <- c(mark.periods, which(pbp$EVENTMSGTYPE == 8 & pbp$EVENTMSGACTIONTYPE == 0))  # Subs
+  markers <- which(pbp$EVENTMSGTYPE == 8 & pbp$EVENTMSGACTIONTYPE == 0)  # Subs
   markers <- markers[order(markers)]
   
   # Remove consecutive markers at the same timestamp
@@ -156,6 +156,10 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
       markers <- markers[-i]
     }
   }
+  
+  # Add periods into markers
+  markers <- c(markers, mark.periods)
+  markers <- markers[order(markers)]
   
   # Get team IDs
   home.id <- pbp[pbp$EVENTMSGTYPE == 8 & pbp$EVENTMSGACTIONTYPE == 0 & !is.na(pbp$HOMEDESCRIPTION), 'PLAYER1_TEAM_ID'][1]
