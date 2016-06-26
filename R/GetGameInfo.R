@@ -184,14 +184,18 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
     group.first <- length(markers[markers <= mark.periods[i]])
     group.last <- length(markers[markers <= mark.periods[i + 1]]) - 1
     
-    # Add home players
+    # If home players haven't played in the quarter, add them to the whole thing
     for (player in home.add) {
-      home.players <- .AddPlayers(player, home.players, group.first, group.last)
+      if (!(player %in% .GetPlayers(home.players, group.first, group.last))) {
+        home.players <- .AddPlayers(player, home.players, group.first, group.last)
+      }
     }
     
-    # Add away players
+    # If away players haven't played in the quarter, add them to the whole thing
     for (player in away.add) {
-      away.players <- .AddPlayers(player, away.players, group.first, group.last)
+      if (!(player %in% .GetPlayers(away.players, group.first, group.last))) {
+        away.players <- .AddPlayers(player, away.players, group.first, group.last)
+      }
     }
   }
   
