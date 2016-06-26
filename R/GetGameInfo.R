@@ -259,7 +259,7 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
     }
     
     # Loop through subs
-    for (k in length(players.in)) {
+    for (k in 1:length(players.in)) {
       
       player.in <- players.in[k]
       player.out <- players.out[k]
@@ -273,8 +273,6 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
       players <- .RemovePlayer(player.out, players, group + 1, group.last)
       players <- .AddPlayers(player.in, players, group + 1, group.last)
     }
-    
-    cat(j, '\n')
   }
 
   return(players)
