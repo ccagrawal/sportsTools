@@ -33,3 +33,11 @@
     return(as.numeric(format(Sys.Date(), "%Y")))
   }
 }
+
+.SecondsElapsed <- function(period, timestamp) {
+  seconds <- rep(0, length(period))
+  seconds[period <= 4] <- 12 * 60 * period[period <= 4]
+  seconds[period > 4] <- 12 * 60 * 4 + 5 * 60 * (period[period > 4] - 4)
+  seconds.remaining <- sapply(strsplit(timestamp, ":"), function(x) as.numeric(x[1]) * 60 + as.numeric(x[2]))
+  return(seconds - seconds.remaining)
+}

@@ -3,9 +3,10 @@
 #' @param year 2015 for 2014-15 season
 #' @param season.type Either 'Regular Season' or 'Playoffs'
 #' @param per.mode Either 'Per Game' or 'Totals'
-#' @param stat Statistic to pull (e.g. 'Passing', 'Possessions')
+#' @param measure.type Either 'SpeedDistance', 'Rebounding', 'Possessions', 'CatchShoot', 'PullUpShot', 
+#'        'Defense', 'Drives', 'Passing', 'ElbowTouch', 'PostTouch', 'PaintTouch', or 'Efficiency'
 #' @param player.or.team Either 'Player' or 'Team'
-#' @param position Either 'G', 'F', or 'C'
+#' @param position Either 'G', 'F', 'C', 'G-F', 'F-G', 'F-C', or 'C-F'
 #' @return data frame of stats
 #' @keywords synergy
 #' @importFrom httr GET content add_headers
@@ -16,7 +17,7 @@
 GetTrackingStats <- function(year = .CurrentYear(), 
                              season.type = 'Regular Season', 
                              per.mode = 'Per Game', 
-                             stat, 
+                             measure.type, 
                              player.or.team = 'Player', 
                              position = '') {
   
@@ -50,7 +51,7 @@ GetTrackingStats <- function(year = .CurrentYear(),
       PlayerExperience = "",
       PlayerOrTeam = player.or.team,
       PlayerPosition = position,
-      PtMeasureType = stat,
+      PtMeasureType = measure.type,
       Season = .YearToSeason(year),
       SeasonSegment = "",
       SeasonType = season.type,

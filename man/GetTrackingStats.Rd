@@ -5,7 +5,8 @@
 \title{NBA Player Tracking}
 \usage{
 GetTrackingStats(year = .CurrentYear(), season.type = "Regular Season",
-  per.mode = "Per Game", stat, player.or.team = "Player", position = "")
+  per.mode = "Per Game", measure.type, player.or.team = "Player",
+  position = "")
 }
 \arguments{
 \item{year}{2015 for 2014-15 season}
@@ -14,11 +15,12 @@ GetTrackingStats(year = .CurrentYear(), season.type = "Regular Season",
 
 \item{per.mode}{Either 'Per Game' or 'Totals'}
 
-\item{stat}{Statistic to pull (e.g. 'Passing', 'Possessions')}
+\item{measure.type}{Either 'SpeedDistance', 'Rebounding', 'Possessions', 'CatchShoot', 'PullUpShot', 
+'Defense', 'Drives', 'Passing', 'ElbowTouch', 'PostTouch', 'PaintTouch', or 'Efficiency'}
 
 \item{player.or.team}{Either 'Player' or 'Team'}
 
-\item{position}{Either 'G', 'F', or 'C'}
+\item{position}{Either 'G', 'F', 'C', 'G-F', 'F-G', 'F-C', or 'C-F'}
 }
 \value{
 data frame of stats
