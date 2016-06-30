@@ -24,8 +24,8 @@ GetSchedule <- function(sport = 'NBA', year = .CurrentYear(), season.type = 'Reg
 #' Schedule and results (multi-year).
 #'
 #' @param sport 'NBA', 'NCAAB', or 'WNBA'
-#' @param year.start Season (e.g. 2008 for 2007-08 season)
-#' @param year.end Season (e.g. 2014 for 2013-14 season)
+#' @param start.year Season (e.g. 2008 for 2007-08 season)
+#' @param end.year Season (e.g. 2014 for 2013-14 season)
 #' @param season.type Either 'Regular Season', 'Playoffs', or 'Both'
 #' @param info Either 'scores' or 'advanced'
 #' @return data frame with schedule and results for each game in all the seasons
@@ -35,10 +35,10 @@ GetSchedule <- function(sport = 'NBA', year = .CurrentYear(), season.type = 'Reg
 #' @examples
 #' GetScheduleRange(2012, 2015, 'playoffs')
 
-GetScheduleRange <- function(sport = 'NBA', year.start, year.end, season.type = 'Both', info = 'scores') {
+GetScheduleRange <- function(sport = 'NBA', start.year, end.year, season.type = 'Both', info = 'scores') {
   schedule <- data.frame()
   
-  for (year in year.start:year.end) {
+  for (year in start.year:end.year) {
     temp <- GetSchedule(sport, year, season.type, info)
     temp$season <- year
     schedule <- rbind(schedule, temp)
