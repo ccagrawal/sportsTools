@@ -55,17 +55,17 @@ GetScheduleRange <- function(sport = 'NBA', start.year, end.year, season.type = 
     url <- paste('http://www.basketball-reference.com/leagues/NBA_', year, '_games.html', sep = '')
     tables <- readHTMLTable(url)
     
-    if (season.type == 'playoffs' & length(tables) > 1) {
+    if (season.type == 'Playoffs' & length(tables) > 1) {
       schedule <- tables[['games_playoffs']]
-      schedule$type <- 'playoff'
+      schedule$type <- 'Playoff'
     } else {
       schedule <- tables[['games']]
-      schedule$type <- 'regular season'
+      schedule$type <- 'Regular Season'
     } 
     
-    if (season.type == 'both' & length(tables) > 1) {
+    if (season.type == 'Both' & length(tables) > 1) {
       temp <- tables[['games_playoffs']]
-      temp$type <- 'playoff'
+      temp$type <- 'Playoff'
       schedule <- rbind(schedule, temp)
     }
     
