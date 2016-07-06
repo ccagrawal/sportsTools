@@ -1,16 +1,19 @@
 #' Team IDs on websites
 #' 
 #' @param sport 'NBA' or 'NCAAB'
-#' @param year NBA season for which you want team IDs (e.g. 2008 for the 2007-08 season)
-#' @param source website that is being used ('NBA', 'ESPN', 'Basketball-Reference', 'Sports-Reference')
+#' @param year Season for which you want team IDs (e.g. 2008 for the 2007-08 season)
+#' @param source Either 'NBA', 'ESPN', 'Basketball-Reference', or 'Sports-Reference'
 #' @return data frame of names and IDs
 #' @keywords team IDs
 #' @importFrom rjson fromJSON
+#' @importFrom httr GET content add_headers
 #' @export
 #' @examples
 #' GetTeamIDs(2015)
 
-GetTeamIDs <- function(sport = 'NBA', year = 2016, source = 'NBA') {
+GetTeamIDs <- function(sport = 'NBA', year = .CurrentYear(), source = 'NBA') {
+  
+  options(stringsAsFactors = FALSE)
   
   if (sport == 'NBA') {
     return(.GetTeamIDsNBA(year, source))
@@ -19,20 +22,33 @@ GetTeamIDs <- function(sport = 'NBA', year = 2016, source = 'NBA') {
   }
 }
 
-.GetTeamIDsNBA <- function(year = 2016, source = 'NBA') {
+.GetTeamIDsNBA <- function(year = .CurrentYear(), source = 'NBA') {
   
   options(stringsAsFactors = FALSE)
   
   if (source == 'NBA') {
-    year <- year - 1
-    url <- gsub('YEAR', year, 'http://stats.nba.com/stats/playoffpicture?LeagueID=00&SeasonID=2YEAR')
-    json <- fromJSON(file = url)[[3]]                  # (3) contains the actual info for the day
-    team.list <- c(json[[3]]$rowSet, json[[4]]$rowSet)      # Combine standings from East and West
     
-    team.list <- lapply(team.list, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-    team.list <- data.frame(matrix(unlist(team.list), nrow = length(team.list), byrow = TRUE)) # Turn list to data frame
+    if (year == .CurrentYear()) {
+      game.date <- min(Sys.Date(), as.Date(paste0(year, '-04-04')))
+    } else {
+      game.date <- as.Date(paste0(year, '-04-04'))
+    }
     
-    team.list <- team.list[, c(4, 3)]      # Drop useless columns
+    request <- GET(
+      "http://stats.nba.com/stats/scoreboard",
+      query = list(
+        DayOffset = 0,
+        LeagueId = '00',
+        gameDate = game.date
+      ),
+      add_headers('Referer' = 'http://stats.nba.com/standings/')
+    )
+    
+    content.east <- content(request, 'parsed')[[3]][[5]]
+    content.west <- content(request, 'parsed')[[3]][[6]]
+    team.list <- rbind(.ContentToDF(content.east), .ContentToDF(content.west))
+    
+    team.list <- team.list[, c(1, 6)]      # Drop useless columns
     colnames(team.list) <- c('id', 'name')
   } else if (source == 'ESPN') {
     url <- 'http://espn.go.com/nba/teams'

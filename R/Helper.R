@@ -1,6 +1,6 @@
 .ToSeconds <- function(x){
   if (!is.character(x)) stop("x must be a character string of the form H:M:S")
-  if (length(x)<=0)return(x)
+  if (length(x) <= 0) return(x)
   
   unlist(
     lapply(x,
@@ -40,4 +40,12 @@
   seconds[period > 4] <- 12 * 60 * 4 + 5 * 60 * (period[period > 4] - 4)
   seconds.remaining <- sapply(strsplit(timestamp, ":"), function(x) as.numeric(x[1]) * 60 + as.numeric(x[2]))
   return(seconds - seconds.remaining)
+}
+
+.ContentToDF <- function(content) {
+  data <- content$rowSet
+  data <- lapply(data, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
+  data <- data.frame(matrix(unlist(data), nrow = length(data), byrow = TRUE)) # Turn list to data frame
+  colnames(data) <- content$headers
+  return(data)
 }

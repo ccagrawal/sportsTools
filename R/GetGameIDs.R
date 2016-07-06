@@ -103,12 +103,11 @@ GetGameIDs <- function(year = .CurrentYear(),
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
-  game.list <- content$rowSet
   
-  if (length(game.list) > 0) {
+  if (length(content$rowSet) > 0) {
+    
     # Create raw data frame
-    game.list <- lapply(game.list, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-    game.list <- data.frame(matrix(unlist(game.list), nrow = length(game.list), byrow = TRUE)) # Turn list to data frame
+    game.list <- .ContentToDF(content)
     
     # Clean data frame
     game.list <- game.list[, c(3, 2, 4)]      # Drop useless columns
@@ -147,16 +146,11 @@ GetGameIDs <- function(year = .CurrentYear(),
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
-  game.list <- content$rowSet
   
-  if (length(game.list) > 0) {
+  if (length(content$rowSet) > 0) {
     
     # Create raw data frame
-    game.list <- lapply(game.list, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-    game.list <- data.frame(matrix(unlist(game.list), nrow = length(game.list), byrow = TRUE)) # Turn list to data frame
-    
-    # Get column names
-    colnames(game.list) <- content$headers
+    game.list <- .ContentToDF(content)
     
     # Clean data frame
     game.list <- game.list[, c(1, 3, 5, 7, 8, 12)]      # Drop useless columns
