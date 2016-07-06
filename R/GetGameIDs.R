@@ -72,7 +72,7 @@ GetGameIDs <- function(year = .CurrentYear(),
 #           year (ex. 2008 for 2007-08 season)
 #           season.type either 'Regular Season', 'Playoffs', or 'Both'
 # Output:   Data frame with info for games that day from stats.nba.com
-#           game.id, date, team
+#           game.id, date, home, away, season.type
 .GetNBAGameIDsTeam <- function(team, year, season.type) {
   
   if (season.type == 'Both') {
@@ -126,6 +126,7 @@ GetGameIDs <- function(year = .CurrentYear(),
     game.list[grep('vs', game.list$matchup), 'away'] <- game.list[grep('vs', game.list$matchup), 'opponent']
     
     game.list <- game.list[, c(1, 2, 5, 6)]
+    game.list$season.type <- season.type
     return(game.list)
   }
 }
