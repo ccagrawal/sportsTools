@@ -2,7 +2,8 @@
 #'
 #' @param year Season (e.g. 2008 for the 2007-08 season)
 #' @param source Either 'Basketball-Reference' or 'NBA'
-#' @param type Either "Regular Season", "Playoffs", or "Both"
+#' @param season.type Either "Regular Season", "Playoffs", or "Both"
+#' @param method Either "Team" or "Date"
 #' @return vector if from 'Basketball-Reference' or data frame if from 'NBA'
 #' @keywords gameid
 #' @importFrom httr GET content add_headers
@@ -11,15 +12,16 @@
 #' GetGameIDs(2014, 'regular season')
 
 GetGameIDs <- function(year = .CurrentYear(), 
-                       source = 'Basketball-Reference', 
-                       season.type = 'Regular Season') {
+                       source = 'NBA', 
+                       season.type = 'Regular Season',
+                       method = 'Team') {
   
   options(stringsAsFactors = FALSE)
   
   if (source == 'Basketball-Reference') {
     ids <- .GetBRefGameIDs(year, season.type)
   } else if (source == 'NBA') {
-    ids <- .GetNBAGameIDs(year, season.type, method = 'Team')
+    ids <- .GetNBAGameIDs(year, season.type, method = method)
   } else {
     return(NULL)
   }

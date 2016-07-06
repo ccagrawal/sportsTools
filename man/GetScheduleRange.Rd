@@ -4,15 +4,15 @@
 \alias{GetScheduleRange}
 \title{Schedule and results (multi-year).}
 \usage{
-GetScheduleRange(sport = "NBA", year.start, year.end, season.type = "Both",
+GetScheduleRange(sport = "NBA", start.year, end.year, season.type = "Both",
   info = "scores")
 }
 \arguments{
 \item{sport}{'NBA', 'NCAAB', or 'WNBA'}
 
-\item{year.start}{Season (e.g. 2008 for 2007-08 season)}
+\item{start.year}{Season (e.g. 2008 for 2007-08 season)}
 
-\item{year.end}{Season (e.g. 2014 for 2013-14 season)}
+\item{end.year}{Season (e.g. 2014 for 2013-14 season)}
 
 \item{season.type}{Either 'Regular Season', 'Playoffs', or 'Both'}
 
