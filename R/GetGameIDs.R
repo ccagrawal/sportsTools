@@ -164,12 +164,12 @@ GetGameIDs <- function(year = .CurrentYear(),
 # Input:    year (e.g. 2008 for the 2007-08 season)
 #           season.type ('Regular Season', 'Playoffs', or 'Both')
 # Output:   Data frame with info for games that day from stats.nba.com
-#           date, game.id, status, home.team.id, away.team.id, national.tv if method = 'date'
-#           date, game.id, home, away if method = 'team'
+#           date, game.id, status, home.team.id, away.team.id, national.tv if method = 'Date'
+#           date, game.id, home, away if method = 'Team'
 .GetNBAGameIDs <- function(year, season.type, method) {
   
   if (method == 'Date') {
-    schedule <- GetSchedule(year, season.type)
+    schedule <- GetSchedule(sport = 'NBA', year = year, season.type = season.type)
     start.date <- min(schedule$date)
     end.date <- max(schedule$date)
     
