@@ -21,7 +21,7 @@ GetGameIDs <- function(year = .CurrentYear(),
   if (source == 'Basketball-Reference') {
     ids <- .GetBRefGameIDs(year, season.type)
   } else if (source == 'NBA') {
-    ids <- .GetNBAGameIDs(year, season.type, method = method)
+    ids <- .GetNBAGameIDs(year, season.type, method)
   } else {
     return(NULL)
   }
