@@ -38,6 +38,7 @@ GetPlayerStats <- function(year = .CurrentYear(),
   
   if (measure.type == 'Advanced') {
     url <- gsub("TYPE", "advanced", base.url)
+    per.mode <- NA
   } else if (per.mode == 'Per Game') {
     url <- gsub("TYPE", "per_game", base.url)
   } else if (per.mode == 'Totals') {
