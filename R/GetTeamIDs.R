@@ -53,7 +53,8 @@ GetTeamIDs <- function(sport = 'NBA', year = .CurrentYear(), source = 'NBA') {
   } else if (source == 'ESPN') {
     url <- 'http://espn.go.com/nba/teams'
     lines <- readLines(url)
-    lines <- lines[grep('http://espn.go.com/nba/team/_/name', lines)]
+    lines <- unlist(strsplit(lines, '<span>'))
+    lines <- lines[grep('http://www.espn.com/nba/team/_/name/', lines)]
     
     team.list <- gsub('.*team/_/name/([^/]*)/([^\"]*).*', '\\1~\\2', lines)
     team.list <- strsplit(team.list, '~')
