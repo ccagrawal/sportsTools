@@ -16,7 +16,7 @@
 #' GetTeamStats(2014)
 
 GetTeamStats <- function(year = .CurrentYear(), 
-                         measure.type = 'Base', 
+                         measure.type = 'Base',
                          season.type = 'Regular Season', 
                          keep.average = FALSE, 
                          source = 'NBA') {
@@ -24,9 +24,9 @@ GetTeamStats <- function(year = .CurrentYear(),
   options(stringsAsFactors = FALSE)
   
   if (source == 'Basketball-Reference') {
-    return(.GetTeamStatsBRef(year, measure.type, season.type, keep.average))
+    return(.GetTeamStatsBRef(year, measure.type, stat.type, season.type, keep.average))
   } else if (source == 'NBA') {
-    return(.GetTeamStatsNBA(year, measure.type, season.type))
+    return(.GetTeamStatsNBA(year, measure.type, stat.type, season.type))
   }
 }
 
@@ -42,38 +42,38 @@ GetTeamStats <- function(year = .CurrentYear(),
   tables <- readHTMLTable(url)
   
   # Get table, convert appropriate columns to numeric, remove asterisks from team names
-  if (stat.type == 'Advanced') {
+  if (measure.type == 'Advanced') {
     
     stats <- tables[['misc']]
     stats[, -c(2, 23, 24)] <- lapply(stats[, -c(2, 23, 24)], as.numeric)
     stats$Attendance <- as.numeric(gsub(',', '', stats$Attendance))
     stats$Team <- gsub('\\*', '', stats$Team)
     
-  } else if (stat.type == 'Team') {
+  } else if (measure.type == 'Team') {
     
     stats <- tables[['team']]
     stats[, -2] <- lapply(stats[, -2], as.numeric)
     stats$Team <- gsub('\\*', '', stats$Team)
     
-  } else if (stat.type == 'Opponent') {
+  } else if (measure.type == 'Opponent') {
     
     stats <- tables[['opponent']]
     stats[, -2] <- lapply(stats[, -2], as.numeric)
     stats$Team <- gsub('\\*', '', stats$Team)
     
-  } else if (stat.type == 'Shooting') {
+  } else if (measure.type == 'Shooting') {
     
     stats <- tables[['shooting']]
     stats[, -2] <- lapply(stats[, -2], as.numeric)
     stats$Team <- gsub('\\*', '', stats$Team)
     
-  } else if (stat.type == 'Shooting Opponent') {
+  } else if (measure.type == 'Shooting Opponent') {
     
     stats <- tables[['shooting_opp']]
     stats[, -2] <- lapply(stats[, -2], as.numeric)
     stats$Team <- gsub('\\*', '', stats$Team)
     
-  } else if (stat.type == 'Standings') {
+  } else if (measure.type == 'Standings') {
     
     indices <- c(which(names(tables) == 'E_standings')[1], which(names(tables) == 'W_standings')[1])
     temp.east <- tables[[indices[1]]]
@@ -93,7 +93,7 @@ GetTeamStats <- function(year = .CurrentYear(),
     
   }
   
-  if (stat.type != 'Standings') {
+  if (measure.type != 'Standings') {
     if (!keep.average) {
       stats <- stats[-which(is.na(stats$Rk)), -1]   # Remove league average row and rank column
     } else {
