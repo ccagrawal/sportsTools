@@ -2,11 +2,12 @@
 #'
 #' @param id Game ID that matches the source
 #' @param source either 'Basketball-Reference' or 'NBA'
-#' @param info desired information ('box scores', 'team scores', 'lineups', 'four factors', 'play by play')
+#' @param info desired information ('box scores', 'team scores', 'lineups', 'four factors', 'play by play', 'advanced')
 #' @return list of information requested
 #' @keywords boxscore
 #' @importFrom XML readHTMLTable
 #' @importFrom httr GET content add_headers
+#' @importFrom dplyr bind_rows
 #' @export
 #' @examples
 #' GetGameInfo('201004170ATL', 'Basketball-Reference', c('box scores'))
@@ -60,6 +61,10 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
     
     if ('box score' %in% info) {
       results$box.score <- .GetNBABoxScore(id)
+    }
+    
+    if ('advanced' %in% info) {
+      results$advanced <- .GetNBAAdvanced(id)
     }
   }
   
@@ -134,6 +139,58 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
   
   # Clean data frame
   stats[, 10:28] <- sapply(stats[, 10:28], as.numeric)
+  
+  return(stats)
+}
+
+# Input:    Game ID (ex. '0021300359')
+#           start.period - starting quarter
+#           end.period - ending quarter
+# Output:   Data frame with advanced stats from NBA.com
+.GetNBAAdvanced <- function(id, start.period = 1, end.period = 14) {
+  
+  request <- GET(
+    "http://stats.nba.com/stats/boxscoreadvancedv2",
+    query = list(
+      EndPeriod = end.period,
+      EndRange = 28800,
+      GameID = id,
+      RangeType = 1,
+      Season = "",
+      SeasonType = "",
+      StartPeriod = start.period,
+      StartRange = 0
+    ),
+    add_headers('Referer' = 'http://stats.nba.com/game/')
+  )
+  
+  content <- content(request, 'parsed')[[3]][[1]]
+  player.stats <- content$rowSet
+  
+  # Create raw data frame
+  player.stats <- lapply(player.stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
+  player.stats <- data.frame(matrix(unlist(player.stats), nrow = length(player.stats), byrow = TRUE)) # Turn list to data frame
+  
+  # Get column headers
+  colnames(player.stats) <- content$headers
+  
+  content <- content(request, 'parsed')[[3]][[2]]
+  team.stats <- content$rowSet
+  
+  # Create raw data frame
+  team.stats <- lapply(team.stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
+  team.stats <- data.frame(matrix(unlist(team.stats), nrow = length(team.stats), byrow = TRUE)) # Turn list to data frame
+  
+  # Get column headers
+  colnames(team.stats) <- content$headers
+  
+  # Clean data frame
+  stats <- bind_rows(player.stats, team.stats)
+  stats <- stats[, -which(colnames(stats) == 'TEAM_NAME')]
+  
+  char.cols <- c('GAME_ID', 'PLAYER_ID', 'PLAYER_NAME', 'TEAM_ID', 'TEAM_ABBREVIATION', 'TEAM_CITY', 'START_POSITION', 'COMMENT', 'MIN')
+  char.cols <- which(colnames(stats) %in% char.cols)
+  stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   
   return(stats)
 }

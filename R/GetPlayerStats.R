@@ -86,6 +86,8 @@ GetPlayerStats <- function(year = .CurrentYear(),
   
   if (per.mode == '100 Possessions') {
     per.mode <- 'Per100Possessions'
+  } else if (per.mode == 'Per Game') {
+    per.mode <- 'PerGame'
   }
   
   request <- GET(
