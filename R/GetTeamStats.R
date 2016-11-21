@@ -24,9 +24,9 @@ GetTeamStats <- function(year = .CurrentYear(),
   options(stringsAsFactors = FALSE)
   
   if (source == 'Basketball-Reference') {
-    return(.GetTeamStatsBRef(year, measure.type, stat.type, season.type, keep.average))
+    return(.GetTeamStatsBRef(year, measure.type, season.type, keep.average))
   } else if (source == 'NBA') {
-    return(.GetTeamStatsNBA(year, measure.type, stat.type, season.type))
+    return(.GetTeamStatsNBA(year, measure.type, season.type))
   }
 }
 
