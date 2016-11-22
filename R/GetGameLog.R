@@ -57,14 +57,14 @@ GetGameLog <- function(player,
     game.list[, 6:22] <- sapply(game.list[, 6:22], as.numeric)
     
     # Figure out team and opponent
-    team <- gsub('([^ ]*).*', '\\1', game.list[1, 3])
-    game.list$opponent <- gsub('.*[\\.!@] (.*)', '\\1', game.list$matchup)
+    team <- gsub('([^ ]*).*', '\\1', game.list[1, 4])
+    game.list$opponent <- gsub('.*[\\.!@] (.*)', '\\1', game.list$MATCHUP)
     
     # Create separate home and away columns
-    game.list[grep('@', game.list$matchup), 'home'] <- game.list[grep('@', game.list$matchup), 'opponent']
-    game.list[grep('vs', game.list$matchup), 'home'] <- team
-    game.list[grep('@', game.list$matchup), 'away'] <- team
-    game.list[grep('vs', game.list$matchup), 'away'] <- game.list[grep('vs', game.list$matchup), 'opponent']
+    game.list[grep('@', game.list$MATCHUP), 'home'] <- game.list[grep('@', game.list$MATCHUP), 'opponent']
+    game.list[grep('vs', game.list$MATCHUP), 'home'] <- team
+    game.list[grep('@', game.list$MATCHUP), 'away'] <- team
+    game.list[grep('vs', game.list$MATCHUP), 'away'] <- game.list[grep('vs', game.list$MATCHUP), 'opponent']
     
     game.list$season.type <- season.type
     return(game.list)
