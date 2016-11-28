@@ -165,6 +165,12 @@ GetGameInfo <- function(id, source = 'Basketball-Reference', info = c('box score
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
+  
+  # Return NA if empty (game isn't done yet)
+  if (length(content$rowSet) == 0) {
+    return(NA)
+  }
+  
   player.stats <- content$rowSet
   
   # Create raw data frame
