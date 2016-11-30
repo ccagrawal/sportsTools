@@ -4,15 +4,21 @@
 \alias{GetPlayerSpecificStats}
 \title{Player specific stats in a season.}
 \usage{
-GetPlayerSpecificStats(player, stat, year = as.numeric(format(Sys.Date(),
-  "\%Y")), player.ids)
+GetPlayerSpecificStats(player, measure.type, per.mode = "Totals",
+  year = CurrentYear(), player.ids, source = "NBA")
 }
 \arguments{
 \item{player}{NBA player (e.g. "James Harden")}
 
-\item{stat}{Which stat do you want (e.g. "on-off")}
+\item{measure.type}{Either 'Base', 'Advanced', 'Misc', 'Scoring', or 'Usage'}
+
+\item{per.mode}{Either 'Totals', 'PerGame'}
 
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
+
+\item{player.ids}{Players and their IDs}
+
+\item{source}{Either 'Basketball-Reference' or 'NBA'}
 }
 \value{
 data frame with player's stats

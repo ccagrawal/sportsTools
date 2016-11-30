@@ -57,7 +57,7 @@ GetShots <- function(player.id, year, season.type = 'regular') {
     shot.list[which(shot.list$result == 'missed'), 'result'] <- 0
     shot.list[which(shot.list$result == 'made'), 'result'] <- 1
     shot.list[, c(2, 3, 5, 6, 7, 8, 9, 10, 12)] <- sapply(shot.list[, c(2, 3, 5, 6, 7, 8, 9, 10, 12)], as.numeric)
-    shot.list$game.clock <- .ToSeconds(shot.list$game.clock)
+    shot.list$game.clock <- ToSeconds(shot.list$game.clock)
     
     return(shot.list)
   }

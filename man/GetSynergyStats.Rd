@@ -4,7 +4,7 @@
 \alias{GetSynergyStats}
 \title{Synergy stats on players or teams}
 \usage{
-GetSynergyStats(season = .CurrentYear(), stat, side = "Offensive",
+GetSynergyStats(season = CurrentYear(), stat, side = "Offensive",
   type = "Player", season.type = "Regular Season")
 }
 \arguments{

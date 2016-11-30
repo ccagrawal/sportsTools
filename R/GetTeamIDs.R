@@ -11,7 +11,7 @@
 #' @examples
 #' GetTeamIDs(2015)
 
-GetTeamIDs <- function(sport = 'NBA', year = .CurrentYear(), source = 'NBA') {
+GetTeamIDs <- function(sport = 'NBA', year = CurrentYear(), source = 'NBA') {
   
   options(stringsAsFactors = FALSE)
   
@@ -22,13 +22,13 @@ GetTeamIDs <- function(sport = 'NBA', year = .CurrentYear(), source = 'NBA') {
   }
 }
 
-.GetTeamIDsNBA <- function(year = .CurrentYear(), source = 'NBA') {
+.GetTeamIDsNBA <- function(year = CurrentYear(), source = 'NBA') {
   
   options(stringsAsFactors = FALSE)
   
   if (source == 'NBA') {
     
-    if (year == .CurrentYear()) {
+    if (year == CurrentYear()) {
       game.date <- min(Sys.Date(), as.Date(paste0(year, '-04-04')))
     } else {
       game.date <- as.Date(paste0(year, '-04-04'))
@@ -46,7 +46,7 @@ GetTeamIDs <- function(sport = 'NBA', year = .CurrentYear(), source = 'NBA') {
     
     content.east <- content(request, 'parsed')[[3]][[5]]
     content.west <- content(request, 'parsed')[[3]][[6]]
-    team.list <- rbind(.ContentToDF(content.east), .ContentToDF(content.west))
+    team.list <- rbind(ContentToDF(content.east), ContentToDF(content.west))
     
     team.list <- team.list[, c(1, 6)]      # Drop useless columns
     colnames(team.list) <- c('id', 'name')
@@ -62,7 +62,7 @@ GetTeamIDs <- function(sport = 'NBA', year = .CurrentYear(), source = 'NBA') {
     colnames(team.list) <- c('id', 'name')
     
     team.list$name <- gsub('-', ' ', team.list$name)
-    team.list$name <- sapply(team.list$name, .CapLetters)
+    team.list$name <- sapply(team.list$name, CapLetters)
   } else if (source == 'Basketball-Reference') {
     url <- gsub('YEAR', year, 'http://www.basketball-reference.com/leagues/NBA_YEAR.html')
     lines <- readLines(url)
@@ -74,7 +74,7 @@ GetTeamIDs <- function(sport = 'NBA', year = .CurrentYear(), source = 'NBA') {
     colnames(team.list) <- c('id', 'name')
     
     team.list$name <- gsub('-', ' ', team.list$name)
-    team.list$name <- sapply(team.list$name, .CapLetters)
+    team.list$name <- sapply(team.list$name, CapLetters)
   }
   
   return(team.list)

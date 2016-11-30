@@ -4,7 +4,7 @@
 \alias{GetTeamDefenseStats}
 \title{Team Defense Stats.}
 \usage{
-GetTeamDefenseStats(year = .CurrentYear(),
+GetTeamDefenseStats(year = CurrentYear(),
   defense.category = "Less Than 6Ft", season.type = "Regular Season")
 }
 \arguments{

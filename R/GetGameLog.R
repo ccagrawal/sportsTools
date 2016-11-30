@@ -38,7 +38,7 @@ GetGameLog <- function(player,
       DateTo = '',
       LeagueId = '00',
       PlayerId = player,
-      Season = .YearToSeason(year),
+      Season = YearToSeason(year),
       SeasonType = season.type
     ),
     add_headers('Referer' = 'http://stats.nba.com/player/')
@@ -49,7 +49,7 @@ GetGameLog <- function(player,
   if (length(content$rowSet) > 0) {
     
     # Create raw data frame
-    game.list <- .ContentToDF(content)
+    game.list <- ContentToDF(content)
     
     # Clean data frame
     game.list <- game.list[, -c(1, 10, 13, 16, 27)]      # Drop useless columns

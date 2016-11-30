@@ -11,7 +11,7 @@
 #' @examples
 #' GetGameIDs(2014, 'regular season')
 
-GetGameIDs <- function(year = .CurrentYear(), 
+GetGameIDs <- function(year = CurrentYear(), 
                        source = 'NBA', 
                        season.type = 'Regular Season',
                        method = 'Team') {
@@ -95,7 +95,7 @@ GetGameIDs <- function(year = .CurrentYear(),
     "http://stats.nba.com/stats/teamgamelog",
     query = list(
       LeagueId = '00',
-      Season = .YearToSeason(year),
+      Season = YearToSeason(year),
       SeasonType = season.type,
       TeamID = team
     ),
@@ -107,7 +107,7 @@ GetGameIDs <- function(year = .CurrentYear(),
   if (length(content$rowSet) > 0) {
     
     # Create raw data frame
-    game.list <- .ContentToDF(content)
+    game.list <- ContentToDF(content)
     
     # Clean data frame
     game.list <- game.list[, c(3, 2, 4)]      # Drop useless columns
@@ -150,7 +150,7 @@ GetGameIDs <- function(year = .CurrentYear(),
   if (length(content$rowSet) > 0) {
     
     # Create raw data frame
-    game.list <- .ContentToDF(content)
+    game.list <- ContentToDF(content)
     
     # Clean data frame
     game.list <- game.list[, c(1, 3, 5, 7, 8, 12)]      # Drop useless columns

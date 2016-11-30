@@ -10,7 +10,9 @@
 #' @examples
 #' GetPlayerDefenseStats(stat = 'Greater Than 15Ft')
 
-GetPlayerDefenseStats <- function(year, stat = 'Greater Than 15Ft', per.mode = 'Totals') {
+GetPlayerDefenseStats <- function(year, 
+                                  stat = 'Greater Than 15Ft', 
+                                  per.mode = 'Totals') {
   
   options(stringsAsFactors = FALSE)
   
@@ -43,7 +45,7 @@ GetPlayerDefenseStats <- function(year, stat = 'Greater Than 15Ft', per.mode = '
       Period = 0,
       PlayerExperience = "",
       PlayerPosition = "",
-      Season = .YearToSeason(year),
+      Season = YearToSeason(year),
       SeasonSegment = "",
       SeasonType = "Regular Season",
       StarterBench = "",
@@ -56,14 +58,7 @@ GetPlayerDefenseStats <- function(year, stat = 'Greater Than 15Ft', per.mode = '
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
-  stats <- content$rowSet
-  
-  # Create raw data frame
-  stats <- lapply(stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-  stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
-  
-  # Get column headers
-  colnames(stats) <- content$headers
+  stats <- ContentToDF(content)
   
   char.cols <- c('CLOSE_DEF_PERSON_ID', 'PLAYER_NAME', 'PLAYER_LAST_TEAM_ID', 'PLAYER_LAST_TEAM_ABBREVIATION', 'PLAYER_POSITION')
   char.cols <- which(colnames(stats) %in% char.cols)

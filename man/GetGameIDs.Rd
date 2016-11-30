@@ -4,7 +4,7 @@
 \alias{GetGameIDs}
 \title{Get Game IDs.}
 \usage{
-GetGameIDs(year = .CurrentYear(), source = "NBA",
+GetGameIDs(year = CurrentYear(), source = "NBA",
   season.type = "Regular Season", method = "Team")
 }
 \arguments{

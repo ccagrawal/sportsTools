@@ -4,7 +4,7 @@
 \alias{GetTeamShootingStats}
 \title{Team Shooting Stats.}
 \usage{
-GetTeamShootingStats(year = .CurrentYear(), close.def.dist = "",
+GetTeamShootingStats(year = CurrentYear(), close.def.dist = "",
   season.type = "Regular Season")
 }
 \arguments{

@@ -4,7 +4,7 @@
 \alias{GetTrackingStats}
 \title{NBA Player Tracking}
 \usage{
-GetTrackingStats(year = .CurrentYear(), season.type = "Regular Season",
+GetTrackingStats(year = CurrentYear(), season.type = "Regular Season",
   per.mode = "Per Game", measure.type, player.or.team = "Player",
   position = "")
 }

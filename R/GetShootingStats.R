@@ -9,7 +9,7 @@
 #' @examples
 #' GetShootingStats(id = '201147', stat = 'Shot Type Detail')
 
-GetShootingStats <- function(id, stat = 'Shot Type Detail') {
+GetShootingStats <- function(id, year = CurrentYear(), stat = 'Shot Type Detail') {
   
   options(stringsAsFactors = FALSE)
   
@@ -33,7 +33,7 @@ GetShootingStats <- function(id, stat = 'Shot Type Detail') {
       PlayerID = id,
       PlusMinus = "N",
       Rank = "N",
-      Season = "2015-16",
+      Season = YearToSeason(year),
       SeasonSegment = "",
       SeasonType = "Regular Season",
       ShotClockRange = "",
@@ -49,14 +49,7 @@ GetShootingStats <- function(id, stat = 'Shot Type Detail') {
     content <- content[[7]]
   }
   
-  stats <- content$rowSet
-  
-  # Create raw data frame
-  stats <- lapply(stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-  stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
-  
-  # Get column headers
-  colnames(stats) <- content$headers
+  stats <- ContentToDF(content)
   
   if (stat == 'Shot Type Detail') {
     char.cols <- c('GROUP_SET', 'GROUP_VALUE', 'CFPARAMS')

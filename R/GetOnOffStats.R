@@ -12,7 +12,11 @@
 #' @examples
 #' GetOnOffStats(id = '1610612745', measure.type = 'Advanced')
 
-GetOnOffStats <- function(id, year = .CurrentYear(), season.type = 'Regular Season', measure.type = 'Base', per.mode = 'Totals') {
+GetOnOffStats <- function(id, 
+                          year = CurrentYear(), 
+                          season.type = 'Regular Season', 
+                          measure.type = 'Base', 
+                          per.mode = 'Totals') {
   
   options(stringsAsFactors = FALSE)
   
@@ -34,7 +38,7 @@ GetOnOffStats <- function(id, year = .CurrentYear(), season.type = 'Regular Seas
       Period = 0,
       PlusMinus = "N",
       Rank = "N",
-      Season = .YearToSeason(year),
+      Season = YearToSeason(year),
       SeasonSegment = "",
       SeasonType = "Regular Season",
       TeamID = id,
@@ -45,25 +49,8 @@ GetOnOffStats <- function(id, year = .CurrentYear(), season.type = 'Regular Seas
   )
   
   content <- content(request, 'parsed')[[3]]
-  content.on <- content[[2]]
-  content.off <- content[[3]]
-    
-  stats.on <- content.on$rowSet
-  stats.off <- content.off$rowSet
-  
-  # Create raw data frame
-  stats.on <- lapply(stats.on, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-  stats.on <- data.frame(matrix(unlist(stats.on), nrow = length(stats.on), byrow = TRUE)) # Turn list to data frame
-  
-  # Get column headers
-  colnames(stats.on) <- content.on$headers
-  
-  # Create raw data frame
-  stats.off <- lapply(stats.off, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-  stats.off <- data.frame(matrix(unlist(stats.off), nrow = length(stats.off), byrow = TRUE)) # Turn list to data frame
-  
-  # Get column headers
-  colnames(stats.off) <- content.off$headers
+  stats.on <- ContentToDF(content[[2]])
+  stats.off <- ContentToDF(content[[3]])
   
   # Merge on and off court stats
   stats <- rbind(stats.on, stats.off)

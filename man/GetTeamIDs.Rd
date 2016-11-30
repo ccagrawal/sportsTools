@@ -4,7 +4,7 @@
 \alias{GetTeamIDs}
 \title{Team IDs on websites}
 \usage{
-GetTeamIDs(sport = "NBA", year = .CurrentYear(), source = "NBA")
+GetTeamIDs(sport = "NBA", year = CurrentYear(), source = "NBA")
 }
 \arguments{
 \item{sport}{'NBA' or 'NCAAB'}

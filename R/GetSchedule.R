@@ -11,7 +11,7 @@
 #' @examples
 #' GetSchedule(year = 2014, season.type = 'playoffs')
 
-GetSchedule <- function(sport = 'NBA', year = .CurrentYear(), season.type = 'Regular Season', info = 'scores') {
+GetSchedule <- function(sport = 'NBA', year = CurrentYear(), season.type = 'Regular Season', info = 'scores') {
   if (sport == 'NBA') {
     return(.GetScheduleNBA(year, season.type, info))
   } else if (sport == 'NCAAB') {

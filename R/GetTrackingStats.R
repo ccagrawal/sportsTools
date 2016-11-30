@@ -14,7 +14,7 @@
 #' @examples
 #' GetTrackingStats(stat = 'Postup')
 
-GetTrackingStats <- function(year = .CurrentYear(), 
+GetTrackingStats <- function(year = CurrentYear(), 
                              season.type = 'Regular Season', 
                              per.mode = 'Per Game', 
                              measure.type, 
@@ -52,7 +52,7 @@ GetTrackingStats <- function(year = .CurrentYear(),
       PlayerOrTeam = player.or.team,
       PlayerPosition = position,
       PtMeasureType = measure.type,
-      Season = .YearToSeason(year),
+      Season = YearToSeason(year),
       SeasonSegment = "",
       SeasonType = season.type,
       StarterBench = "",
@@ -65,15 +65,7 @@ GetTrackingStats <- function(year = .CurrentYear(),
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
-  
-  stats <- content$rowSet
-  
-  # Create raw data frame
-  stats <- lapply(stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-  stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
-  
-  # Get column headers
-  colnames(stats) <- content$headers
+  stats <- ContentToDF(content)
   
   # Clean data frame
   if (player.or.team == 'Player') {

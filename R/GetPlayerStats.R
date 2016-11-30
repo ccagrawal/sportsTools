@@ -14,12 +14,12 @@
 #' @examples
 #' GetPlayerStats(2014, measure.type = 'Basic')
 
-GetPlayerStats <- function(year = .CurrentYear(), 
+GetPlayerStats <- function(year = CurrentYear(), 
                            season.type = 'Regular Season', 
                            measure.type = 'Basic', 
                            per.mode = 'Per Game',
                            position = '',
-                           source = 'Basketball-Reference') {
+                           source = 'NBA') {
   
   options(stringsAsFactors = FALSE)
   
@@ -119,7 +119,7 @@ GetPlayerStats <- function(year = .CurrentYear(),
       PlayerPosition = position,
       PlusMinus = "N",
       Rank = "N",
-      Season = .YearToSeason(year),
+      Season = YearToSeason(year),
       SeasonSegment = "",
       SeasonType = season.type,
       ShotClockRange = "",
@@ -133,15 +133,7 @@ GetPlayerStats <- function(year = .CurrentYear(),
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
-
-  stats <- content$rowSet
-  
-  # Create raw data frame
-  stats <- lapply(stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-  stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
-  
-  # Get column headers
-  colnames(stats) <- content$headers
+  stats <- ContentToDF(content)
   
   char.cols <- c('PLAYER_ID', 'PLAYER_NAME', 'TEAM_ID', 'TEAM_ABBREVIATION', 'CFPARAMS')
   char.cols <- which(colnames(stats) %in% char.cols)

@@ -4,7 +4,7 @@
 \alias{GetTeamStats}
 \title{Team Stats.}
 \usage{
-GetTeamStats(year = .CurrentYear(), measure.type = "Base",
+GetTeamStats(year = CurrentYear(), measure.type = "Base",
   season.type = "Regular Season", keep.average = FALSE, source = "NBA")
 }
 \arguments{

@@ -4,7 +4,7 @@
 \alias{GetSchedule}
 \title{Schedule and Results.}
 \usage{
-GetSchedule(sport = "NBA", year = .CurrentYear(),
+GetSchedule(sport = "NBA", year = CurrentYear(),
   season.type = "Regular Season", info = "scores")
 }
 \arguments{

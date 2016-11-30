@@ -11,7 +11,7 @@
 #' @examples
 #' GetTeamDefenseStats(2017)
 
-GetTeamDefenseStats <- function(year = .CurrentYear(), 
+GetTeamDefenseStats <- function(year = CurrentYear(), 
                                 defense.category = 'Less Than 6Ft',
                                 season.type = 'Regular Season') {
   
@@ -35,7 +35,7 @@ GetTeamDefenseStats <- function(year = .CurrentYear(),
       PORound = 0,
       PerMode = 'Totals',
       Period = 0,
-      Season = .YearToSeason(year),
+      Season = YearToSeason(year),
       SeasonSegment = "",
       SeasonType = season.type,
       TeamID = 0,
@@ -45,15 +45,7 @@ GetTeamDefenseStats <- function(year = .CurrentYear(),
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
-  
-  stats <- content$rowSet
-  
-  # Create raw data frame
-  stats <- lapply(stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-  stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
-  
-  # Get column headers
-  colnames(stats) <- content$headers
+  stats <- ContentToDF(content)
   
   # Clean data frame
   char.cols <- c('TEAM_ID', 'TEAM_NAME', 'TEAM_ABBREVIATION')

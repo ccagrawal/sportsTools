@@ -4,7 +4,7 @@
 \alias{GetOnOffStats}
 \title{On-Off stats for each player on a team}
 \usage{
-GetOnOffStats(id, year = .CurrentYear(), season.type = "Regular Season",
+GetOnOffStats(id, year = CurrentYear(), season.type = "Regular Season",
   measure.type = "Base", per.mode = "Totals")
 }
 \arguments{

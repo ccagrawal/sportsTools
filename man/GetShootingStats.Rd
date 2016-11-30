@@ -4,7 +4,7 @@
 \alias{GetShootingStats}
 \title{Shooting stats for players}
 \usage{
-GetShootingStats(id, stat = "Shot Type Detail")
+GetShootingStats(id, year = CurrentYear(), stat = "Shot Type Detail")
 }
 \arguments{
 \item{id}{player's ID}

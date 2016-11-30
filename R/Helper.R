@@ -1,4 +1,4 @@
-.ToSeconds <- function(x){
+ToSeconds <- function(x){
   if (!is.character(x)) stop("x must be a character string of the form H:M:S")
   if (length(x) <= 0) return(x)
   
@@ -17,16 +17,16 @@
   )  
 }
 
-.CapLetters <- function(x) {
+CapLetters <- function(x) {
   s <- strsplit(x, " ")[[1]]
   paste(toupper(substring(s, 1, 1)), substring(s, 2), sep = '', collapse = ' ')
 }
 
-.YearToSeason <- function(x) {
+YearToSeason <- function(x) {
   paste0(x - 1, '-', substring(x, 3, 4))
 }
 
-.CurrentYear <- function() {
+CurrentYear <- function() {
   if (as.numeric(format(Sys.Date(), "%m")) >= 11) {
     return(as.numeric(format(Sys.Date(), "%Y")) + 1)
   } else {
@@ -34,7 +34,7 @@
   }
 }
 
-.SecondsElapsed <- function(period, timestamp) {
+SecondsElapsed <- function(period, timestamp) {
   seconds <- rep(0, length(period))
   seconds[period <= 4] <- 12 * 60 * period[period <= 4]
   seconds[period > 4] <- 12 * 60 * 4 + 5 * 60 * (period[period > 4] - 4)
@@ -42,7 +42,7 @@
   return(seconds - seconds.remaining)
 }
 
-.ContentToDF <- function(content) {
+ContentToDF <- function(content) {
   data <- content$rowSet
   data <- lapply(data, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
   data <- data.frame(matrix(unlist(data), nrow = length(data), byrow = TRUE)) # Turn list to data frame

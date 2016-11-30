@@ -4,9 +4,9 @@
 \alias{GetPlayerStats}
 \title{Player stats per season.}
 \usage{
-GetPlayerStats(year = .CurrentYear(), season.type = "Regular Season",
+GetPlayerStats(year = CurrentYear(), season.type = "Regular Season",
   measure.type = "Basic", per.mode = "Per Game", position = "",
-  source = "Basketball-Reference")
+  source = "NBA")
 }
 \arguments{
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}

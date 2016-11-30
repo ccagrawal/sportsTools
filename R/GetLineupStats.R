@@ -39,7 +39,7 @@ GetLineupStats <- function(year, players = 5, type = 'Advanced', date.from = '',
       Period = 0,
       PlusMinus = "N",
       Rank = "N",
-      Season = .YearToSeason(year),
+      Season = YearToSeason(year),
       SeasonSegment = "",
       SeasonType = "Regular Season",
       ShotClockRange = "",
@@ -51,14 +51,7 @@ GetLineupStats <- function(year, players = 5, type = 'Advanced', date.from = '',
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
-  stats <- content$rowSet
-  
-  # Create raw data frame
-  stats <- lapply(stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-  stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
-  
-  # Get column headers
-  colnames(stats) <- content$headers
+  stats <- ContentToDF(content)
   
   char.cols <- c('GROUP_SET', 'GROUP_ID', 'GROUP_NAME', 'TEAM_ID', 'TEAM_ABBREVIATION')
   char.cols <- which(colnames(stats) %in% char.cols)

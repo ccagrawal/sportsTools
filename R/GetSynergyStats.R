@@ -12,7 +12,11 @@
 #' @examples
 #' GetSynergyStats('Postup')
 
-GetSynergyStats <- function(season = .CurrentYear(), stat, side = 'Offensive', type = 'Player', season.type = 'Regular Season') {
+GetSynergyStats <- function(season = CurrentYear(), 
+                            stat, 
+                            side = 'Offensive', 
+                            type = 'Player', 
+                            season.type = 'Regular Season') {
   
   options(stringsAsFactors = FALSE)
   

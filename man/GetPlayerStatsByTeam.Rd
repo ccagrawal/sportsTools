@@ -4,7 +4,7 @@
 \alias{GetPlayerStatsByTeam}
 \title{Player stats by team}
 \usage{
-GetPlayerStatsByTeam(year = .CurrentYear(), team.id,
+GetPlayerStatsByTeam(year = CurrentYear(), team.id,
   season.type = "Regular Season", measure.type = "Base",
   per.mode = "Per Game", source = "NBA")
 }

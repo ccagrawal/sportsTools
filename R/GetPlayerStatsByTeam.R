@@ -13,7 +13,7 @@
 #' @examples
 #' GetPlayerStatsByTeam(year = 2016, team.id = '1610612745')
 
-GetPlayerStatsByTeam <- function(year = .CurrentYear(), 
+GetPlayerStatsByTeam <- function(year = CurrentYear(), 
                                  team.id,
                                  season.type = 'Regular Season', 
                                  measure.type = 'Base', 
@@ -55,7 +55,7 @@ GetPlayerStatsByTeam <- function(year = .CurrentYear(),
       Period = 0,
       PlusMinus = "N",
       Rank = "N",
-      Season = .YearToSeason(year),
+      Season = YearToSeason(year),
       SeasonSegment = "",
       SeasonType = season.type,
       TeamID = team.id,
@@ -66,14 +66,7 @@ GetPlayerStatsByTeam <- function(year = .CurrentYear(),
   )
   
   content <- content(request, 'parsed')[[3]][[2]]
-  stats <- content$rowSet
-  
-  # Create raw data frame
-  stats <- lapply(stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-  stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
-  
-  # Get column headers
-  colnames(stats) <- content$headers
+  stats <- ContentToDF(content)
   
   char.cols <- c('GROUP_SET', 'PLAYER_ID', 'PLAYER_NAME')
   char.cols <- which(colnames(stats) %in% char.cols)

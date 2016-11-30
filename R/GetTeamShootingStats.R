@@ -10,7 +10,7 @@
 #' @examples
 #' GetTeamShootingStats(2014)
 
-GetTeamShootingStats <- function(year = .CurrentYear(), 
+GetTeamShootingStats <- function(year = CurrentYear(), 
                          close.def.dist = '',
                          season.type = 'Regular Season') {
   
@@ -40,7 +40,7 @@ GetTeamShootingStats <- function(year = .CurrentYear(),
       PlayerPosition = "",
       PlusMinus = "N",
       Rank = "N",
-      Season = .YearToSeason(year),
+      Season = YearToSeason(year),
       SeasonSegment = "",
       SeasonType = season.type,
       ShotClockRange = "",
@@ -54,15 +54,7 @@ GetTeamShootingStats <- function(year = .CurrentYear(),
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
-  
-  stats <- content$rowSet
-  
-  # Create raw data frame
-  stats <- lapply(stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-  stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
-  
-  # Get column headers
-  colnames(stats) <- content$headers
+  stats <- ContentToDF(content)
   
   # Clean data frame
   char.cols <- c('TEAM_ID', 'TEAM_NAME', 'TEAM_ABBREVIATION')
