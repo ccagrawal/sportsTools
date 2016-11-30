@@ -1,3 +1,7 @@
+#' Helper functions
+#'
+#' @export
+
 ToSeconds <- function(x){
   if (!is.character(x)) stop("x must be a character string of the form H:M:S")
   if (length(x) <= 0) return(x)
