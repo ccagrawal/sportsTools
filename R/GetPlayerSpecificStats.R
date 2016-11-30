@@ -4,6 +4,7 @@
 #' @param measure.type Either 'Base', 'Advanced', 'Misc', 'Scoring', or 'Usage'
 #' @param per.mode Either 'Totals', 'PerGame'
 #' @param year NBA season (e.g. 2008 for the 2007-08 season)
+#' @param season.type Either 'Regular Season' or 'Playoffs'
 #' @param player.ids Players and their IDs
 #' @param source Either 'Basketball-Reference' or 'NBA'
 #' @return data frame with player's stats
@@ -17,7 +18,8 @@
 GetPlayerSpecificStats <- function(player, 
                                    measure.type,
                                    per.mode = 'Totals',
-                                   year = CurrentYear(), 
+                                   year = CurrentYear(),
+                                   season.type = 'Regular Season',
                                    player.ids,
                                    source = 'NBA') {
   
@@ -34,7 +36,7 @@ GetPlayerSpecificStats <- function(player,
   if (source == 'Basketball-Reference') {
     return(.GetPlayerSpecificStatsBRef(player, measure.type, year))
   } else if (source == 'NBA') {
-    return(.GetPlayerSpecificStatsNBA(player, measure.type, per.mode, year))
+    return(.GetPlayerSpecificStatsNBA(player, measure.type, per.mode, season.type, year))
   }
 }
 
@@ -93,7 +95,7 @@ GetPlayerSpecificStats <- function(player,
   return(table)
 }
 
-.GetPlayerSpecificStatsNBA <- function(player, measure.type, per.mode, year) {
+.GetPlayerSpecificStatsNBA <- function(player, measure.type, per.mode, season.type, year) {
   
   request <- GET(
     "http://stats.nba.com/stats/playerdashboardbyyearoveryear",
@@ -125,13 +127,16 @@ GetPlayerSpecificStats <- function(player,
     )
   )
   
-  content <- content(request, 'parsed')[[3]][[1]]
+  content <- content(request, 'parsed')[[3]][[2]]
   stats <- ContentToDF(content)
   
   # Clean data frame
-  char.cols <- c('TEAM_ID', 'TEAM_NAME', 'CFID', 'CFPARAMS')
-  char.cols <- which(colnames(stats) %in% char.cols)
-  stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
+  remove.cols <- c('GROUP_SET', 'CFPARAMS', 'CFID')
+  remove.cols <- which(colnames(stats) %in% remove.cols)
+  stats <- stats[, -remove.cols]
+  
+  stats$GROUP_VALUE <- SeasonToYear(stats$GROUP_VALUE)
+  stats <- data.frame(sapply(stats, as.numeric))
   
   return(stats)
 }

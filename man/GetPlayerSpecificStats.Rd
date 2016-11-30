@@ -5,7 +5,8 @@
 \title{Player specific stats in a season.}
 \usage{
 GetPlayerSpecificStats(player, measure.type, per.mode = "Totals",
-  year = CurrentYear(), player.ids, source = "NBA")
+  year = CurrentYear(), season.type = "Regular Season", player.ids,
+  source = "NBA")
 }
 \arguments{
 \item{player}{NBA player (e.g. "James Harden")}
@@ -15,6 +16,8 @@ GetPlayerSpecificStats(player, measure.type, per.mode = "Totals",
 \item{per.mode}{Either 'Totals', 'PerGame'}
 
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
+
+\item{season.type}{Either 'Regular Season' or 'Playoffs'}
 
 \item{player.ids}{Players and their IDs}
 

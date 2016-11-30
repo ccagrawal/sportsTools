@@ -1,7 +1,3 @@
-#' Helper functions
-#'
-#' @export
-
 ToSeconds <- function(x){
   if (!is.character(x)) stop("x must be a character string of the form H:M:S")
   if (length(x) <= 0) return(x)
@@ -28,6 +24,10 @@ CapLetters <- function(x) {
 
 YearToSeason <- function(x) {
   paste0(x - 1, '-', substring(x, 3, 4))
+}
+
+SeasonToYear <- function(x) {
+  as.numeric(substring(x, 1, 4)) + 1
 }
 
 CurrentYear <- function() {
