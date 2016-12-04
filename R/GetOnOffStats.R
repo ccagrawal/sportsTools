@@ -11,7 +11,7 @@
 #' @importFrom httr GET content add_headers
 #' @export
 #' @examples
-#' GetOnOffStats(id = '1610612745', measure.type = 'Advanced')
+#' GetOnOffStats(team = '1610612745', measure.type = 'Advanced')
 
 GetOnOffStats <- function(team, 
                           year = CurrentYear(), 
