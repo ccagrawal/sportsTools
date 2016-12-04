@@ -45,6 +45,10 @@ GetSynergyStats <- function(year = CurrentYear(),
   
   content <- content(request, 'parsed')[[2]]
   
+  if (length(content) == 0) {
+    return(NA)
+  }
+  
   # Create raw data frame
   stats <- lapply(content, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
   stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
