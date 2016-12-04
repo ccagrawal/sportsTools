@@ -29,7 +29,7 @@ GetPlayerIDs <- function(year = CurrentYear(), source = 'NBA') {
     request = GET(
       "http://stats.nba.com/stats/commonallplayers",
       query = list(
-        IsOnlyCurrentSeason = 1,
+        IsOnlyCurrentSeason = 0,
         LeagueID = "00",
         Season = YearToSeason(year)
       ),
