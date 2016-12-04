@@ -4,7 +4,8 @@
 \alias{GetPlayerDefenseStats}
 \title{Defensive stats for players}
 \usage{
-GetPlayerDefenseStats(year, stat = "Greater Than 15Ft", per.mode = "Totals")
+GetPlayerDefenseStats(year = CurrentYear(), stat = "Greater Than 15Ft",
+  per.mode = "Totals")
 }
 \arguments{
 \item{year}{e.g. 2015 for 2014-15 season}

@@ -2,6 +2,7 @@
 
 export(FindPlayerSeason)
 export(GetAttendance)
+export(GetDefenseDashboard)
 export(GetGameIDs)
 export(GetGameInfo)
 export(GetGameLog)

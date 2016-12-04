@@ -30,7 +30,7 @@ GetPlayerSpecificStats <- function(player,
     if (missing(player.ids)) {
       player.ids <- GetPlayerIDs(year = year)
     }
-    player <- player.ids[which(player.ids$name == player), 'id']
+    player <- player.ids[which(player.ids$DISPLAY_FIRST_LAST == player), 'PERSON_ID']
   }
   
   if (source == 'Basketball-Reference') {

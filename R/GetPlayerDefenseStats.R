@@ -10,7 +10,7 @@
 #' @examples
 #' GetPlayerDefenseStats(stat = 'Greater Than 15Ft')
 
-GetPlayerDefenseStats <- function(year, 
+GetPlayerDefenseStats <- function(year = CurrentYear(), 
                                   stat = 'Greater Than 15Ft', 
                                   per.mode = 'Totals') {
   
