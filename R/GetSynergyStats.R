@@ -1,7 +1,7 @@
 #' Synergy stats on players or teams
 #' 
-#' @param season 2015 for 2014-15 season
-#' @param stat statistic to pull (e.g. 'Postup', 'Isolation', 'PRRollMan', 'PRBallHandler', 'Cut', 'OffRebound')
+#' @param year 2015 for 2014-15 season
+#' @param play.type statistic to pull (e.g. 'Postup', 'Isolation', 'PRRollMan', 'PRBallHandler', 'Cut', 'OffRebound')
 #' @param side either 'Offensive' or 'Defensive'
 #' @param type either 'Player' or 'Team'
 #' @param season.type either 'Regular Season' or 'Playoffs'
@@ -12,8 +12,8 @@
 #' @examples
 #' GetSynergyStats('Postup')
 
-GetSynergyStats <- function(season = CurrentYear(), 
-                            stat, 
+GetSynergyStats <- function(year = CurrentYear(), 
+                            play.type, 
                             side = 'Offensive', 
                             type = 'Player', 
                             season.type = 'Regular Season') {
@@ -33,24 +33,24 @@ GetSynergyStats <- function(season = CurrentYear(),
   request <- GET(
     paste0('http://stats-prod.nba.com/wp-json/statscms/v1/synergy/', type, '/'),
     query = list(
-      category = stat,
+      category = play.type,
       limit = 500,
       name = side,
       q = 1,
-      season = season,
+      season = (year - 1),
       seasonType = season.type
     ),
     add_headers('Referer' = paste0('http://stats.nba.com/league/', type, '/'))
   )
   
-  json <- content(request, 'parsed')[[2]]
+  content <- content(request, 'parsed')[[2]]
   
   # Create raw data frame
-  stats <- lapply(json, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
+  stats <- lapply(content, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
   stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
   
   # Get column headers
-  colnames(stats) <- names(json[[1]])
+  colnames(stats) <- names(content[[1]])
   
   # Clean data frame
   if (type == 'player') {
