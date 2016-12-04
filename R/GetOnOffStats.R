@@ -1,10 +1,11 @@
 #' On-Off stats for each player on a team
 #' 
-#' @param id team's ID
+#' @param team Either team name ('Golden State') or team id
 #' @param year 2015 for 2014-15 season
 #' @param season.type Either 'Regular Season' or 'Playoffs'
 #' @param measure.type Either 'Base', 'Advanced', 'Misc', 'Four Factors', 'Scoring', 'Opponent', 'Usage', or 'Defense'
 #' @param per.mode Either 'Totals', 'PerGame', 'MinutesPer', 'Per48', 'Per40', 'PerMinute', 'PerPossession', 'PerPlay', 'Per100Possessions', or 'Per100Plays'
+#' @param team.ids Teams and their IDs
 #' @return data frame of stats
 #' @keywords onoff team
 #' @importFrom httr GET content add_headers
@@ -12,13 +13,22 @@
 #' @examples
 #' GetOnOffStats(id = '1610612745', measure.type = 'Advanced')
 
-GetOnOffStats <- function(id, 
+GetOnOffStats <- function(team, 
                           year = CurrentYear(), 
                           season.type = 'Regular Season', 
                           measure.type = 'Base', 
-                          per.mode = 'Totals') {
+                          per.mode = 'Totals',
+                          team.ids) {
   
   options(stringsAsFactors = FALSE)
+  
+  # If team name was provided, get team ID
+  if (is.na(as.numeric(team))) {
+    if (missing(team.ids)) {
+      team.ids <- GetTeamIDs(year = year)
+    }
+    team <- team.ids[which(team.ids$name == team), 'id']
+  }
   
   request = GET(
     "http://stats.nba.com/stats/teamplayeronoffdetails",
@@ -41,7 +51,7 @@ GetOnOffStats <- function(id,
       Season = YearToSeason(year),
       SeasonSegment = "",
       SeasonType = "Regular Season",
-      TeamID = id,
+      TeamID = team,
       VsConference = "",
       VsDivision = ""
     ),
