@@ -54,7 +54,6 @@ GetSynergyStats <- function(year = CurrentYear(),
   
   # Clean data frame
   if (type == 'player') {
-    colnames(stats) <- c(colnames(stats)[2:31], colnames(stats)[1], colnames(stats)[32:34])
     char.cols <- c('PlayerIDSID', 'PlayerFirstName', 'PlayerLastName', 'P', 'TeamIDSID', 'TeamName', 'TeamNameAbbreviation', 'TeamShortName', 'name', 'seasonType')
     char.cols <- which(colnames(stats) %in% char.cols)
     stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
