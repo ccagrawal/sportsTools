@@ -4,16 +4,24 @@
 \alias{GetShotDashboard}
 \title{Shot Dashboard stats on players or teams}
 \usage{
-GetShotDashboard(stat, type = "team", id, opponent.id = "0")
+GetShotDashboard(player, team, stat, year = CurrentYear(),
+  per.mode = "Totals", season.type = "Regular Season", opponent.id = "0",
+  player.ids, team.ids)
 }
 \arguments{
-\item{stat}{statistic to pull (e.g. 'Defender Distance')}
+\item{player}{Player name (if player's dashboard is desired)}
 
-\item{type}{either 'player' or 'team'}
+\item{team}{Team name (if team's dashboard is desired)}
 
-\item{id}{either player's ID or team's ID}
+\item{stat}{Statistic to pull (e.g. 'Defender Distance' or 'Shot Clock Range')}
 
-\item{opponent.id}{opponent team's ID}
+\item{year}{e.g. 2017 for 2016-17 season}
+
+\item{per.mode}{Either 'Totals' or 'Per Game'}
+
+\item{season.type}{Either 'Regular Season' or 'Playoffs'}
+
+\item{opponent.id}{Opponent team name}
 }
 \value{
 data frame of stats
@@ -22,7 +30,7 @@ data frame of stats
 Shot Dashboard stats on players or teams
 }
 \examples{
-GetShotDashboard('Defender Distance', 'player', '201147')
+GetShotDashboard('James Harden', stat = 'Defender Distance')
 }
 \keyword{player}
 \keyword{shooting}
