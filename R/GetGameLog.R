@@ -1,6 +1,6 @@
 #' Get individual game stats.
 #'
-#' @param player NBA player (e.g. "Harden, James")
+#' @param player NBA player (e.g. "James Harden")
 #' @param year NBA season (e.g. 2008 for the 2007-08 season)
 #' @param season.type either 'Preseason', 'Regular Season', or 'Playoffs'
 #' @param player.ids dataframe with player ids if scraping for multiple players
@@ -12,7 +12,7 @@
 #' GetGameLog('Harden, James', 2015)
 
 GetGameLog <- function(player, 
-                       year = as.numeric(format(Sys.Date(), "%Y")), 
+                       year = CurrentYear()), 
                        season.type = 'Regular Season', 
                        player.ids) {
   
@@ -24,8 +24,8 @@ GetGameLog <- function(player,
       player.ids <- GetPlayerIDs(year = year, source = 'NBA')
     }
     
-    if (player %in% player.ids$name) {
-      player <- player.ids[which(player.ids$name == player), 'id']
+    if (player %in% player.ids$DISPLAY_FIRST_LAST) {
+      player <- player.ids[which(player.ids$DISPLAY_FIRST_LAST == player), 'id']
     } else {
       return(NULL)
     }
