@@ -4,11 +4,11 @@
 \alias{GetGameLog}
 \title{Get individual game stats.}
 \usage{
-GetGameLog(player, year = as.numeric(format(Sys.Date(), "\%Y")),
-  season.type = "Regular Season", player.ids)
+GetGameLog(player, year = CurrentYear(), season.type = "Regular Season",
+  player.ids)
 }
 \arguments{
-\item{player}{NBA player (e.g. "Harden, James")}
+\item{player}{NBA player (e.g. "James Harden")}
 
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
 
