@@ -12,7 +12,7 @@
 #' GetGameLog('Harden, James', 2015)
 
 GetGameLog <- function(player, 
-                       year = CurrentYear()), 
+                       year = CurrentYear(), 
                        season.type = 'Regular Season', 
                        player.ids) {
   
