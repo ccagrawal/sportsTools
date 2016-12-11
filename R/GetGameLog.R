@@ -9,7 +9,7 @@
 #' @importFrom httr GET content add_headers
 #' @export
 #' @examples
-#' GetGameLog('Harden, James', 2015)
+#' GetGameLog('James Harden', 2015)
 
 GetGameLog <- function(player, 
                        year = CurrentYear(), 
@@ -25,7 +25,7 @@ GetGameLog <- function(player,
     }
     
     if (player %in% player.ids$DISPLAY_FIRST_LAST) {
-      player <- player.ids[which(player.ids$DISPLAY_FIRST_LAST == player), 'id']
+      player <- player.ids[which(player.ids$DISPLAY_FIRST_LAST == player), 'PERSON_ID']
     } else {
       return(NULL)
     }

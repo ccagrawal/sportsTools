@@ -23,7 +23,7 @@ data frame with player's stats
 Get individual game stats.
 }
 \examples{
-GetGameLog('Harden, James', 2015)
+GetGameLog('James Harden', 2015)
 }
 \keyword{gamelog}
 \keyword{player}
