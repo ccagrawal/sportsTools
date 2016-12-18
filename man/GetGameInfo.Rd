@@ -4,14 +4,12 @@
 \alias{GetGameInfo}
 \title{Get Game Info.}
 \usage{
-GetGameInfo(id, source = "Basketball-Reference", info = c("box scores"))
+GetGameInfo(id, info = c("box score"))
 }
 \arguments{
 \item{id}{Game ID that matches the source}
 
-\item{source}{either 'Basketball-Reference' or 'NBA'}
-
-\item{info}{desired information ('box scores', 'team scores', 'lineups', 'four factors', 'play by play', 'advanced')}
+\item{info}{desired information ('box scores', 'lineups', 'play by play', 'advanced')}
 }
 \value{
 list of information requested
@@ -20,7 +18,7 @@ list of information requested
 Get Game Info.
 }
 \examples{
-GetGameInfo('201004170ATL', 'Basketball-Reference', c('box scores'))
+GetGameInfo('201004170ATL', c('box score'))
 }
 \keyword{boxscore}
 

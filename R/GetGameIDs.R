@@ -15,10 +15,11 @@ GetGameIDs <- function(year = CurrentYear(),
                        date) {
   
   options(stringsAsFactors = FALSE)
-  all.games <- data.frame()
   
   if (missing(date)) {
+    all.games <- data.frame()
     teams <- GetTeamIDs(year = year)
+    
     for (id in teams$id) {
       temp <- .GetNBAGameIDsTeam(team = id, year, season.type)
       all.games <- rbind(all.games, temp)
