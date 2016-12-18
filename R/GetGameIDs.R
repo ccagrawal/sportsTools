@@ -1,71 +1,36 @@
 #' Get Game IDs.
 #'
 #' @param year Season (e.g. 2008 for the 2007-08 season)
-#' @param source Either 'Basketball-Reference' or 'NBA'
 #' @param season.type Either "Regular Season", "Playoffs", or "Both"
-#' @param method Either "Team" or "Date"
-#' @return vector if from 'Basketball-Reference' or data frame if from 'NBA'
-#' @keywords gameid
+#' @param date If provided, target date for game IDs
+#' @return data.frame
+#' @keywords Game
 #' @importFrom httr GET content add_headers
 #' @export
 #' @examples
-#' GetGameIDs(2014, 'regular season')
+#' GetGameIDs(2014, 'Regular Season')
 
 GetGameIDs <- function(year = CurrentYear(), 
-                       source = 'NBA', 
                        season.type = 'Regular Season',
-                       method = 'Team') {
+                       date) {
   
   options(stringsAsFactors = FALSE)
+  all.games <- data.frame()
   
-  if (source == 'Basketball-Reference') {
-    ids <- .GetBRefGameIDs(year, season.type)
-  } else if (source == 'NBA') {
-    ids <- .GetNBAGameIDs(year, season.type, method)
-  } else {
-    return(NULL)
-  }
-  
-  return(ids)
-}
-
-# Input:    year season (e.g. 2008 for the 2007-08 season)
-#           season.type Either 'Regular Season', 'Playoffs', or 'Both'
-# Output:   Vector with game IDs for that season from Basketball-Reference
-.GetBRefGameIDs <- function(year, season.type) {
-  
-  url <- paste0('http://www.basketball-reference.com/leagues/NBA_', year, '_games.html')
-  html <- readLines(url)
-  
-  if (season.type == 'Regular Season') {
-    
-    html <- html[grep('Regular Season</h2>', html):length(html)]   # Chop HTML to include from regular season on
-    if (length(grep('Playoffs</h2>', html)) == 1) {    # Check if playoffs occured that season
-      html <- html[1:grep('Playoffs</h2>', html)]      # Chop HTML till playoffs
+  if (missing(date)) {
+    teams <- GetTeamIDs(year = year)
+    for (id in teams$id) {
+      temp <- .GetNBAGameIDsTeam(team = id, year, season.type)
+      all.games <- rbind(all.games, temp)
     }
     
-    ids <- html[grep('/boxscores/.*html', html)]
-    ids <- gsub('.*boxscores/([^\\.]*).*', '\\1', ids)
-    
-  } else if (season.type == 'Playoffs') {
-    
-    if (length(grep('Playoffs</h2>', html)) == 0) {    # Check if playoffs occured that season
-      return(NULL)
-    }
-    
-    html <- html[grep('Playoffs</h2>', html):length(html)]   # Chop HTML to include from playoffs on
-    ids <- html[grep('/boxscores/.*html', html)]
-    ids <- gsub('.*boxscores/([^\\.]*).*', '\\1', ids)
-    
+    return(unique(all.games))
   } else {
-    
-    html <- html[grep('Regular Season</h2>', html):length(html)]   # Chop HTML to include from regular season on
-    ids <- html[grep('/boxscores/.*html', html)]
-    ids <- gsub('.*boxscores/([^\\.]*).*', '\\1', ids)
-    
+    if (class(date) == 'character') {
+      date <- as.Date(date, origin = '1970-01-01')      # Convert epoch (days) to date object
+    }
+    return(.GetNBAGameIDsDay(date))
   }
-  
-  return(ids)
 }
 
 # Input:    Team (ex. '1610612745' or 'Houston')
@@ -159,40 +124,4 @@ GetGameIDs <- function(year = CurrentYear(),
     
     return(game.list)
   }
-}
-
-# Input:    year (e.g. 2008 for the 2007-08 season)
-#           season.type ('Regular Season', 'Playoffs', or 'Both')
-# Output:   Data frame with info for games that day from stats.nba.com
-#           date, game.id, status, home.team.id, away.team.id, national.tv if method = 'Date'
-#           date, game.id, home, away if method = 'Team'
-.GetNBAGameIDs <- function(year, season.type, method) {
-  
-  if (method == 'Date') {
-    schedule <- GetSchedule(sport = 'NBA', year = year, season.type = season.type)
-    start.date <- min(schedule$date)
-    end.date <- max(schedule$date)
-    
-    all.games <- data.frame()                            # Create empty data frame
-    
-    # Iterate through days and add games to all.games data frame 
-    for (date in seq(from = as.Date(start.date), to = as.Date(end.date), by = 1)) {
-      date <- as.Date(date, origin = '1970-01-01')      # Convert epoch (days) to date object
-      temp <- .GetNBAGameIDsDay(date)
-      all.games <- rbind(all.games, temp)
-    }
-    
-  } else {
-    all.games <- data.frame()
-    
-    teams <- GetTeamIDs(year = year)
-    for (id in teams$id) {
-      temp <- .GetNBAGameIDsTeam(team = id, year, season.type)
-      all.games <- rbind(all.games, temp)
-    }
-    
-    all.games <- unique(all.games)
-  }
-  
-  return(all.games)
 }
