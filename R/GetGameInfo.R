@@ -1,7 +1,7 @@
 #' Get Game Info.
 #'
 #' @param id Game ID that matches the source
-#' @param info desired information ('box scores', 'lineups', 'play by play', 'advanced')
+#' @param info desired information ('box scores', 'summary, 'lineups', 'play by play', 'advanced')
 #' @return list of information requested
 #' @keywords boxscore
 #' @importFrom httr GET content add_headers
@@ -16,19 +16,23 @@ GetGameInfo <- function(id, info = c('box score')) {
   results <- list()
     
   if ('play by play' %in% info) {
-    results$play.by.play <- .GetNBAPlayByPlay(id)
+    results$play.by.play <- .GetPlayByPlay(id)
+  }
+  
+  if ('summary' %in% info) {
+    results$summary <- .GetSummary(id)
   }
   
   if ('lineups' %in% info) {
-    results$lineups <- .GetNBALineups(id)
+    results$lineups <- .GetLineups(id)
   }
   
   if ('box score' %in% info) {
-    results$box.score <- .GetNBABoxScore(id)
+    results$box.score <- .GetBoxScore(id)
   }
   
   if ('advanced' %in% info) {
-    results$advanced <- .GetNBAAdvanced(id)
+    results$advanced <- .GetAdvanced(id)
   }
   
   return(results)
@@ -36,7 +40,7 @@ GetGameInfo <- function(id, info = c('box score')) {
 
 # Input:    Game ID (ex. '0021300359')
 # Output:   Data frame with play-by-play breakdown from NBA.com
-.GetNBAPlayByPlay <- function(id) {
+.GetPlayByPlay <- function(id) {
   
   request <- GET(
     "http://stats.nba.com/stats/playbyplayv2",
@@ -54,14 +58,7 @@ GetGameInfo <- function(id, info = c('box score')) {
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
-  actions <- content$rowSet
-  
-  # Create raw data frame
-  actions <- lapply(actions, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-  actions <- data.frame(matrix(unlist(actions), nrow = length(actions), byrow = TRUE)) # Turn list to data frame
-  
-  # Get column headers
-  colnames(actions) <- content$headers
+  actions <- ContentToDF(content)
   
   # Clean data frame
   actions[, c(2:5, 13, 20, 27)] <- sapply(actions[, c(2:5, 13, 20, 27)], as.numeric)
@@ -70,38 +67,27 @@ GetGameInfo <- function(id, info = c('box score')) {
 }
 
 # Input:    Game ID (ex. '0021300359')
-#           start.period - starting quarter
-#           end.period - ending quarter
 # Output:   Data frame with box score from NBA.com
-.GetNBABoxScore <- function(id, start.period = 1, end.period = 14) {
+.GetSummary <- function(id) {
   
   request <- GET(
-    "http://stats.nba.com/stats/boxscoretraditionalv2",
+    "http://stats.nba.com/stats/boxscoresummaryv2",
     query = list(
-      EndPeriod = end.period,
-      EndRange = 28800,
-      GameID = id,
-      RangeType = 1,
-      Season = "",
-      SeasonType = "",
-      StartPeriod = start.period,
-      StartRange = 0
+      GameID = id
     ),
     add_headers('Referer' = 'http://stats.nba.com/game/')
   )
   
-  content <- content(request, 'parsed')[[3]][[1]]
-  stats <- content$rowSet
-  
-  # Create raw data frame
-  stats <- lapply(stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-  stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
-  
-  # Get column headers
-  colnames(stats) <- content$headers
+  content <- content(request, 'parsed')[[3]][[6]]
+  stats <- ContentToDF(content)
   
   # Clean data frame
-  stats[, 10:28] <- sapply(stats[, 10:28], as.numeric)
+  pts.cols <- colnames(stats)[grepl('PTS', colnames(stats))]
+  stats[, pts.cols] <- sapply(stats[, pts.cols], as.numeric)
+  
+  num.periods <- sum(colSums(stats[, pts.cols] == 0) != 2) - 1
+  stats <- stats[, c('GAME_ID', 'TEAM_ID', 'TEAM_ABBREVIATION', 'TEAM_CITY_NAME', 'TEAM_NICKNAME', 'PTS')]
+  stats$PERIODS <- num.periods
   
   return(stats)
 }
@@ -110,7 +96,7 @@ GetGameInfo <- function(id, info = c('box score')) {
 #           start.period - starting quarter
 #           end.period - ending quarter
 # Output:   Data frame with advanced stats from NBA.com
-.GetNBAAdvanced <- function(id, start.period = 1, end.period = 14) {
+.GetAdvanced <- function(id, start.period = 1, end.period = 14) {
   
   request <- GET(
     "http://stats.nba.com/stats/boxscoreadvancedv2",
@@ -134,24 +120,10 @@ GetGameInfo <- function(id, info = c('box score')) {
     return(NA)
   }
   
-  player.stats <- content$rowSet
-  
-  # Create raw data frame
-  player.stats <- lapply(player.stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-  player.stats <- data.frame(matrix(unlist(player.stats), nrow = length(player.stats), byrow = TRUE)) # Turn list to data frame
-  
-  # Get column headers
-  colnames(player.stats) <- content$headers
+  player.stats <- ContentToDF(content)
   
   content <- content(request, 'parsed')[[3]][[2]]
-  team.stats <- content$rowSet
-  
-  # Create raw data frame
-  team.stats <- lapply(team.stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-  team.stats <- data.frame(matrix(unlist(team.stats), nrow = length(team.stats), byrow = TRUE)) # Turn list to data frame
-  
-  # Get column headers
-  colnames(team.stats) <- content$headers
+  team.stats <- ContentToDF(content)
   
   # Clean data frame
   stats <- bind_rows(player.stats, team.stats)
@@ -166,10 +138,10 @@ GetGameInfo <- function(id, info = c('box score')) {
 
 # Input:    NBA Game ID (ex. '0021300359')
 # Output:   Data frame with 5 man lineups with play-by-play from NBA.com
-.GetNBALineups <- function(id) {
+.GetLineups <- function(id) {
   
   # Get play by play first
-  pbp <- .GetNBAPlayByPlay(id)
+  pbp <- .GetPlayByPlay(id)
   
   # Add markers for when the 10 man lineups can change
   mark.periods <- c(1, which(pbp$EVENTMSGTYPE == 13 & pbp$EVENTMSGACTIONTYPE == 0))   # End of period
@@ -202,14 +174,14 @@ GetGameInfo <- function(id, info = c('box score')) {
   away.id <- pbp[pbp$EVENTMSGTYPE == 8 & pbp$EVENTMSGACTIONTYPE == 0 & !is.na(pbp$VISITORDESCRIPTION), 'PLAYER1_TEAM_ID'][1]
   
   # Go through substitutions and get preliminary lineups
-  home.players <- .ProcessNBASubs(pbp, markers, mark.periods, ranges, 'Home')
-  away.players <- .ProcessNBASubs(pbp, markers, mark.periods, ranges, 'Away')
+  home.players <- .ProcessSubs(pbp, markers, mark.periods, ranges, 'Home')
+  away.players <- .ProcessSubs(pbp, markers, mark.periods, ranges, 'Away')
   
   # Fill in missing players using box score
   for (i in 1:(length(mark.periods) - 1)) {
     
     # Get box score for period and split into home and away
-    box.score <- .GetNBABoxScore(id, start.period = i, end.period = i)
+    box.score <- .GetBoxScore(id, start.period = i, end.period = i)
     
     if (i <= 4) {
       box.score <- box.score[box.score$MIN == '12:00', ]
@@ -257,7 +229,7 @@ GetGameInfo <- function(id, info = c('box score')) {
 #           ranges - list of consecutive subs
 #           team - either 'Home' or 'Away'
 # Output:   List of arrays of players at each time
-.ProcessNBASubs <- function(pbp, markers, mark.periods, ranges, team) {
+.ProcessSubs <- function(pbp, markers, mark.periods, ranges, team) {
 
   # Keep track of players that are in the lineup between each marker
   players <- lapply(markers[-1], function(x) NULL)
