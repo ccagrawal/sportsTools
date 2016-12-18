@@ -56,10 +56,15 @@ GetGameInfo <- function(id, info = c('box score')) {
   # Clean data frame
   pts.cols <- colnames(stats)[grepl('PTS', colnames(stats))]
   stats[, pts.cols] <- sapply(stats[, pts.cols], as.numeric)
-  
   num.periods <- sum(colSums(stats[, pts.cols] == 0) != 2) - 1
   stats <- stats[, c('GAME_ID', 'TEAM_ID', 'TEAM_ABBREVIATION', 'TEAM_CITY_NAME', 'TEAM_NICKNAME', 'PTS')]
   stats$PERIODS <- num.periods
+  
+  # Get home and away teams
+  extra.info <- ContentToDF(content(request, 'parsed')[[3]][[1]])
+  home.team <- extra.info[1, 'HOME_TEAM_ID']
+  stats$LOCATION <- 'Away'
+  stats[stats$TEAM_ID == home.team, 'LOCATION'] <- 'Home'
   
   return(stats)
 }
@@ -68,7 +73,7 @@ GetGameInfo <- function(id, info = c('box score')) {
 #           start.period - starting quarter
 #           end.period - ending quarter
 # Output:   Data frame with box score from NBA.com
-.GetNBABoxScore <- function(id, start.period = 1, end.period = 14) {
+.GetBoxScore <- function(id, start.period = 1, end.period = 14) {
   
   request <- GET(
     "http://stats.nba.com/stats/boxscoretraditionalv2",
