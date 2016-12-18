@@ -10,7 +10,7 @@
 #' @examples
 #' GetPlayerShootingStats(2014)
 
-GetTeamShootingStats <- function(year = CurrentYear(), 
+GetPlayerShootingStats <- function(year = CurrentYear(), 
                          close.def.dist = '',
                          season.type = 'Regular Season') {
   
