@@ -39,6 +39,62 @@ GetGameInfo <- function(id, info = c('box score')) {
 }
 
 # Input:    Game ID (ex. '0021300359')
+# Output:   Data frame with box score from NBA.com
+.GetSummary <- function(id) {
+  
+  request <- GET(
+    "http://stats.nba.com/stats/boxscoresummaryv2",
+    query = list(
+      GameID = id
+    ),
+    add_headers('Referer' = 'http://stats.nba.com/game/')
+  )
+  
+  content <- content(request, 'parsed')[[3]][[6]]
+  stats <- ContentToDF(content)
+  
+  # Clean data frame
+  pts.cols <- colnames(stats)[grepl('PTS', colnames(stats))]
+  stats[, pts.cols] <- sapply(stats[, pts.cols], as.numeric)
+  
+  num.periods <- sum(colSums(stats[, pts.cols] == 0) != 2) - 1
+  stats <- stats[, c('GAME_ID', 'TEAM_ID', 'TEAM_ABBREVIATION', 'TEAM_CITY_NAME', 'TEAM_NICKNAME', 'PTS')]
+  stats$PERIODS <- num.periods
+  
+  return(stats)
+}
+
+# Input:    Game ID (ex. '0021300359')
+#           start.period - starting quarter
+#           end.period - ending quarter
+# Output:   Data frame with box score from NBA.com
+.GetNBABoxScore <- function(id, start.period = 1, end.period = 14) {
+  
+  request <- GET(
+    "http://stats.nba.com/stats/boxscoretraditionalv2",
+    query = list(
+      EndPeriod = end.period,
+      EndRange = 28800,
+      GameID = id,
+      RangeType = 1,
+      Season = "",
+      SeasonType = "",
+      StartPeriod = start.period,
+      StartRange = 0
+    ),
+    add_headers('Referer' = 'http://stats.nba.com/game/')
+  )
+  
+  content <- content(request, 'parsed')[[3]][[1]]
+  stats <- ContentToDF(content)
+  
+  # Clean data frame
+  stats[, 10:28] <- sapply(stats[, 10:28], as.numeric)
+  
+  return(stats)
+}
+
+# Input:    Game ID (ex. '0021300359')
 # Output:   Data frame with play-by-play breakdown from NBA.com
 .GetPlayByPlay <- function(id) {
   
@@ -64,32 +120,6 @@ GetGameInfo <- function(id, info = c('box score')) {
   actions[, c(2:5, 13, 20, 27)] <- sapply(actions[, c(2:5, 13, 20, 27)], as.numeric)
   
   return(actions)
-}
-
-# Input:    Game ID (ex. '0021300359')
-# Output:   Data frame with box score from NBA.com
-.GetSummary <- function(id) {
-  
-  request <- GET(
-    "http://stats.nba.com/stats/boxscoresummaryv2",
-    query = list(
-      GameID = id
-    ),
-    add_headers('Referer' = 'http://stats.nba.com/game/')
-  )
-  
-  content <- content(request, 'parsed')[[3]][[6]]
-  stats <- ContentToDF(content)
-  
-  # Clean data frame
-  pts.cols <- colnames(stats)[grepl('PTS', colnames(stats))]
-  stats[, pts.cols] <- sapply(stats[, pts.cols], as.numeric)
-  
-  num.periods <- sum(colSums(stats[, pts.cols] == 0) != 2) - 1
-  stats <- stats[, c('GAME_ID', 'TEAM_ID', 'TEAM_ABBREVIATION', 'TEAM_CITY_NAME', 'TEAM_NICKNAME', 'PTS')]
-  stats$PERIODS <- num.periods
-  
-  return(stats)
 }
 
 # Input:    Game ID (ex. '0021300359')
