@@ -4,12 +4,10 @@
 \alias{GetPlayerIDs}
 \title{Player IDs on websites}
 \usage{
-GetPlayerIDs(year = CurrentYear(), source = "NBA")
+GetPlayerIDs(year = CurrentYear())
 }
 \arguments{
 \item{year}{NBA season for which you want player IDs (e.g. 2008 for the 2007-08 season)}
-
-\item{source}{Either 'NBA' or 'Basketball-Reference'}
 }
 \value{
 data frame of names and IDs
