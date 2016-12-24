@@ -50,6 +50,34 @@ ContentToDF <- function(content) {
   data <- content$rowSet
   data <- lapply(data, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
   data <- data.frame(matrix(unlist(data), nrow = length(data), byrow = TRUE)) # Turn list to data frame
-  colnames(data) <- content$headers
+  
+  if (length(content$headers) == ncol(data)) {
+    colnames(data) <- content$headers
+    
+  } else { # Multiple levels of headers
+    headers <- lapply(colnames(data), function(x) c())
+    
+    for (col.level in 1:length(content$headers)) {
+      col.names <- content$headers[[col.level]]
+      
+      if ('columnsToSkip' %in% names(col.names)) {
+        start <- col.names$columnsToSkip + 1
+      } else {
+        start <- 1
+      }
+      span <- col.names$columnSpan
+      
+      col.ix <- 1
+      for (i in seq(from = start, to = ncol(data), by = span)) {
+        for (j in i:(i + span - 1)) {
+          headers[[j]] <- c(headers[[j]], col.names$columnNames[[col.ix]][1])
+        }
+        col.ix <- col.ix + 1
+      }
+    }
+    
+    colnames(data) <- sapply(headers, function(x) paste(x, collapse = '.'))
+  }
+  
   return(data)
 }

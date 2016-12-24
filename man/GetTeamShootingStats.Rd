@@ -5,14 +5,18 @@
 \title{Team Shooting Stats.}
 \usage{
 GetTeamShootingStats(year = CurrentYear(), close.def.dist = "",
-  season.type = "Regular Season")
+  distance.range, season.type = "Regular Season", per.mode = "Totals")
 }
 \arguments{
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
 
 \item{close.def.dist}{Either '', '6+ Feet - Wide Open'}
 
+\item{distance.range}{If provided, either 'By Zone', '5ft Range', or '8ft Range'}
+
 \item{season.type}{'Regular Season' or 'Playoffs'}
+
+\item{per.mode}{'PerGame' or 'Totals'}
 }
 \value{
 data frame with wins and losses for that season
