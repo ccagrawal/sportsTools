@@ -12,9 +12,16 @@
 #' @examples
 #' GetLineupStats(year = 2016, players = 5, type = 'Advanced')
 
-GetLineupStats <- function(year, players = 5, type = 'Advanced', date.from = '', date.to = '') {
+GetLineupStats <- function(year, players = 5, type = 'Advanced', 
+                           date.from = '', date.to = '', team = '') {
   
   options(stringsAsFactors = FALSE)
+  
+  # If team name was provided, get team ID
+  if (is.na(as.numeric(team))) {
+    team.ids <- GetTeamIDs(year = year)
+    team <- team.ids[which(team.ids$name == team), 'id']
+  }
 
   request = GET(
     "http://stats.nba.com/stats/leaguedashlineups",
@@ -43,7 +50,7 @@ GetLineupStats <- function(year, players = 5, type = 'Advanced', date.from = '',
       SeasonSegment = "",
       SeasonType = "Regular Season",
       ShotClockRange = "",
-      TeamID = 0,
+      TeamID = team,
       VsConference = "",
       VsDivision = ""
     ),

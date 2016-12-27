@@ -5,7 +5,7 @@
 \title{Lineup stats}
 \usage{
 GetLineupStats(year, players = 5, type = "Advanced", date.from = "",
-  date.to = "")
+  date.to = "", team = "")
 }
 \arguments{
 \item{year}{e.g. 2015 for 2014-15 season}
