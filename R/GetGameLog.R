@@ -21,7 +21,7 @@ GetGameLog <- function(player,
   # If team is name, convert it to team id
   if (grepl('[a-z]', player)) {
     if (missing(player.ids)) {
-      player.ids <- GetPlayerIDs(year = year, source = 'NBA')
+      player.ids <- GetPlayerIDs(year = year)
     }
     
     if (player %in% player.ids$DISPLAY_FIRST_LAST) {

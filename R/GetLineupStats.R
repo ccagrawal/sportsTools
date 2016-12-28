@@ -13,7 +13,7 @@
 #' GetLineupStats(year = 2016, players = 5, type = 'Advanced')
 
 GetLineupStats <- function(year, players = 5, type = 'Advanced', 
-                           date.from = '', date.to = '', team = '') {
+                           date.from = '', date.to = '', team = 0) {
   
   options(stringsAsFactors = FALSE)
   
