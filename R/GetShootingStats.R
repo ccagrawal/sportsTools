@@ -1,7 +1,8 @@
 #' Shooting stats for players
 #' 
 #' @param id player's ID
-#' @param stat which stat ('Shot Type Detail')
+#' @param stat which stat ('Shot Distance (5ft)', 'Shot Distance (8ft)', 'Shot Area', 
+#' 'Assisted Shot', 'Shot Type Summary', 'Shot Type Detail', 'Assisted By')
 #' @return data frame of stats
 #' @keywords shooting player
 #' @importFrom httr GET content add_headers
@@ -45,8 +46,20 @@ GetShootingStats <- function(id, year = CurrentYear(), stat = 'Shot Type Detail'
   
   content <- content(request, 'parsed')[[3]]
   
-  if (stat == 'Shot Type Detail') {
+  if (stat == 'Shot Distance (5ft)') {
+    content <- content[[2]]
+  } else if (stat == 'Shot Distance (8ft)') {
+    content <- content[[3]]
+  } else if (stat == 'Shot Area') {
+    content <- content[[4]]
+  } else if (stat == 'Assisted Shot') {
+    content <- content[[5]]
+  } else if (stat == 'Shot Type Summary') {
+    content <- content[[6]]
+  } else if (stat == 'Shot Type Detail') {
     content <- content[[7]]
+  } else if (stat == 'Assisted By') {
+    content <- content[[8]]
   }
   
   stats <- ContentToDF(content)

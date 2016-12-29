@@ -9,7 +9,8 @@ GetShootingStats(id, year = CurrentYear(), stat = "Shot Type Detail")
 \arguments{
 \item{id}{player's ID}
 
-\item{stat}{which stat ('Shot Type Detail')}
+\item{stat}{which stat ('Shot Distance (5ft)', 'Shot Distance (8ft)', 'Shot Area', 
+'Assisted Shot', 'Shot Type Summary', 'Shot Type Detail', 'Assisted By')}
 }
 \value{
 data frame of stats
