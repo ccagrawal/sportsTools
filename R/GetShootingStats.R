@@ -64,11 +64,9 @@ GetShootingStats <- function(id, year = CurrentYear(), stat = 'Shot Type Detail'
   
   stats <- ContentToDF(content)
   
-  if (stat == 'Shot Type Detail') {
-    char.cols <- c('GROUP_SET', 'GROUP_VALUE', 'CFPARAMS')
-    char.cols <- which(colnames(stats) %in% char.cols)
-    stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
-  }
+  char.cols <- c('GROUP_SET', 'GROUP_VALUE', 'CFPARAMS')
+  char.cols <- which(colnames(stats) %in% char.cols)
+  stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   
   return(stats)
 }
