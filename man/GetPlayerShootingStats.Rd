@@ -4,13 +4,15 @@
 \alias{GetPlayerShootingStats}
 \title{Player Shooting Stats.}
 \usage{
-GetPlayerShootingStats(year = CurrentYear(), close.def.dist = "",
-  season.type = "Regular Season")
+GetPlayerShootingStats(year = CurrentYear(), close.def.dist.range = "",
+  shot.dist.range = "", season.type = "Regular Season")
 }
 \arguments{
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
 
-\item{close.def.dist}{Either '', '6+ Feet - Wide Open'}
+\item{close.def.dist.range}{Either '', '6+ Feet - Wide Open', '2-4 Feet - Tight'}
+
+\item{shot.dist.range}{e.g. '>=10.0'}
 
 \item{season.type}{'Regular Season' or 'Playoffs'}
 }

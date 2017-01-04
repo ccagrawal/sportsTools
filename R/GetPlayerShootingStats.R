@@ -1,7 +1,8 @@
 #' Player Shooting Stats.
 #'
 #' @param year NBA season (e.g. 2008 for the 2007-08 season)
-#' @param close.def.dist Either '', '6+ Feet - Wide Open'
+#' @param close.def.dist.range Either '', '6+ Feet - Wide Open', '2-4 Feet - Tight'
+#' @param shot.dist.range e.g. '>=10.0'
 #' @param season.type 'Regular Season' or 'Playoffs'
 #' @return data frame with shooting stats
 #' @keywords player shooting
@@ -11,15 +12,16 @@
 #' GetPlayerShootingStats(2014)
 
 GetPlayerShootingStats <- function(year = CurrentYear(), 
-                         close.def.dist = '',
-                         season.type = 'Regular Season') {
+                                   close.def.dist.range = '',
+                                   shot.dist.range = '',
+                                   season.type = 'Regular Season') {
   
   options(stringsAsFactors = FALSE)
   
   request <- GET(
     "http://stats.nba.com/stats/leaguedashplayerptshot",
     query = list(
-      CloseDefDistRange = close.def.dist,
+      CloseDefDistRange = close.def.dist.range,
       College = "",
       Conference = "",
       Country = "",
@@ -48,7 +50,7 @@ GetPlayerShootingStats <- function(year = CurrentYear(),
       SeasonSegment = "",
       SeasonType = season.type,
       ShotClockRange = "",
-      ShotDistRange = "",
+      ShotDistRange = shot.dist.range,
       StarterBench = "",
       TeamID = 0,
       TouchTimeRange = "",

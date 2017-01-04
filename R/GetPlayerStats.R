@@ -23,59 +23,11 @@ GetPlayerStats <- function(year = CurrentYear(),
   
   options(stringsAsFactors = FALSE)
   
-  if (source == 'Basketball-Reference') {
-    return(.GetPlayerStatsBRef(year, measure.type, per.mode))
-  } else if (source == 'NBA') {
+  if (source == 'NBA') {
     return(.GetPlayerStatsNBA(year, season.type, measure.type, per.mode, position))
   } else if (source == 'ESPN') {
     return(.GetPlayerStatsESPN(year, measure.type, per.mode))
   }
-}
-
-.GetPlayerStatsBRef <- function(year, measure.type, per.mode) {
-  
-  base.url <- paste0("http://www.basketball-reference.com/leagues/NBA_", year, "_TYPE.html")
-  
-  if (measure.type == 'Advanced') {
-    url <- gsub("TYPE", "advanced", base.url)
-    per.mode <- NA
-  } else if (per.mode == 'Per Game') {
-    url <- gsub("TYPE", "per_game", base.url)
-  } else if (per.mode == 'Totals') {
-    url <- gsub("TYPE", "totals", base.url)
-  }
-  
-  table <- readHTMLTable(url)[[1]]
-  
-  # Remove repeat header rows
-  table <- table[-which(table$Rk == 'Rk'), ]
-  
-  if (per.mode %in% c('Totals', 'Per Game')) {
-    # Remove the useless columns
-    table <- table[, c(2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 19, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30)]
-    
-    # Fix the column types
-    table[, -c(1, 2, 4)] <- lapply(table[, -c(1, 2, 4)], as.numeric)
-    
-    # Add percentages
-    table$'FG%' <- table$FG / table$FGA
-    table$'3P%' <- table$'3P' / table$'3PA'
-    table$'FT%' <- table$FT / table$FTA
-    
-    # Rearrange columns
-    table <- table[, c(1, 2, 3, 4, 5, 6, 7, 8, 9, 23, 10, 11, 24, 12, 13, 25, 14, 15, 16, 17, 18, 19, 20, 21, 22)]
-  } else if (measure.type %in% c('Advanced')) {
-    # Remove the useless columns
-    table <- table[, -c(1, 20, 25)]
-    
-    # Fix the column types
-    table[, -c(1, 2, 4)] <- lapply(table[, -c(1, 2, 4)], as.numeric)
-  }
-  
-  # Remove astericks from player name
-  table$Player <- gsub('\\*', '', table$Player)
-  
-  return(table)
 }
 
 .GetPlayerStatsNBA <- function(year, season.type, measure.type, per.mode, position) {
