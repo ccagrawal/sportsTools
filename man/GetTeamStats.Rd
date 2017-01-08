@@ -5,23 +5,20 @@
 \title{Team Stats.}
 \usage{
 GetTeamStats(year = CurrentYear(), measure.type = "Base",
-  season.type = "Regular Season", keep.average = FALSE, source = "NBA")
+  season.type = "Regular Season", per.mode = "Totals")
 }
 \arguments{
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
 
-\item{measure.type}{Either 'Regular', 'Advanced', 'Team', 'Opponent', 'Shooting', 'Shooting Opponent', 
-'Standings' for Basketball-Reference. Either 'Base', 'Advanced', 'Misc', 'Four Factors', 'Scoring',
-'Opponent', 'Usage', or 'Defense' for NBA.}
+\item{measure.type}{Either 'Base', 'Advanced', 'Misc', 'Four Factors', 'Scoring',
+'Opponent', 'Usage', or 'Defense'}
 
 \item{season.type}{'Regular Season' or 'Playoffs'}
 
-\item{keep.average}{TRUE or FALSE, depending on whether you want to keep League Average info}
-
-\item{source}{'Basketball-Reference' or 'NBA'}
+\item{per.mode}{'Per Game' or 'Totals'}
 }
 \value{
-data frame with wins and losses for that season
+data frame with team stats
 }
 \description{
 Team Stats.
