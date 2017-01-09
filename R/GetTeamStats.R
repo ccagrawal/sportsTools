@@ -5,6 +5,7 @@
 #'        'Opponent', 'Usage', or 'Defense'
 #' @param season.type 'Regular Season' or 'Playoffs'
 #' @param per.mode 'Per Game' or 'Totals'
+#' @param quarter Quarter number (1, 2, 3, 4, 5 for OT1, 6 for OT2, etc.)
 #' @return data frame with team stats
 #' @keywords team
 #' @importFrom httr GET content add_headers
@@ -15,7 +16,8 @@
 GetTeamStats <- function(year = CurrentYear(), 
                          measure.type = 'Base',
                          season.type = 'Regular Season', 
-                         per.mode = 'Totals') {
+                         per.mode = 'Totals',
+                         quarter = 0) {
   
   options(stringsAsFactors = FALSE)
   
@@ -38,7 +40,7 @@ GetTeamStats <- function(year = CurrentYear(),
       PORound = 0,
       PaceAdjust = 'N',
       PerMode = per.mode,
-      Period = 0,
+      Period = quarter,
       PlayerExperience = "",
       PlayerPosition = "",
       PlusMinus = "N",

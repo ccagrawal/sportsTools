@@ -5,7 +5,7 @@
 \title{Team Stats.}
 \usage{
 GetTeamStats(year = CurrentYear(), measure.type = "Base",
-  season.type = "Regular Season", per.mode = "Totals")
+  season.type = "Regular Season", per.mode = "Totals", quarter = 0)
 }
 \arguments{
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
@@ -16,6 +16,8 @@ GetTeamStats(year = CurrentYear(), measure.type = "Base",
 \item{season.type}{'Regular Season' or 'Playoffs'}
 
 \item{per.mode}{'Per Game' or 'Totals'}
+
+\item{quarter}{Quarter number (1, 2, 3, 4, 5 for OT1, 6 for OT2, etc.)}
 }
 \value{
 data frame with team stats
