@@ -8,7 +8,7 @@
 #' @importFrom dplyr bind_rows
 #' @export
 #' @examples
-#' GetGameInfo('201004170ATL', c('box score'))
+#' GetGameInfo('0021600425', c('box score'))
 
 GetGameInfo <- function(id, info = c('box score')) {
   
