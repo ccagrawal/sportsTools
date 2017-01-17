@@ -18,7 +18,7 @@ list of information requested
 Get Game Info.
 }
 \examples{
-GetGameInfo('201004170ATL', c('box score'))
+GetGameInfo('0021600425', c('box score'))
 }
 \keyword{boxscore}
 
