@@ -4,20 +4,15 @@
 \alias{GetSchedule}
 \title{Schedule and Results.}
 \usage{
-GetSchedule(sport = "NBA", year = CurrentYear(),
-  season.type = "Regular Season", info = "scores")
+GetSchedule(year = CurrentYear(), season.type = "Regular Season")
 }
 \arguments{
-\item{sport}{'NBA', 'NCAAB', 'WNBA'}
+\item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
 
-\item{year}{Season (e.g. 2008 for the 2007-08 season)}
-
-\item{season.type}{Either 'Regular Season', 'Playoffs', or 'Both'}
-
-\item{info}{Either 'scores' or 'advanced'}
+\item{season.type}{'Regular Season' or 'Playoffs'}
 }
 \value{
-data frame with schedule and results for each game in that season
+data frame with game logs
 }
 \description{
 Schedule and Results.
@@ -25,5 +20,6 @@ Schedule and Results.
 \examples{
 GetSchedule(year = 2014, season.type = 'playoffs')
 }
-\keyword{schedule}
+\keyword{game}
+\keyword{logs}
 

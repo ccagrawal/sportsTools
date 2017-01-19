@@ -1,189 +1,49 @@
 #' Schedule and Results.
 #'
-#' @param sport 'NBA', 'NCAAB', 'WNBA'
-#' @param year Season (e.g. 2008 for the 2007-08 season)
-#' @param season.type Either 'Regular Season', 'Playoffs', or 'Both'
-#' @param info Either 'scores' or 'advanced'
-#' @return data frame with schedule and results for each game in that season
-#' @keywords schedule
-#' @importFrom XML readHTMLTable
+#' @param year NBA season (e.g. 2008 for the 2007-08 season)
+#' @param season.type 'Regular Season' or 'Playoffs'
+#' @return data frame with game logs
+#' @keywords game logs
+#' @importFrom httr GET content add_headers
 #' @export
 #' @examples
 #' GetSchedule(year = 2014, season.type = 'playoffs')
 
-GetSchedule <- function(sport = 'NBA', year = CurrentYear(), season.type = 'Regular Season', info = 'scores') {
-  if (sport == 'NBA') {
-    return(.GetScheduleNBA(year, season.type, info))
-  } else if (sport == 'NCAAB') {
-    return(.GetScheduleNCAAB(year, season.type, info))
-  } else if (sport == 'WNBA') {
-    return(.GetScheduleWNBA(year, season.type, info))
-  }
-}
-
-#' Schedule and results (multi-year).
-#'
-#' @param sport 'NBA', 'NCAAB', or 'WNBA'
-#' @param start.year Season (e.g. 2008 for 2007-08 season)
-#' @param end.year Season (e.g. 2014 for 2013-14 season)
-#' @param season.type Either 'Regular Season', 'Playoffs', or 'Both'
-#' @param info Either 'scores' or 'advanced'
-#' @return data frame with schedule and results for each game in all the seasons
-#' @keywords schedule
-#' @importFrom XML readHTMLTable
-#' @export
-#' @examples
-#' GetScheduleRange(2012, 2015, 'playoffs')
-
-GetScheduleRange <- function(sport = 'NBA', start.year, end.year, season.type = 'Both', info = 'scores') {
-  schedule <- data.frame()
-  
-  for (year in start.year:end.year) {
-    temp <- GetSchedule(sport, year, season.type, info)
-    temp$season <- year
-    schedule <- rbind(schedule, temp)
-  }
-  
-  return(schedule)
-}
-
-.GetScheduleNBA <- function(year, season.type, info) {
+GetSchedule <- function(year = CurrentYear(), season.type = 'Regular Season') {
   
   options(stringsAsFactors = FALSE)
   
-  if (info == 'scores') {
-    url <- paste('http://www.basketball-reference.com/leagues/NBA_', year, '_games.html', sep = '')
-    tables <- readHTMLTable(url)
-    
-    if (season.type == 'Playoffs' & length(tables) > 1) {
-      schedule <- tables[['games_playoffs']]
-      schedule$type <- 'Playoff'
-    } else {
-      schedule <- tables[['games']]
-      schedule$type <- 'Regular Season'
-    } 
-    
-    if (season.type == 'Both' & length(tables) > 1) {
-      temp <- tables[['games_playoffs']]
-      temp$type <- 'Playoff'
-      schedule <- rbind(schedule, temp)
-    }
-    
-    # Remove extra columns
-    schedule <- schedule[, c(1, 4, 5, 6, 7, 10)]
-    schedule$Date <- as.Date(strptime(schedule$Date, format = '%a, %b %d, %Y'))
-    schedule[, 3] <- as.numeric(schedule[, 3])
-    schedule[, 5] <- as.numeric(schedule[, 5])
-    
-    colnames(schedule) <- c('date', 'away.name', 'away.points', 'home.name', 'home.points', 'type')
-    schedule$home.margin <- schedule$home.points - schedule$away.points
-    
-  } else if (info == 'advanced') {
-    team.ids <- GetTeamIDs(year, 'Basketball-Reference')
-    
-    schedule <- data.frame()
-    for (team.id in team.ids$id) {
-      temp <- GetTeamSpecificStats(team.id, 'advanced gamelog', year)
-      temp$Team <- team.id
-      schedule <- rbind(schedule, temp)
-    }
-    
-    schedule <- schedule[schedule$Home == 1, c(2, 26, 4, 6:25)]
-    colnames(schedule) <- c('date', 'home.name', 'away.name', 'home.score', 'away.score',
-                            'home.ortg', 'away.ortg', 'pace', 'home.ftr', 'home.3par',
-                            'home.ts', 'home.trb', 'home.ast', 'home.stl', 'home.blk', 
-                            'home.efg', 'home.tov', 'home.orb', 'home.ft.fga', 'away.efg', 
-                            'away.tov', 'away.drb', 'away.ft.fga')
-  }
+  request <- GET(
+    "http://stats.nba.com/stats/leaguegamelog",
+    query = list(
+      Counter = 3000,
+      DateFrom = "",
+      DateTo = "",
+      Direction = "DESC",
+      LeagueID = "00",
+      PlayerOrTeam = 'T',
+      Season = YearToSeason(year),
+      SeasonType = season.type,
+      Sorter = "DATE"
+    )
+  )
   
-  return(schedule)
-}
-
-# .GetScheduleWNBA <- function(year, season.type, info) {
-#   
-#   options(stringsAsFactors = FALSE)
-#   
-#   if (info == 'scores') {
-#     url <- paste('http://www.basketball-reference.com/leagues/NBA_', year, '_games.html', sep = '')
-#     tables <- readHTMLTable(url)
-#     
-#     if (season.type == 'playoffs' & length(tables) > 1) {
-#       schedule <- tables[['games_playoffs']]
-#       schedule$type <- 'playoff'
-#     } else {
-#       schedule <- tables[['games']]
-#       schedule$type <- 'regular season'
-#     } 
-#     
-#     if (season.type == 'both' & length(tables) > 1) {
-#       temp <- tables[['games_playoffs']]
-#       temp$type <- 'playoff'
-#       schedule <- rbind(schedule, temp)
-#     }
-#     
-#     # Remove extra columns
-#     schedule <- schedule[, c(1, 4, 5, 6, 7, 10)]
-#     schedule$Date <- as.Date(strptime(schedule$Date, format = '%a, %b %d, %Y'))
-#     schedule[, 3] <- as.numeric(schedule[, 3])
-#     schedule[, 5] <- as.numeric(schedule[, 5])
-#     
-#     colnames(schedule) <- c('date', 'away.name', 'away.points', 'home.name', 'home.points', 'type')
-#     schedule$home.margin <- schedule$home.points - schedule$away.points
-#   }
-#   
-#   return(schedule)
-# }
-
-.GetScheduleNCAAB <- function(year, season.type, info) {
+  content <- content(request, 'parsed')[[3]][[1]]
+  logs <- ContentToDF(content)
   
-  options(stringsAsFactors = FALSE)
+  # Clean data frame
+  char.cols <- c('SEASON_ID', 'TEAM_ID', 'TEAM_ABBREVIATION', 'TEAM_NAME', 'GAME_ID', 'MATCHUP', 'WL', 'GAME_DATE')
+  char.cols <- which(colnames(logs) %in% char.cols)
+  logs[, -char.cols] <- sapply(logs[, -char.cols], as.numeric)
+  logs$GAME_DATE <- as.Date(logs$GAME_DATE)
   
-  team.ids <- GetTeamIDs(sport = 'NCAAB', year, source = 'Sports-Reference')
-  schedule <- data.frame()
+  # Combine Home and Away
+  home <- logs[grep('vs.', logs$MATCHUP), ]
+  colnames(home) <- paste0('home.', colnames(home))
   
-  if (info == 'scores') {
-    for (i in 1:nrow(team.ids)) {
-      url <- paste0('http://www.sports-reference.com/cbb/schools/', team.ids[i, 'id'], '/', year, '-schedule.html')
-      
-      temp <- readHTMLTable(url)[['schedule']]
-      temp$team <- team.ids[i, 'name']
-      schedule <- rbind(schedule, temp)
-    }
-    
-    schedule$Opponent <- gsub('\\([0-9]*)', '', schedule$Opponent)
-    
-    # Remove extra columns
-    schedule <- schedule[, c(2, 6, 7, 10, 11, 17)]
-    schedule$Date <- as.Date(strptime(schedule$Date, format = '%a, %b %d, %Y'))
-    schedule[, 4] <- as.numeric(schedule[, 4])
-    schedule[, 5] <- as.numeric(schedule[, 5])
-    
-    # Create winner and loser columns
-    schedule$winner.points <- apply(schedule, 1, function(x) max(x[4], x[5]))
-    schedule$loser.points <- apply(schedule, 1, function(x) min(x[4], x[5]))
-    schedule$winner.name <- apply(schedule, 1, function(x) ifelse(x[4] == x[7], x[6], x[3]))
-    schedule$loser.name <- apply(schedule, 1, function(x) ifelse(x[4] == x[7], x[3], x[6]))
-    
-    # Create home column
-    schedule$home <- 0
-    schedule[schedule[, 2] == '', 'home'] <- 1
-    schedule[schedule[, 2] == '@', 'home'] <- -1
-    schedule[which(schedule$team == schedule$loser.name), 'home'] <- -schedule[which(schedule$team == schedule$loser.name), 'home']
-    
-    # Fill in NAs (games that haven't happened yet)
-    schedule[is.na(schedule$winner.name), 'winner.name'] <- schedule[is.na(schedule$winner.name), 'team']
-    schedule[is.na(schedule$loser.name), 'loser.name'] <- schedule[is.na(schedule$loser.name), 'Opponent']
-    
-    # Clean up columns
-    schedule <- schedule[, c(1, 9, 10, 11, 7, 8)]
-    colnames(schedule) <- c('date', 'winner.name', 'loser.name', 'home', 'winner.points', 'loser.points')
-    schedule$winner.points <- as.numeric(schedule$winner.points)
-    schedule$loser.points <- as.numeric(schedule$loser.points)
-    schedule$margin <- schedule$winner.points - schedule$loser.points
-    
-    # Remove duplicate rows
-    schedule <- schedule[!duplicated(schedule), ]
-  }
+  extra.cols <- c('SEASON_ID', 'GAME_DATE', 'VIDEO_AVAILABLE', 'MATCHUP', 'WL', 'PLUS_MINUS')
+  away <- logs[grep('@', logs$MATCHUP), -which(colnames(logs) %in% extra.cols)]
+  colnames(away) <- paste0('away.', colnames(away))
   
-  return(schedule)
+  return(merge(home, away, by.x = 'home.GAME_ID', by.y = 'away.GAME_ID'))
 }
