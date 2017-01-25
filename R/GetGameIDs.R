@@ -21,7 +21,7 @@ GetGameIDs <- function(year = CurrentYear(),
     teams <- GetTeamIDs(year = year)
     
     for (id in teams$id) {
-      temp <- .GetNBAGameIDsTeam(team = id, year, season.type)
+      temp <- GetGameIDsTeam(team = id, year, season.type)
       all.games <- rbind(all.games, temp)
     }
     
@@ -30,20 +30,27 @@ GetGameIDs <- function(year = CurrentYear(),
     if (class(date) == 'character') {
       date <- as.Date(date, origin = '1970-01-01')      # Convert epoch (days) to date object
     }
-    return(.GetNBAGameIDsDay(date))
+    return(GetGameIDsDay(date))
   }
 }
 
-# Input:    Team (ex. '1610612745' or 'Houston')
-#           year (ex. 2008 for 2007-08 season)
-#           season.type either 'Regular Season', 'Playoffs', or 'Both'
-# Output:   Data frame with info for games that day from stats.nba.com
-#           game.id, date, home, away, season.type
-.GetNBAGameIDsTeam <- function(team, year, season.type) {
+#' Get Game IDs for a team
+#'
+#' @param team target date
+#' @param year Season (e.g. 2008 for the 2007-08 season)
+#' @param season.type Either "Regular Season", "Playoffs", or "Both"
+#' @return data.frame
+#' @keywords Game
+#' @importFrom httr GET content add_headers
+#' @export
+#' @examples
+#' GetGameIDsTeam('Houston Rockets', 2017, 'Regular Season')
+
+GetGameIDsTeam <- function(team, year, season.type) {
   
   if (season.type == 'Both') {
-    ids.regular <- .GetNBAGameIDsTeam(team, year, 'Regular Season')
-    ids.playoffs <- .GetNBAGameIDsTeam(team, year, 'Playoffs')
+    ids.regular <- GetGameIDsTeam(team, year, 'Regular Season')
+    ids.playoffs <- GetGameIDsTeam(team, year, 'Playoffs')
     return(rbind(ids.regular, ids.playoffs))
   }
   
@@ -96,10 +103,17 @@ GetGameIDs <- function(year = CurrentYear(),
   }
 }
 
-# Input:    Date (ex. '2013-11-23')
-# Output:   Data frame with info for games that day from stats.nba.com
-#           date, game.id, status, home.team.id, away.team.id, national.tv
-.GetNBAGameIDsDay <- function(date) {
+#' Get Game IDs for a day
+#'
+#' @param date target date
+#' @return data.frame
+#' @keywords Game
+#' @importFrom httr GET content add_headers
+#' @export
+#' @examples
+#' GetGameIDsDay('2017-01-24')
+
+GetGameIDsDay <- function(date) {
   
   request <- GET(
     "http://stats.nba.com/stats/scoreboardV2",
