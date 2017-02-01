@@ -81,3 +81,18 @@ ContentToDF <- function(content) {
   
   return(data)
 }
+
+CleanParam <- function(param) {
+  
+  if (param == 'Basic') {
+    return('Base')
+  } else if (param == '100 Possessions') {
+    return('Per100Possessions')
+  } else if (param == 'Per Game') {
+    return('PerGame')
+  } else {
+    return(param)
+  }
+}
+
+CHARACTER.COLUMNS <- c('GROUP_SET', 'PLAYER_ID', 'PLAYER_NAME', 'TEAM_ID', 'TEAM_NAME', 'TEAM_ABBREVIATION', 'CFID', 'CFPARAMS')

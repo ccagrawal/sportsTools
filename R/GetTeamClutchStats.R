@@ -1,41 +1,35 @@
-#' Player clutch stats
+#' Team Clutch Stats
 #'
 #' @param year NBA season (e.g. 2008 for the 2007-08 season)
-#' @param season.type Either 'Regular Season' or 'Playoffs'
-#' @param measure.type Either 'Basic', 'Advanced', or 'RPM'
-#' @param per.mode Either 'Per Game', 'Totals', or '100 Possessions'
-#' @param position Either 'G', 'F', or 'C'
-#' @return data frame with players stats
-#' @keywords player
+#' @param measure.type Either 'Basic' or 'Advanced'
+#' @param season.type 'Regular Season' or 'Playoffs'
+#' @param per.mode 'Per Game' or 'Totals'
+#' @return data frame with team clutch stats
+#' @keywords team
 #' @importFrom httr GET content add_headers
 #' @export
 #' @examples
-#' GetPlayerClutchStats(2014)
+#' GetTeamClutchStats(2014)
 
-GetPlayerClutchStats <- function(year = CurrentYear(), 
-                                 season.type = 'Regular Season',
-                                 measure.type = 'Advanced',
-                                 per.mode = 'Per Game',
-                                 position = '') {
+GetTeamClutchStats <- function(year = CurrentYear(), 
+                               measure.type = 'Basic',
+                               season.type = 'Regular Season', 
+                               per.mode = 'Totals',
+                               quarter = 0) {
   
   options(stringsAsFactors = FALSE)
   
   request <- GET(
-    "http://stats.nba.com/stats/leaguedashplayerclutch",
+    "http://stats.nba.com/stats/leaguedashteamclutch",
     query = list(
       AheadBehind = 'Ahead or Behind',
       ClutchTime = 'Last 5 Minutes',
-      College = "",
       Conference = "",
-      Country = "",
       DateFrom = "",
       DateTo = "",
       Division = "",
-      DraftPick = "",
-      DraftYear = "",
       GameScope = "",
       GameSegment = "",
-      Height = "",
       LastNGames = 0,
       LeagueID = "00",
       Location = "",
@@ -44,11 +38,11 @@ GetPlayerClutchStats <- function(year = CurrentYear(),
       OpponentTeamID = 0,
       Outcome = "",
       PORound = 0,
-      PaceAdjust = "N",
+      PaceAdjust = 'N',
       PerMode = CleanParam(per.mode),
-      Period = 0,
+      Period = quarter,
       PlayerExperience = "",
-      PlayerPosition = position,
+      PlayerPosition = "",
       PlusMinus = "N",
       PointDiff = 5,
       Rank = "N",
@@ -59,15 +53,14 @@ GetPlayerClutchStats <- function(year = CurrentYear(),
       StarterBench = "",
       TeamID = 0,
       VsConference = "",
-      VsDivision = "",
-      Weight = ""
-    ),
-    add_headers('Referer' = 'http://stats.nba.com/team/')
+      VsDivision = ""
+    )
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
   stats <- ContentToDF(content)
   
+  # Clean data frame
   char.cols <- which(colnames(stats) %in% CHARACTER.COLUMNS)
   stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   
