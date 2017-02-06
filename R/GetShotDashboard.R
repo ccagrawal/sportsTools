@@ -94,7 +94,7 @@ GetShotDashboard <- function(player, team, stat, year = CurrentYear(), per.mode 
   
   # Clean data frame
   char.cols <- which(colnames(stats) %in% CHARACTER.COLUMNS)
-  stats[, -CHARACTER.COLUMNS] <- sapply(stats[, -CHARACTER.COLUMNS], as.numeric)
+  stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   
   return(stats)
 }
@@ -162,7 +162,7 @@ GetShotDashboard <- function(player, team, stat, year = CurrentYear(), per.mode 
   
   # Clean data frame
   char.cols <- which(colnames(stats) %in% CHARACTER.COLUMNS)
-  stats[, -CHARACTER.COLUMNS] <- sapply(stats[, -CHARACTER.COLUMNS], as.numeric)
+  stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   
   return(stats)
 }
