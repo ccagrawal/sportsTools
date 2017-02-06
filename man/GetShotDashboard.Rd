@@ -6,7 +6,7 @@
 \usage{
 GetShotDashboard(player, team, stat, year = CurrentYear(),
   per.mode = "Totals", season.type = "Regular Season", opponent.id = "0",
-  player.ids, team.ids)
+  date.from = "", date.to = "", ids)
 }
 \arguments{
 \item{player}{Player name (if player's dashboard is desired)}

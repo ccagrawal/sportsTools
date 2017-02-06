@@ -46,7 +46,9 @@ GetGameIDs <- function(year = CurrentYear(),
 #' @examples
 #' GetGameIDsTeam('Houston Rockets', 2017, 'Regular Season')
 
-GetGameIDsTeam <- function(team, year, season.type) {
+GetGameIDsTeam <- function(team, year, season.type = 'Regular Season') {
+  
+  options(stringsAsFactors = FALSE)
   
   if (season.type == 'Both') {
     ids.regular <- GetGameIDsTeam(team, year, 'Regular Season')
@@ -114,6 +116,8 @@ GetGameIDsTeam <- function(team, year, season.type) {
 #' GetGameIDsDay('2017-01-24')
 
 GetGameIDsDay <- function(date) {
+  
+  options(stringsAsFactors = FALSE)
   
   request <- GET(
     "http://stats.nba.com/stats/scoreboardV2",

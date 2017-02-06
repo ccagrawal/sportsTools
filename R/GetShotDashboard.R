@@ -15,124 +15,154 @@
 #' GetShotDashboard('James Harden', stat = 'Defender Distance')
 
 GetShotDashboard <- function(player, team, stat, year = CurrentYear(), per.mode = 'Totals', 
-                             season.type = 'Regular Season', opponent.id = '0', player.ids, team.ids) {
+                             season.type = 'Regular Season', opponent.id = '0', 
+                             date.from = '', date.to = '', ids) {
   
   options(stringsAsFactors = FALSE)
   
-  if (per.mode == 'Per Game') {
-    per.mode <- 'PerGame'
-  }
+  per.mode <- CleanParam(per.mode)
 
   # Get team dashboard
   if (missing(player)) {
-    
-    # If team name was provided, get team ID
-    if (is.na(as.numeric(team))) {
-      if (missing(team.ids)) {
-        team.ids <- GetTeamIDs(year = year)
-      }
-      team <- team.ids[which(team.ids$name == team), 'id']
-    }
-    
-    request <- GET(
-      "http://stats.nba.com/stats/teamdashptshots",
-      query = list(
-        DateFrom = "",
-        DateTo = "",
-        GameSegment = "",
-        LastNGames = 0,
-        LeagueID = "00",
-        Location = "",
-        MeasureType = 'Base',
-        Month = 0,
-        OpponentTeamID = opponent.id,
-        Outcome = "",
-        PORound = 0,
-        PaceAdjust = 'N',
-        PerMode = per.mode,
-        Period = 0,
-        PlusMinus = "N",
-        Rank = "N",
-        Season = YearToSeason(year),
-        SeasonSegment = "",
-        SeasonType = season.type,
-        TeamID = team,
-        VsConference = "",
-        VsDivision = ""
-      )
-    )
-    
-    content <- content(request, 'parsed')[[3]]
-    char.cols <- c('TEAM_ID', 'TEAM_NAME')
-    
-    if (stat == 'Shot Type') {
-      content <- content[[1]]
-      char.cols <- c(char.cols, 'SHOT_TYPE')
-    } else if (stat == 'Shot Clock Range') {
-      content <- content[[2]]
-      char.cols <- c(char.cols, 'SHOT_CLOCK_RANGE')
-    } else if (stat == 'Dribble Range') {
-      content <- content[[3]]
-      char.cols <- c(char.cols, 'DRIBBLE_RANGE')
-    } else if (stat == 'Defender Distance') {
-      content <- content[[4]]
-      char.cols <- c(char.cols, 'CLOSE_DEF_DIST_RANGE')
-    } else if (stat == 'Defender Distance >10ft') {
-      content <- content[[5]]
-      char.cols <- c(char.cols, 'CLOSE_DEF_DIST_RANGE')
-    } else if (stat == 'Touch Time Range') {
-      content <- content[[6]]
-      char.cols <- c(char.cols, 'TOUCH_TIME_RANGE')
-    }
-    
-    stats <- ContentToDF(content)
-    
-    # Clean data frame
-    char.cols <- which(colnames(stats) %in% char.cols)
-    stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
-    
+    return(.GetTeamShotDashboard(team, stat, year, per.mode, season.type, opponent.id, 
+                                 date.from, date.to, ids))
   } else {
-    url <- paste0('http://stats.nba.com/stats/playerdashptshots?',
-                  'DateFrom=&',
-                  'DateTo=&', 
-                  'GameSegment=&', 
-                  'LastNGames=0&', 
-                  'LeagueID=00&', 
-                  'Location=&', 
-                  'Month=0&', 
-                  'OpponentTeamID=', opponent.id, '&', 
-                  'Outcome=&',
-                  'PerMode=Totals&',
-                  'Period=0&',
-                  'PlayerID=', id, '&',
-                  'Season=2015-16&',
-                  'SeasonSegment=&',
-                  'SeasonType=Regular+Season&',
-                  'TeamID=0&',
-                  'VsConference=&',
-                  'VsDivision=')
-    
-    json <- fromJSON(file = url)[[3]]
-    
-    if (stat == 'Defender Distance') {
-      json <- json[[5]]
+    return(.GetPlayerShotDashboard(player, stat, year, per.mode, season.type, opponent.id, 
+                                   date.from, date.to, ids))
+  }
+  
+  return(stats)
+}
+
+.GetTeamShotDashboard <- function(team, stat, year = CurrentYear(), per.mode = 'Totals', 
+                                  season.type = 'Regular Season', opponent.id = '0', 
+                                  date.from = '', date.to = '', team.ids) {
+  
+  # If team name was provided, get team ID
+  if (is.na(as.numeric(team))) {
+    if (missing(team.ids)) {
+      team.ids <- GetTeamIDs(year = year)
+    }
+    team <- team.ids[which(team.ids$name == team), 'id']
+  }
+  
+  request <- GET(
+    "http://stats.nba.com/stats/teamdashptshots",
+    query = list(
+      DateFrom = date.from,
+      DateTo = date.to,
+      GameSegment = "",
+      LastNGames = 0,
+      LeagueID = "00",
+      Location = "",
+      MeasureType = 'Base',
+      Month = 0,
+      OpponentTeamID = opponent.id,
+      Outcome = "",
+      PORound = 0,
+      PaceAdjust = 'N',
+      PerMode = per.mode,
+      Period = 0,
+      PlusMinus = "N",
+      Rank = "N",
+      Season = YearToSeason(year),
+      SeasonSegment = "",
+      SeasonType = season.type,
+      TeamID = team,
+      VsConference = "",
+      VsDivision = ""
+    )
+  )
+  
+  content <- content(request, 'parsed')[[3]]
+  
+  if (stat == 'Shot Type') {
+    content <- content[[1]]
+  } else if (stat == 'Shot Clock Range') {
+    content <- content[[2]]
+  } else if (stat == 'Dribble Range') {
+    content <- content[[3]]
+  } else if (stat == 'Defender Distance') {
+    content <- content[[4]]
+  } else if (stat == 'Defender Distance >10ft') {
+    content <- content[[5]]
+  } else if (stat == 'Touch Time Range') {
+    content <- content[[6]]
+  }
+  
+  stats <- ContentToDF(content)
+  
+  # Clean data frame
+  char.cols <- which(colnames(stats) %in% CHARACTER_COLUMNS)
+  stats[, -CHARACTER_COLUMNS] <- sapply(stats[, -CHARACTER_COLUMNS], as.numeric)
+  
+  return(stats)
+}
+
+
+.GetPlayerShotDashboard <- function(player, stat, year = CurrentYear(), per.mode = 'Totals', 
+                                    season.type = 'Regular Season', opponent.id = '0', 
+                                    date.from = '', date.to = '', player.ids) {
+  
+  # If player is name, convert it to player id
+  if (grepl('[a-z]', player)) {
+    if (missing(player.ids)) {
+      player.ids <- GetPlayerIDs(year = year)
     }
     
-    stats <- json$rowSet
-    
-    # Create raw data frame
-    stats <- lapply(stats, lapply, function(x) ifelse(is.null(x), NA, x))   # Convert nulls to NAs
-    stats <- data.frame(matrix(unlist(stats), nrow = length(stats), byrow = TRUE)) # Turn list to data frame
-    
-    # Get column headers
-    colnames(stats) <- json$headers
-    
-    if (stat == 'Defender Distance') {
-      char.cols <- c('PLAYER_ID', 'PLAYER_NAME_LAST_FIRST', 'CLOSE_DEF_DIST_RANGE')
-      char.cols <- which(colnames(stats) %in% char.cols)
-      stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
+    if (player %in% player.ids$DISPLAY_FIRST_LAST) {
+      player <- player.ids[which(player.ids$DISPLAY_FIRST_LAST == player), 'PERSON_ID']
+    } else {
+      return(NULL)
     }
   }
+  
+  request <- GET(
+    "http://stats.nba.com/stats/playerdashptshots",
+    query = list(
+      DateFrom = date.from,
+      DateTo = date.to,
+      GameSegment = "",
+      LastNGames = 0,
+      LeagueID = "00",
+      Location = "",
+      MeasureType = 'Base',
+      Month = 0,
+      OpponentTeamID = opponent.id,
+      Outcome = "",
+      PerMode = per.mode,
+      Period = 0,
+      PlayerID = player,
+      Season = YearToSeason(year),
+      SeasonSegment = "",
+      SeasonType = season.type,
+      TeamID = 0,
+      VsConference = "",
+      VsDivision = ""
+    )
+  )
+  
+  content <- content(request, 'parsed')[[3]]
+  
+  if (stat == 'Shot Type') {
+    content <- content[[1]]
+  } else if (stat == 'Shot Clock Range') {
+    content <- content[[2]]
+  } else if (stat == 'Dribble Range') {
+    content <- content[[3]]
+  } else if (stat == 'Defender Distance') {
+    content <- content[[5]]
+  } else if (stat == 'Defender Distance >10ft') {
+    content <- content[[5]]
+  } else if (stat == 'Touch Time Range') {
+    content <- content[[6]]
+  }
+  
+  stats <- ContentToDF(content)
+  
+  # Clean data frame
+  char.cols <- which(colnames(stats) %in% CHARACTER_COLUMNS)
+  stats[, -CHARACTER_COLUMNS] <- sapply(stats[, -CHARACTER_COLUMNS], as.numeric)
   
   return(stats)
 }

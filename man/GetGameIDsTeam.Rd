@@ -4,7 +4,7 @@
 \alias{GetGameIDsTeam}
 \title{Get Game IDs for a team}
 \usage{
-GetGameIDsTeam(team, year, season.type)
+GetGameIDsTeam(team, year, season.type = "Regular Season")
 }
 \arguments{
 \item{team}{target date}

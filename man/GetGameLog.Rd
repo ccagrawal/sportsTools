@@ -2,29 +2,32 @@
 % Please edit documentation in R/GetGameLog.R
 \name{GetGameLog}
 \alias{GetGameLog}
-\title{Get individual game stats.}
+\title{Get game logs.}
 \usage{
-GetGameLog(player, year = CurrentYear(), season.type = "Regular Season",
-  player.ids)
+GetGameLog(player, team, year = CurrentYear(),
+  season.type = "Regular Season", ids)
 }
 \arguments{
 \item{player}{NBA player (e.g. "James Harden")}
+
+\item{team}{NBA team (e.g. "Houston Rockets")}
 
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
 
 \item{season.type}{either 'Preseason', 'Regular Season', or 'Playoffs'}
 
-\item{player.ids}{dataframe with player ids if scraping for multiple players}
+\item{ids}{dataframe with player or team ids}
 }
 \value{
-data frame with player's stats
+data frame with player's or team's stats by game
 }
 \description{
-Get individual game stats.
+Get game logs.
 }
 \examples{
 GetGameLog('James Harden', 2015)
 }
 \keyword{gamelog}
 \keyword{player}
+\keyword{team}
 
