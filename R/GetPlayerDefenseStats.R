@@ -16,9 +16,7 @@ GetPlayerDefenseStats <- function(year = CurrentYear(),
   
   options(stringsAsFactors = FALSE)
   
-  if (per.mode == 'Per Game') {
-    per.mode <- 'PerGame'
-  }
+  per.mode <- CleanParam(per.mode)
   
   request = GET(
     "http://stats.nba.com/stats/leaguedashptdefend",
@@ -54,14 +52,14 @@ GetPlayerDefenseStats <- function(year = CurrentYear(),
       VsDivision = "",
       Weight = ""
     ),
-    add_headers('Referer' = 'http://stats.nba.com/league/player/defense/')
+    add_headers('Referer' = 'http://stats.nba.com/league/player/defense/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
   stats <- ContentToDF(content)
   
-  char.cols <- c('CLOSE_DEF_PERSON_ID', 'PLAYER_NAME', 'PLAYER_LAST_TEAM_ID', 'PLAYER_LAST_TEAM_ABBREVIATION', 'PLAYER_POSITION')
-  char.cols <- which(colnames(stats) %in% char.cols)
+  char.cols <- which(colnames(stats) %in% CHARACTER.COLUMNS)
   stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
 
   return(stats)

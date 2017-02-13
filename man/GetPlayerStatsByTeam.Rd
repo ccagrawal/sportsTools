@@ -6,7 +6,7 @@
 \usage{
 GetPlayerStatsByTeam(year = CurrentYear(), team.id,
   season.type = "Regular Season", measure.type = "Base",
-  per.mode = "Per Game", source = "NBA")
+  per.mode = "Per Game")
 }
 \arguments{
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}

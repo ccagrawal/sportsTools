@@ -4,6 +4,7 @@
 #' @param defense.category 'Overall', '3 Pointers', '2 Pointers', 'Less Than 6Ft',
 #' 'Less Than 10Ft', 'Greater Than 15Ft'
 #' @param season.type 'Regular Season' or 'Playoffs'
+#' @param per.mode 'Per Game' or 'Totals'
 #' @return data frame with wins and losses for that season
 #' @keywords team shooting
 #' @importFrom httr GET content add_headers
@@ -13,9 +14,12 @@
 
 GetTeamDefenseStats <- function(year = CurrentYear(), 
                                 defense.category = 'Less Than 6Ft',
-                                season.type = 'Regular Season') {
+                                season.type = 'Regular Season',
+                                per.mode = 'Totals') {
   
   options(stringsAsFactors = FALSE)
+  
+  per.mode <- CleanParam(per.mode)
   
   request <- GET(
     "http://stats.nba.com/stats/leaguedashptteamdefend",
@@ -33,7 +37,7 @@ GetTeamDefenseStats <- function(year = CurrentYear(),
       OpponentTeamID = 0,
       Outcome = "",
       PORound = 0,
-      PerMode = 'Totals',
+      PerMode = per.mode,
       Period = 0,
       Season = YearToSeason(year),
       SeasonSegment = "",
@@ -41,7 +45,8 @@ GetTeamDefenseStats <- function(year = CurrentYear(),
       TeamID = 0,
       VsConference = "",
       VsDivision = ""
-    )
+    ),
+    add_headers('User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]

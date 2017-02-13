@@ -23,9 +23,7 @@ GetTrackingStats <- function(year = CurrentYear(),
   
   options(stringsAsFactors = FALSE)
   
-  if (per.mode == 'Per Game') {
-    per.mode <- 'PerGame'
-  }
+  per.mode <- CleanParam(per.mode)
   
   request <- GET(
     "http://stats.nba.com/stats/leaguedashptstats",
@@ -61,22 +59,16 @@ GetTrackingStats <- function(year = CurrentYear(),
       VsDivision = "",
       Weight = ""
     ),
-    add_headers('Referer' = 'http://stats.nba.com/tracking/')
+    add_headers('Referer' = 'http://stats.nba.com/tracking/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
   stats <- ContentToDF(content)
   
   # Clean data frame
-  if (player.or.team == 'Player') {
-    char.cols <- c('PLAYER_ID', 'PLAYER_NAME', 'TEAM_ID', 'TEAM_ABBREVIATION')
-    char.cols <- which(colnames(stats) %in% char.cols)
-    stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
-  } else {
-    char.cols <- c('TEAM_ID', 'TEAM_ABBREVIATION', 'TEAM_NAME')
-    char.cols <- which(colnames(stats) %in% char.cols)
-    stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
-  }
+  char.cols <- which(colnames(stats) %in% CHARACTER.COLUMNS)
+  stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   
   return(stats)
 }

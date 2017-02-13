@@ -18,17 +18,13 @@ GetPlayerSpecificStats <- function(player,
                                    per.mode = 'Totals',
                                    year = CurrentYear(),
                                    season.type = 'Regular Season',
-                                   player.ids) {
+                                   player.ids = NA) {
   
   options(stringsAsFactors = FALSE)
   
-  # If player name was provided, get player ID
-  if (is.na(as.numeric(player))) {
-    if (missing(player.ids)) {
-      player.ids <- GetPlayerIDs(year = year)
-    }
-    player <- player.ids[which(player.ids$DISPLAY_FIRST_LAST == player), 'PERSON_ID']
-  }
+  measure.type <- CleanParam(measure.type)
+  per.mode <- CleanParam(per.mode)
+  player <- PlayerNameToID(player, year, player.ids)
   
   request <- GET(
     "http://stats.nba.com/stats/playerdashboardbyyearoveryear",
@@ -57,7 +53,8 @@ GetPlayerSpecificStats <- function(player,
       Split = "yoy",
       VsConference = "",
       VsDivision = ""
-    )
+    ),
+    add_headers('User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[2]]
@@ -69,8 +66,7 @@ GetPlayerSpecificStats <- function(player,
   stats <- stats[, -remove.cols]
   
   stats$GROUP_VALUE <- SeasonToYear(stats$GROUP_VALUE)
-  char.cols <- c('TEAM_ID', 'GROUP_VALUE')
-  char.cols <- which(colnames(stats) %in% char.cols)
+  char.cols <- which(colnames(stats) %in% CHARACTER.COLUMNS)
   stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   
   return(stats)

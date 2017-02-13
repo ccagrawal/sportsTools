@@ -1,15 +1,14 @@
 #' Get Team Picture
 #'
-#' @param team.id Team ID
-#' @param source currently only 'ESPN'
+#' @param team.id Team ID from ESPN (e.g. 'hou')
 #' @return team's picture
 #' @keywords picture team
 #' @importFrom png readPNG
 #' @export
 #' @examples
-#' GetTeamPicture('hou', source = 'ESPN')
+#' GetTeamPicture('hou')
 
-GetTeamPicture <- function(team.id, source = 'ESPN') {
+GetTeamPicture <- function(team.id) {
   
   url <- gsub('###', team.id, 'http://a.espncdn.com/combiner/i?img=/i/teamlogos/nba/500/###.png')
   temp <- tempfile()

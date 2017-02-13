@@ -4,7 +4,7 @@
 \alias{GetRoster}
 \title{Team roster}
 \usage{
-GetRoster(year = CurrentYear(), team, team.ids)
+GetRoster(year = CurrentYear(), team, team.ids = NA)
 }
 \arguments{
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}

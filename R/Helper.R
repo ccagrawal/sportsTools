@@ -86,16 +86,62 @@ CleanParam <- function(param) {
   
   if (param == 'Basic') {
     return('Base')
+    
   } else if (param == '100 Possessions') {
     return('Per100Possessions')
+    
   } else if (param == 'Per Game') {
     return('PerGame')
-  } else {
+    
+  } else if (param == 'Offensive') {
+    return('offensive')
+    
+  } else if (param == 'Defensive') {
+    return('defensive')
+    
+  } else if (param == 'Player') {
+    return('player')
+    
+  } else if (param == 'Team') {
+    return('team')
+    
+  }else {
     return(param)
   }
 }
 
-CHARACTER.COLUMNS <- c('GROUP_SET', 'PLAYER_ID', 'PLAYER_NAME', 'TEAM_ID', 'TEAM_NAME', 'TEAM_ABBREVIATION', 'CFID', 'CFPARAMS',
-                       'Team_ID', 'Game_ID', 'GAME_DATE', 'MATCHUP', 'WL',
-                       'SHOT_TYPE', 'SHOT_CLOCK_RANGE', 'DRIBBLE_RANGE',
-                       'CLOSE_DEF_DIST_RANGE', 'TOUCH_TIME_RANGE', 'PLAYER_NAME_LAST_FIRST')
+CHARACTER.COLUMNS <- c('GROUP_SET', 'GROUP_ID', 'GROUP_NAME', 'PLAYER_ID', 'PLAYER_NAME', 'TEAM_ID', 'TEAM_NAME', 'TEAM_ABBREVIATION', 
+                       'CFID', 'CFPARAMS', 'Team_ID', 'Game_ID', 'GAME_DATE', 'MATCHUP', 'WL',
+                       'SHOT_TYPE', 'SHOT_CLOCK_RANGE', 'DRIBBLE_RANGE', 'VS_PLAYER_ID', 'VS_PLAYER_NAME', 'COURT_STATUS',
+                       'CLOSE_DEF_DIST_RANGE', 'TOUCH_TIME_RANGE', 'PLAYER_NAME_LAST_FIRST', 'CLOSE_DEF_PERSON_ID', 
+                       'PlayerIDSID', 'PlayerFirstName', 'PlayerLastName', 'P', 'TeamIDSID', 'TeamName', 
+                       'TeamNameAbbreviation', 'TeamShortName', 'name', 'seasonType', 'GROUP_VALUE',
+                       'PLAYER_LAST_TEAM_ID', 'PLAYER_LAST_TEAM_ABBREVIATION', 'PLAYER_POSITION', 'DEFENSE_CATEGORY',
+                       'GAME_ID', 'TEAM_CITY', 'START_POSITION', 'COMMENT', 'MIN',
+                       'SEASON_ID', 'GAME_ID')
+
+PlayerNameToID <- function(player, year = CurrentYear(), player.ids) {
+  
+  # If player name was provided, get player ID
+  if (is.na(as.numeric(player))) {
+    if (is.na(player.ids) | missing(player.ids))  {
+      player.ids <- GetPlayerIDs(year = year)
+    }
+    player <- player.ids[which(player.ids$DISPLAY_FIRST_LAST == player), 'PERSON_ID']
+  }
+  
+  return(player)
+}
+
+TeamNameToID <- function(team, year = CurrentYear(), team.ids) {
+  
+  # If team name was provided, get team ID
+  if (is.na(as.numeric(team))) {
+    if (is.na(team.ids) | missing(team.ids)) {
+      team.ids <- GetTeamIDs(year = year)
+    }
+    team <- team.ids[which(team.ids$name == team), 'id']
+  }
+  
+  return(team)
+}

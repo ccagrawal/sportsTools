@@ -4,12 +4,12 @@
 \alias{GetPlayerPicture}
 \title{Get Player Picture}
 \usage{
-GetPlayerPicture(player.id, source = "NBA")
+GetPlayerPicture(player, player.ids = NA)
 }
 \arguments{
-\item{player.id}{Player ID}
+\item{player}{Player's name or ID}
 
-\item{source}{currently only 'NBA'}
+\item{player.ids}{Optional, data frame of player.ids}
 }
 \value{
 player's picture

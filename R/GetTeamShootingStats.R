@@ -20,6 +20,8 @@ GetTeamShootingStats <- function(year = CurrentYear(),
   
   options(stringsAsFactors = FALSE)
   
+  per.mode <- CleanParam(per.mode)
+  
   if (!missing(distance.range)) {
     request <- GET(
       "http://stats.nba.com/stats/leaguedashteamshotlocations",
@@ -54,9 +56,11 @@ GetTeamShootingStats <- function(year = CurrentYear(),
         TeamID = 0,
         VsConference = "",
         VsDivision = ""
-      )
+      ),
+      add_headers('User-Agent' = 'Mozilla/5.0')
     )
     content <- content(request, 'parsed')$resultSets
+    
   } else {
     request <- GET(
       "http://stats.nba.com/stats/leaguedashteamptshot",
@@ -92,7 +96,8 @@ GetTeamShootingStats <- function(year = CurrentYear(),
         VsConference = "",
         VsDivision = "",
         closestDef10 = ""
-      )
+      ),
+      add_headers('User-Agent' = 'Mozilla/5.0')
     )
     content <- content(request, 'parsed')$resultSets[[1]]
   }
@@ -100,8 +105,7 @@ GetTeamShootingStats <- function(year = CurrentYear(),
   stats <- ContentToDF(content)
   
   # Clean data frame
-  char.cols <- c('TEAM_ID', 'TEAM_NAME', 'TEAM_ABBREVIATION')
-  char.cols <- which(colnames(stats) %in% char.cols)
+  char.cols <- which(colnames(stats) %in% CHARACTER.COLUMNS)
   stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   
   return(stats)

@@ -25,15 +25,15 @@ GetSchedule <- function(year = CurrentYear(), season.type = 'Regular Season') {
       Season = YearToSeason(year),
       SeasonType = season.type,
       Sorter = "DATE"
-    )
+    ),
+    add_headers('User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
   logs <- ContentToDF(content)
   
   # Clean data frame
-  char.cols <- c('SEASON_ID', 'TEAM_ID', 'TEAM_ABBREVIATION', 'TEAM_NAME', 'GAME_ID', 'MATCHUP', 'WL', 'GAME_DATE')
-  char.cols <- which(colnames(logs) %in% char.cols)
+  char.cols <- which(colnames(logs) %in% CHARACTER.COLUMNS)
   logs[, -char.cols] <- sapply(logs[, -char.cols], as.numeric)
   logs$GAME_DATE <- as.Date(logs$GAME_DATE)
   

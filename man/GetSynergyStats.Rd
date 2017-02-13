@@ -5,7 +5,7 @@
 \title{Synergy stats on players or teams}
 \usage{
 GetSynergyStats(year = CurrentYear(), play.type, side = "Offensive",
-  type = "Player", season.type = "Regular Season")
+  player.or.team = "Player", season.type = "Regular Season")
 }
 \arguments{
 \item{year}{2015 for 2014-15 season}
@@ -14,7 +14,7 @@ GetSynergyStats(year = CurrentYear(), play.type, side = "Offensive",
 
 \item{side}{either 'Offensive' or 'Defensive'}
 
-\item{type}{either 'Player' or 'Team'}
+\item{player.or.team}{either 'Player' or 'Team'}
 
 \item{season.type}{either 'Regular Season' or 'Playoffs'}
 }

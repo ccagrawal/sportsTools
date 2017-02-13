@@ -16,21 +16,12 @@ GetDefenseDashboard <- function(player,
                                 year = CurrentYear(), 
                                 season.type = 'Regular Season',
                                 per.mode = 'Totals',
-                                player.ids) {
+                                player.ids = NA) {
   
   options(stringsAsFactors = FALSE)
   
-  if (per.mode == 'Per Game') {
-    per.mode <- 'PerGame'
-  }
-  
-  # If player name was provided, get player ID
-  if (is.na(as.numeric(player))) {
-    if (missing(player.ids)) {
-      player.ids <- GetPlayerIDs(year = year)
-    }
-    player <- player.ids[which(player.ids$DISPLAY_FIRST_LAST == player), 'PERSON_ID']
-  }
+  per.mode <- CleanParam(per.mode)
+  player <- PlayerNameToID(player, year, player.ids)
   
   request <- GET(
     "http://stats.nba.com/stats/playerdashptshotdefend",
@@ -54,15 +45,14 @@ GetDefenseDashboard <- function(player,
       TeamID = 0,
       VsConference = "",
       VsDivision = ""
-    )
+    ),
+    add_headers('User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
   stats <- ContentToDF(content)
   
-  # Clean data frame
-  char.cols <- c('CLOSE_DEF_PERSON_ID', 'DEFENSE_CATEGORY')
-  char.cols <- which(colnames(stats) %in% char.cols)
+  char.cols <- which(colnames(stats) %in% CHARACTER.COLUMNS)
   stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   
   return(stats)

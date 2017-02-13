@@ -5,7 +5,7 @@
 \title{Player's defensive dashboard}
 \usage{
 GetDefenseDashboard(player, year = CurrentYear(),
-  season.type = "Regular Season", per.mode = "Totals", player.ids)
+  season.type = "Regular Season", per.mode = "Totals", player.ids = NA)
 }
 \arguments{
 \item{player}{NBA player (e.g. "James Harden")}

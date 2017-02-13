@@ -19,7 +19,8 @@ GetPlayerIDs <- function(year = CurrentYear()) {
       LeagueID = "00",
       Season = YearToSeason(year)
     ),
-    add_headers('Referer' = 'http://stats.nba.com/player/')
+    add_headers('Referer' = 'http://stats.nba.com/player/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]

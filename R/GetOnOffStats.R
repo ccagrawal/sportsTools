@@ -18,17 +18,13 @@ GetOnOffStats <- function(team,
                           season.type = 'Regular Season', 
                           measure.type = 'Base', 
                           per.mode = 'Totals',
-                          team.ids) {
+                          team.ids = NA) {
   
   options(stringsAsFactors = FALSE)
   
-  # If team name was provided, get team ID
-  if (is.na(as.numeric(team))) {
-    if (missing(team.ids)) {
-      team.ids <- GetTeamIDs(year = year)
-    }
-    team <- team.ids[which(team.ids$name == team), 'id']
-  }
+  measure.type <- CleanParam(measure.type)
+  per.mode <- CleanParam(per.mode)
+  team <- TeamNameToID(team, year, team.ids = team.ids)
   
   request = GET(
     "http://stats.nba.com/stats/teamplayeronoffdetails",
@@ -55,7 +51,8 @@ GetOnOffStats <- function(team,
       VsConference = "",
       VsDivision = ""
     ),
-    add_headers('Referer' = 'http://stats.nba.com/team/')
+    add_headers('Referer' = 'http://stats.nba.com/team/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]]
@@ -65,8 +62,7 @@ GetOnOffStats <- function(team,
   # Merge on and off court stats
   stats <- rbind(stats.on, stats.off)
   
-  char.cols <- c('GROUP_SET', 'TEAM_ID', 'TEAM_ABBREVIATION', 'TEAM_NAME', 'VS_PLAYER_ID', 'VS_PLAYER_NAME', 'COURT_STATUS')
-  char.cols <- which(colnames(stats) %in% char.cols)
+  char.cols <- which(colnames(stats) %in% CHARACTER.COLUMNS)
   stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   
   return(stats)

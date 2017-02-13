@@ -5,7 +5,7 @@
 \title{On-Off stats for each player on a team}
 \usage{
 GetOnOffStats(team, year = CurrentYear(), season.type = "Regular Season",
-  measure.type = "Base", per.mode = "Totals", team.ids)
+  measure.type = "Base", per.mode = "Totals", team.ids = NA)
 }
 \arguments{
 \item{team}{Either team name ('Golden State') or team id}

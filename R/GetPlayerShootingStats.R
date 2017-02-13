@@ -41,11 +41,13 @@ GetPlayerShootingStats <- function(year = CurrentYear(),
       OpponentTeamID = 0,
       Outcome = "",
       PORound = 0,
+      PaceAdjust = 'N',
       PerMode = 'Totals',
       Period = 0,
       PlayerExperience = "",
       PlayerPosition = "",
       PlusMinus = "N",
+      Rank = 'N',
       Season = YearToSeason(year),
       SeasonSegment = "",
       SeasonType = season.type,
@@ -57,7 +59,9 @@ GetPlayerShootingStats <- function(year = CurrentYear(),
       VsConference = "",
       VsDivision = "",
       Weight = ""
-    )
+    ),
+    add_headers('Referer' = 'http://stats.nba.com/players/shots-closest-defender/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]

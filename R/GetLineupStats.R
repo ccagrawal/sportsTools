@@ -5,6 +5,7 @@
 #' @param type 'Advanced'
 #' @param date.from starting date
 #' @param date.to ending date
+#' @param team.ids Optional dataframe of team.ids
 #' @return data frame of stats
 #' @keywords lineup stats
 #' @importFrom httr GET content add_headers
@@ -13,15 +14,11 @@
 #' GetLineupStats(year = 2016, players = 5, type = 'Advanced')
 
 GetLineupStats <- function(year, players = 5, type = 'Advanced', 
-                           date.from = '', date.to = '', team = 0) {
+                           date.from = '', date.to = '', team = 0, team.ids = NA) {
   
   options(stringsAsFactors = FALSE)
   
-  # If team name was provided, get team ID
-  if (is.na(as.numeric(team))) {
-    team.ids <- GetTeamIDs(year = year)
-    team <- team.ids[which(team.ids$name == team), 'id']
-  }
+  team <- TeamNameToID(team)
 
   request = GET(
     "http://stats.nba.com/stats/leaguedashlineups",
@@ -54,14 +51,14 @@ GetLineupStats <- function(year, players = 5, type = 'Advanced',
       VsConference = "",
       VsDivision = ""
     ),
-    add_headers('Referer' = 'http://stats.nba.com/league/lineups/')
+    add_headers('Referer' = 'http://stats.nba.com/league/lineups/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
   stats <- ContentToDF(content)
   
-  char.cols <- c('GROUP_SET', 'GROUP_ID', 'GROUP_NAME', 'TEAM_ID', 'TEAM_ABBREVIATION')
-  char.cols <- which(colnames(stats) %in% char.cols)
+  char.cols <- which(colnames(stats) %in% CHARACTER.COLUMNS)
   stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
 
   return(stats)

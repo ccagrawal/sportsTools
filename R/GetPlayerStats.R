@@ -32,15 +32,8 @@ GetPlayerStats <- function(year = CurrentYear(),
 
 .GetPlayerStatsNBA <- function(year, season.type, measure.type, per.mode, position) {
   
-  if (measure.type == 'Basic') {
-    measure.type <- 'Base'
-  }
-  
-  if (per.mode == '100 Possessions') {
-    per.mode <- 'Per100Possessions'
-  } else if (per.mode == 'Per Game') {
-    per.mode <- 'PerGame'
-  }
+  measure.type <- CleanParam(measure.type)
+  per.mode <- CleanParam(per.mode)
   
   request <- GET(
     "http://stats.nba.com/stats/leaguedashplayerstats",
@@ -81,14 +74,14 @@ GetPlayerStats <- function(year = CurrentYear(),
       VsDivision = "",
       Weight = ""
     ),
-    add_headers('Referer' = 'http://stats.nba.com/player/')
+    add_headers('Referer' = 'http://stats.nba.com/player/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
   stats <- ContentToDF(content)
   
-  char.cols <- c('PLAYER_ID', 'PLAYER_NAME', 'TEAM_ID', 'TEAM_ABBREVIATION', 'CFPARAMS')
-  char.cols <- which(colnames(stats) %in% char.cols)
+  char.cols <- which(colnames(stats) %in% CHARACTER.COLUMNS)
   stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   
   return(stats)

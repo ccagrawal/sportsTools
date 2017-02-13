@@ -62,7 +62,8 @@ GetPlayerClutchStats <- function(year = CurrentYear(),
       VsDivision = "",
       Weight = ""
     ),
-    add_headers('Referer' = 'http://stats.nba.com/team/')
+    add_headers('Referer' = 'http://stats.nba.com/team/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]

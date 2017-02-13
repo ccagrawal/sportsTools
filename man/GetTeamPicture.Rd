@@ -4,12 +4,10 @@
 \alias{GetTeamPicture}
 \title{Get Team Picture}
 \usage{
-GetTeamPicture(team.id, source = "ESPN")
+GetTeamPicture(team.id)
 }
 \arguments{
-\item{team.id}{Team ID}
-
-\item{source}{currently only 'ESPN'}
+\item{team.id}{Team ID from ESPN (e.g. 'hou')}
 }
 \value{
 team's picture
@@ -18,7 +16,7 @@ team's picture
 Get Team Picture
 }
 \examples{
-GetTeamPicture('hou', source = 'ESPN')
+GetTeamPicture('hou')
 }
 \keyword{picture}
 \keyword{team}

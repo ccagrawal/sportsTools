@@ -17,17 +17,9 @@ GetPlayerStatsByTeam <- function(year = CurrentYear(),
                                  team.id,
                                  season.type = 'Regular Season', 
                                  measure.type = 'Base', 
-                                 per.mode = 'Per Game',
-                                 source = 'NBA') {
+                                 per.mode = 'Per Game') {
   
   options(stringsAsFactors = FALSE)
-  
-  if (source == 'NBA') {
-    return(.GetPlayerStatsByTeamNBA(year, team.id, season.type, measure.type, per.mode))
-  }
-}
-
-.GetPlayerStatsByTeamNBA <- function(year, team.id, season.type, measure.type, per.mode) {
   
   if (measure.type == 'Basic') {
     measure.type <- 'Base'

@@ -47,7 +47,8 @@ GetGameInfo <- function(id, info = c('box score')) {
     query = list(
       GameID = id
     ),
-    add_headers('Referer' = 'http://stats.nba.com/game/')
+    add_headers('Referer' = 'http://stats.nba.com/game/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[6]]
@@ -87,7 +88,8 @@ GetGameInfo <- function(id, info = c('box score')) {
       StartPeriod = start.period,
       StartRange = 0
     ),
-    add_headers('Referer' = 'http://stats.nba.com/game/')
+    add_headers('Referer' = 'http://stats.nba.com/game/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
@@ -115,7 +117,8 @@ GetGameInfo <- function(id, info = c('box score')) {
       StartPeriod = 0,
       StartRange = 0
     ),
-    add_headers('Referer' = 'http://stats.nba.com/game/')
+    add_headers('Referer' = 'http://stats.nba.com/game/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
@@ -145,7 +148,8 @@ GetGameInfo <- function(id, info = c('box score')) {
       StartPeriod = start.period,
       StartRange = 0
     ),
-    add_headers('Referer' = 'http://stats.nba.com/game/')
+    add_headers('Referer' = 'http://stats.nba.com/game/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
@@ -164,8 +168,7 @@ GetGameInfo <- function(id, info = c('box score')) {
   stats <- bind_rows(player.stats, team.stats)
   stats <- stats[, -which(colnames(stats) == 'TEAM_NAME')]
   
-  char.cols <- c('GAME_ID', 'PLAYER_ID', 'PLAYER_NAME', 'TEAM_ID', 'TEAM_ABBREVIATION', 'TEAM_CITY', 'START_POSITION', 'COMMENT', 'MIN')
-  char.cols <- which(colnames(stats) %in% char.cols)
+  char.cols <- which(colnames(stats) %in% CHARACTER.COLUMNS)
   stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   
   return(stats)

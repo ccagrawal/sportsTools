@@ -53,15 +53,15 @@ GetTeamHustleStats <- function(year = CurrentYear(),
       VsConference = "",
       VsDivision = "",
       Weight = ""
-    )
+    ),
+    add_headers('User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
   stats <- ContentToDF(content)
   
   # Clean data frame
-  char.cols <- c('TEAM_ID', 'TEAM_NAME')
-  char.cols <- which(colnames(stats) %in% char.cols)
+  char.cols <- which(colnames(stats) %in% CHARACTER.COLUMNS)
   stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   
   return(stats)

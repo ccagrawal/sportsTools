@@ -4,13 +4,16 @@
 \alias{GetShootingStats}
 \title{Shooting stats for players}
 \usage{
-GetShootingStats(id, year = CurrentYear(), stat = "Shot Type Detail")
+GetShootingStats(player, year = CurrentYear(), stat = "Shot Type Detail",
+  player.ids = NA)
 }
 \arguments{
-\item{id}{player's ID}
+\item{player}{player's ID}
 
 \item{stat}{which stat ('Shot Distance (5ft)', 'Shot Distance (8ft)', 'Shot Area', 
 'Assisted Shot', 'Shot Type Summary', 'Shot Type Detail', 'Assisted By')}
+
+\item{player.ids}{Optional dataframe of player.ids}
 }
 \value{
 data frame of stats
@@ -19,7 +22,7 @@ data frame of stats
 Shooting stats for players
 }
 \examples{
-GetShootingStats(id = '201147', stat = 'Shot Type Detail')
+GetShootingStats(player = '201147', stat = 'Shot Type Detail')
 }
 \keyword{player}
 \keyword{shooting}

@@ -36,15 +36,7 @@ GetShotDashboard <- function(player, team, stat, year = CurrentYear(), per.mode 
 
 .GetTeamShotDashboard <- function(team, stat, year = CurrentYear(), per.mode = 'Totals', 
                                   season.type = 'Regular Season', opponent.id = '0', 
-                                  date.from = '', date.to = '', team.ids) {
-  
-  # If team name was provided, get team ID
-  if (is.na(as.numeric(team))) {
-    if (missing(team.ids)) {
-      team.ids <- GetTeamIDs(year = year)
-    }
-    team <- team.ids[which(team.ids$name == team), 'id']
-  }
+                                  date.from = '', date.to = '', team.ids = NA) {
   
   request <- GET(
     "http://stats.nba.com/stats/teamdashptshots",
@@ -68,10 +60,11 @@ GetShotDashboard <- function(player, team, stat, year = CurrentYear(), per.mode 
       Season = YearToSeason(year),
       SeasonSegment = "",
       SeasonType = season.type,
-      TeamID = team,
+      TeamID = TeamNameToID(team, year, team.ids),
       VsConference = "",
       VsDivision = ""
-    )
+    ),
+    add_headers('User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]]
@@ -102,20 +95,7 @@ GetShotDashboard <- function(player, team, stat, year = CurrentYear(), per.mode 
 
 .GetPlayerShotDashboard <- function(player, stat, year = CurrentYear(), per.mode = 'Totals', 
                                     season.type = 'Regular Season', opponent.id = '0', 
-                                    date.from = '', date.to = '', player.ids) {
-  
-  # If player is name, convert it to player id
-  if (grepl('[a-z]', player)) {
-    if (missing(player.ids)) {
-      player.ids <- GetPlayerIDs(year = year)
-    }
-    
-    if (player %in% player.ids$DISPLAY_FIRST_LAST) {
-      player <- player.ids[which(player.ids$DISPLAY_FIRST_LAST == player), 'PERSON_ID']
-    } else {
-      return(NULL)
-    }
-  }
+                                    date.from = '', date.to = '', player.ids = NA) {
   
   request <- GET(
     "http://stats.nba.com/stats/playerdashptshots",
@@ -130,16 +110,17 @@ GetShotDashboard <- function(player, team, stat, year = CurrentYear(), per.mode 
       Month = 0,
       OpponentTeamID = opponent.id,
       Outcome = "",
-      PerMode = per.mode,
+      PerMode = CleanParam(per.mode),
       Period = 0,
-      PlayerID = player,
+      PlayerID = PlayerNameToID(player, year, player.ids),
       Season = YearToSeason(year),
       SeasonSegment = "",
       SeasonType = season.type,
       TeamID = 0,
       VsConference = "",
       VsDivision = ""
-    )
+    ),
+    add_headers('User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]]

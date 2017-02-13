@@ -56,25 +56,16 @@ GetGameIDsTeam <- function(team, year, season.type = 'Regular Season') {
     return(rbind(ids.regular, ids.playoffs))
   }
   
-  # If team is name, convert it to team id
-  if (grepl('[a-z]', team)) {
-    team.ids <- GetTeamIDs(year, source = 'NBA')
-    if (team %in% team.ids$name) {
-      team <- team.ids[which(team.ids$name == team), 'id']
-    } else {
-      return(NULL)
-    }
-  }
-  
   request <- GET(
     "http://stats.nba.com/stats/teamgamelog",
     query = list(
       LeagueId = '00',
       Season = YearToSeason(year),
       SeasonType = season.type,
-      TeamID = team
+      TeamID = TeamNameToID(team)
     ),
-    add_headers('Referer' = 'http://stats.nba.com/team/')
+    add_headers('Referer' = 'http://stats.nba.com/team/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
@@ -126,7 +117,8 @@ GetGameIDsDay <- function(date) {
       LeagueId = '00',
       gameDate = date
     ),
-    add_headers('Referer' = 'http://stats.nba.com/scores/')
+    add_headers('Referer' = 'http://stats.nba.com/scores/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]

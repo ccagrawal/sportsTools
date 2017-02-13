@@ -31,18 +31,7 @@ GetGameLog <- function(player, team,
                               season.type = 'Regular Season', 
                               player.ids) {
   
-  # If player is name, convert it to player id
-  if (grepl('[a-z]', player)) {
-    if (missing(player.ids)) {
-      player.ids <- GetPlayerIDs(year = year)
-    }
-    
-    if (player %in% player.ids$DISPLAY_FIRST_LAST) {
-      player <- player.ids[which(player.ids$DISPLAY_FIRST_LAST == player), 'PERSON_ID']
-    } else {
-      return(NULL)
-    }
-  }
+  player <- PlayerNameToID(player)
   
   request <- GET(
     "http://stats.nba.com/stats/playergamelog?",
@@ -54,7 +43,8 @@ GetGameLog <- function(player, team,
       Season = YearToSeason(year),
       SeasonType = season.type
     ),
-    add_headers('Referer' = 'http://stats.nba.com/player/')
+    add_headers('Referer' = 'http://stats.nba.com/player/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
@@ -89,14 +79,6 @@ GetGameLog <- function(player, team,
                             season.type = 'Regular Season', 
                             team.ids) {
   
-  # If team name was provided, get team ID
-  if (is.na(as.numeric(team))) {
-    if (missing(team.ids)) {
-      team.ids <- GetTeamIDs(year = year)
-    }
-    team <- team.ids[which(team.ids$name == team), 'id']
-  }
-  
   request <- GET(
     "http://stats.nba.com/stats/teamgamelog?",
     query = list(
@@ -105,9 +87,10 @@ GetGameLog <- function(player, team,
       LeagueId = '00',
       Season = YearToSeason(year),
       SeasonType = season.type,
-      TeamID = team
+      TeamID = TeamNameToID(team)
     ),
-    add_headers('Referer' = 'http://stats.nba.com/team/')
+    add_headers('Referer' = 'http://stats.nba.com/team/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]

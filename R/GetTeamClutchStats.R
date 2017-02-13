@@ -54,7 +54,8 @@ GetTeamClutchStats <- function(year = CurrentYear(),
       TeamID = 0,
       VsConference = "",
       VsDivision = ""
-    )
+    ),
+    add_headers('User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]

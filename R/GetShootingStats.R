@@ -1,18 +1,24 @@
 #' Shooting stats for players
 #' 
-#' @param id player's ID
+#' @param player player's ID
 #' @param stat which stat ('Shot Distance (5ft)', 'Shot Distance (8ft)', 'Shot Area', 
 #' 'Assisted Shot', 'Shot Type Summary', 'Shot Type Detail', 'Assisted By')
+#' @param player.ids Optional dataframe of player.ids
 #' @return data frame of stats
 #' @keywords shooting player
 #' @importFrom httr GET content add_headers
 #' @export
 #' @examples
-#' GetShootingStats(id = '201147', stat = 'Shot Type Detail')
+#' GetShootingStats(player = '201147', stat = 'Shot Type Detail')
 
-GetShootingStats <- function(id, year = CurrentYear(), stat = 'Shot Type Detail') {
+GetShootingStats <- function(player, 
+                             year = CurrentYear(), 
+                             stat = 'Shot Type Detail',
+                             player.ids = NA) {
   
   options(stringsAsFactors = FALSE)
+  
+  player <- PlayerNameToID(player)
   
   request = GET(
     "http://stats.nba.com/stats/playerdashboardbyshootingsplits",
@@ -41,7 +47,8 @@ GetShootingStats <- function(id, year = CurrentYear(), stat = 'Shot Type Detail'
       VsConference = "",
       VsDivision = ""
     ),
-    add_headers('Referer' = 'http://stats.nba.com/player/')
+    add_headers('Referer' = 'http://stats.nba.com/player/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]]
@@ -64,8 +71,7 @@ GetShootingStats <- function(id, year = CurrentYear(), stat = 'Shot Type Detail'
   
   stats <- ContentToDF(content)
   
-  char.cols <- c('GROUP_SET', 'GROUP_VALUE', 'CFPARAMS')
-  char.cols <- which(colnames(stats) %in% char.cols)
+  char.cols <- which(colnames(stats) %in% CHARACTER.COLUMNS)
   stats[, -char.cols] <- sapply(stats[, -char.cols], as.numeric)
   
   return(stats)

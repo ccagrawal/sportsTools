@@ -10,17 +10,11 @@
 #' @examples
 #' GetRoster(2014, 'Golden State')
 
-GetRoster <- function(year = CurrentYear(), team, team.ids) {
+GetRoster <- function(year = CurrentYear(), team, team.ids = NA) {
   
   options(stringsAsFactors = FALSE)
   
-  # If team name was provided, get team ID
-  if (is.na(as.numeric(team))) {
-    if (missing(team.ids)) {
-      team.ids <- GetTeamIDs(year = year)
-    }
-    team <- team.ids[which(team.ids$name == team), 'id']
-  }
+  team <- TeamNameToID(team, year, team.ids)
   
   request <- GET(
     "http://stats.nba.com/stats/commonteamroster",
@@ -29,7 +23,8 @@ GetRoster <- function(year = CurrentYear(), team, team.ids) {
       Season = YearToSeason(year),
       TeamID = team
     ),
-    add_headers('Referer' = 'http://stats.nba.com/team/')
+    add_headers('Referer' = 'http://stats.nba.com/team/',
+                'User-Agent' = 'Mozilla/5.0')
   )
   
   content <- content(request, 'parsed')[[3]][[1]]

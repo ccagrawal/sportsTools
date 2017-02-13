@@ -5,7 +5,8 @@
 \title{Team Defense Stats.}
 \usage{
 GetTeamDefenseStats(year = CurrentYear(),
-  defense.category = "Less Than 6Ft", season.type = "Regular Season")
+  defense.category = "Less Than 6Ft", season.type = "Regular Season",
+  per.mode = "Totals")
 }
 \arguments{
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
@@ -14,6 +15,8 @@ GetTeamDefenseStats(year = CurrentYear(),
 'Less Than 10Ft', 'Greater Than 15Ft'}
 
 \item{season.type}{'Regular Season' or 'Playoffs'}
+
+\item{per.mode}{'Per Game' or 'Totals'}
 }
 \value{
 data frame with wins and losses for that season
