@@ -120,11 +120,11 @@ CHARACTER.COLUMNS <- c('GROUP_SET', 'GROUP_ID', 'GROUP_NAME', 'PLAYER_ID', 'PLAY
                        'GAME_ID', 'TEAM_CITY', 'START_POSITION', 'COMMENT', 'MIN',
                        'SEASON_ID', 'GAME_ID')
 
-PlayerNameToID <- function(player, year = CurrentYear(), player.ids) {
+PlayerNameToID <- function(player, year = CurrentYear(), player.ids = NA) {
   
   # If player name was provided, get player ID
   if (is.na(as.numeric(player))) {
-    if (is.na(player.ids) | missing(player.ids))  {
+    if (is.na(player.ids))  {
       player.ids <- GetPlayerIDs(year = year)
     }
     player <- player.ids[which(player.ids$DISPLAY_FIRST_LAST == player), 'PERSON_ID']
@@ -133,11 +133,11 @@ PlayerNameToID <- function(player, year = CurrentYear(), player.ids) {
   return(player)
 }
 
-TeamNameToID <- function(team, year = CurrentYear(), team.ids) {
+TeamNameToID <- function(team, year = CurrentYear(), team.ids = NA) {
   
   # If team name was provided, get team ID
   if (is.na(as.numeric(team))) {
-    if (is.na(team.ids) | missing(team.ids)) {
+    if (is.na(team.ids)) {
       team.ids <- GetTeamIDs(year = year)
     }
     team <- team.ids[which(team.ids$name == team), 'id']

@@ -5,7 +5,7 @@
 \title{Get game logs.}
 \usage{
 GetGameLog(player, team, year = CurrentYear(),
-  season.type = "Regular Season", ids)
+  season.type = "Regular Season", ids = NA)
 }
 \arguments{
 \item{player}{NBA player (e.g. "James Harden")}

@@ -15,7 +15,7 @@
 GetGameLog <- function(player, team, 
                        year = CurrentYear(), 
                        season.type = 'Regular Season', 
-                       ids) {
+                       ids = NA) {
   
   options(stringsAsFactors = FALSE)
   
@@ -29,9 +29,7 @@ GetGameLog <- function(player, team,
 .GetPlayerGameLog <- function(player, 
                               year = CurrentYear(), 
                               season.type = 'Regular Season', 
-                              player.ids) {
-  
-  player <- PlayerNameToID(player)
+                              player.ids = NA) {
   
   request <- GET(
     "http://stats.nba.com/stats/playergamelog?",
@@ -39,7 +37,7 @@ GetGameLog <- function(player, team,
       DateFrom = '',
       DateTo = '',
       LeagueId = '00',
-      PlayerId = player,
+      PlayerId = PlayerNameToID(player, year, player.ids),
       Season = YearToSeason(year),
       SeasonType = season.type
     ),
@@ -77,7 +75,7 @@ GetGameLog <- function(player, team,
 .GetTeamGameLog <- function(team, 
                             year = CurrentYear(), 
                             season.type = 'Regular Season', 
-                            team.ids) {
+                            team.ids = NA) {
   
   request <- GET(
     "http://stats.nba.com/stats/teamgamelog?",
@@ -87,7 +85,7 @@ GetGameLog <- function(player, team,
       LeagueId = '00',
       Season = YearToSeason(year),
       SeasonType = season.type,
-      TeamID = TeamNameToID(team)
+      TeamID = TeamNameToID(team, year, team.ids)
     ),
     add_headers('Referer' = 'http://stats.nba.com/team/',
                 'User-Agent' = 'Mozilla/5.0')
