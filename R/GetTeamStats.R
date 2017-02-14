@@ -21,8 +21,6 @@ GetTeamStats <- function(year = CurrentYear(),
   
   options(stringsAsFactors = FALSE)
   
-  per.mode <- CleanParam(per.mod)
-  
   request <- GET(
     "http://stats.nba.com/stats/leaguedashteamstats",
     query = list(
@@ -41,7 +39,7 @@ GetTeamStats <- function(year = CurrentYear(),
       Outcome = "",
       PORound = 0,
       PaceAdjust = 'N',
-      PerMode = per.mode,
+      PerMode = CleanParam(per.mode),
       Period = quarter,
       PlayerExperience = "",
       PlayerPosition = "",

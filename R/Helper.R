@@ -120,8 +120,7 @@ CHARACTER.COLUMNS <- c('GROUP_SET', 'GROUP_ID', 'GROUP_NAME', 'PLAYER_ID', 'PLAY
                        'PlayerIDSID', 'PlayerFirstName', 'PlayerLastName', 'P', 'TeamIDSID', 'TeamName', 
                        'TeamNameAbbreviation', 'TeamShortName', 'name', 'seasonType', 'GROUP_VALUE',
                        'PLAYER_LAST_TEAM_ID', 'PLAYER_LAST_TEAM_ABBREVIATION', 'PLAYER_POSITION', 'DEFENSE_CATEGORY',
-                       'GAME_ID', 'TEAM_CITY', 'START_POSITION', 'COMMENT', 'MIN',
-                       'SEASON_ID', 'GAME_ID')
+                       'GAME_ID', 'TEAM_CITY', 'START_POSITION', 'COMMENT', 'SEASON_ID', 'GAME_ID')
 
 PlayerNameToID <- function(player, year = CurrentYear(), player.ids = NA) {
   
