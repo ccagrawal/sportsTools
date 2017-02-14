@@ -93,6 +93,9 @@ CleanParam <- function(param) {
   } else if (param == 'Per Game') {
     return('PerGame')
     
+  } else if (param == 'Per 36 Minutes') {
+    return('Per36')
+    
   } else if (param == 'Offensive') {
     return('offensive')
     
