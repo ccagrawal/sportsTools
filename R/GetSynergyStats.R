@@ -21,7 +21,7 @@ GetSynergyStats <- function(year = CurrentYear(),
   options(stringsAsFactors = FALSE)
   
   side <- CleanParam(side)
-  player.or.team <- CleanParam(type)
+  player.or.team <- CleanParam(player.or.team)
   season.type <- tolower(season.type)
   
   if (season.type == 'playoffs') {
