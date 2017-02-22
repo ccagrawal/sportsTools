@@ -5,7 +5,7 @@
 \title{Shooting stats for players}
 \usage{
 GetShootingStats(player, year = CurrentYear(), stat = "Shot Type Detail",
-  player.ids = NA)
+  per.mode = "Totals", player.ids = NA)
 }
 \arguments{
 \item{player}{player's ID}

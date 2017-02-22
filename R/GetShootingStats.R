@@ -14,11 +14,10 @@
 GetShootingStats <- function(player, 
                              year = CurrentYear(), 
                              stat = 'Shot Type Detail',
+                             per.mode = 'Totals',
                              player.ids = NA) {
   
   options(stringsAsFactors = FALSE)
-  
-  player <- PlayerNameToID(player)
   
   request = GET(
     "http://stats.nba.com/stats/playerdashboardbyshootingsplits",
@@ -35,9 +34,9 @@ GetShootingStats <- function(player,
       Outcome = "",
       PORound = 0,
       PaceAdjust = "N",
-      PerMode = "Totals",
+      PerMode = CleanParam(per.mode),
       Period = 0,
-      PlayerID = id,
+      PlayerID = PlayerNameToID(player, year = year, player.ids = player.ids),
       PlusMinus = "N",
       Rank = "N",
       Season = YearToSeason(year),

@@ -108,7 +108,7 @@ CleanParam <- function(param) {
   } else if (param == 'Team') {
     return('team')
     
-  }else {
+  } else {
     return(param)
   }
 }
