@@ -5,6 +5,7 @@
 #' @param measure.type Either 'Basic', 'Advanced', or 'RPM'
 #' @param per.mode Either 'Per Game', 'Totals', or '100 Possessions'
 #' @param position Either 'G', 'F', or 'C'
+#' @param Location Either 'Home' or 'Away
 #' @param source Either 'Basketball-Reference', 'NBA', or 'ESPN'
 #' @return data frame with players stats
 #' @keywords player
@@ -19,18 +20,19 @@ GetPlayerStats <- function(year = CurrentYear(),
                            measure.type = 'Basic', 
                            per.mode = 'Per Game',
                            position = '',
+                           location = '',
                            source = 'NBA') {
   
   options(stringsAsFactors = FALSE)
   
   if (source == 'NBA') {
-    return(.GetPlayerStatsNBA(year, season.type, measure.type, per.mode, position))
+    return(.GetPlayerStatsNBA(year, season.type, measure.type, per.mode, position, location))
   } else if (source == 'ESPN') {
     return(.GetPlayerStatsESPN(year, measure.type, per.mode))
   }
 }
 
-.GetPlayerStatsNBA <- function(year, season.type, measure.type, per.mode, position) {
+.GetPlayerStatsNBA <- function(year, season.type, measure.type, per.mode, position, location) {
   
   measure.type <- CleanParam(measure.type)
   per.mode <- CleanParam(per.mode)
@@ -51,7 +53,7 @@ GetPlayerStats <- function(year = CurrentYear(),
       Height = "",
       LastNGames = 0,
       LeagueID = "00",
-      Location = "",
+      Location = location,
       MeasureType = measure.type,
       Month = 0,
       OpponentTeamID = 0,
@@ -74,8 +76,11 @@ GetPlayerStats <- function(year = CurrentYear(),
       VsDivision = "",
       Weight = ""
     ),
-    add_headers('Referer' = 'http://stats.nba.com/player/',
-                'User-Agent' = 'Mozilla/5.0')
+    add_headers(
+      'Accept-Language' = 'en-US,en;q=0.8,af;q=0.6',
+      'Referer' = 'http://stats.nba.com/player/',
+      'User-Agent' = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36'
+    )
   )
   
   content <- content(request, 'parsed')[[3]][[1]]
@@ -89,7 +94,7 @@ GetPlayerStats <- function(year = CurrentYear(),
 
 .GetPlayerStatsESPN <- function(year, measure.type = 'RPM', per.mode = 'Per Game') {
   
-  if (measure.type == 'RPM') {
+  if (CleanParam(measure.type) == 'RPM') {
     base.url <- paste0('http://espn.go.com/nba/statistics/rpm/_/year/', year, '/page/PPPP/sort/RPM')
     
     continue <- TRUE

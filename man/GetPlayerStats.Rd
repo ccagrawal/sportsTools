@@ -6,7 +6,7 @@
 \usage{
 GetPlayerStats(year = CurrentYear(), season.type = "Regular Season",
   measure.type = "Basic", per.mode = "Per Game", position = "",
-  source = "NBA")
+  location = "", source = "NBA")
 }
 \arguments{
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
@@ -20,6 +20,8 @@ GetPlayerStats(year = CurrentYear(), season.type = "Regular Season",
 \item{position}{Either 'G', 'F', or 'C'}
 
 \item{source}{Either 'Basketball-Reference', 'NBA', or 'ESPN'}
+
+\item{Location}{Either 'Home' or 'Away}
 }
 \value{
 data frame with players stats

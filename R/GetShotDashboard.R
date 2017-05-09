@@ -16,12 +16,10 @@
 
 GetShotDashboard <- function(player, team, stat, year = CurrentYear(), per.mode = 'Totals', 
                              season.type = 'Regular Season', opponent.id = '0', 
-                             date.from = '', date.to = '', ids) {
+                             date.from = '', date.to = '', ids = NA) {
   
   options(stringsAsFactors = FALSE)
   
-  per.mode <- CleanParam(per.mode)
-
   # Get team dashboard
   if (missing(player)) {
     return(.GetTeamShotDashboard(team, stat, year, per.mode, season.type, opponent.id, 
@@ -53,7 +51,7 @@ GetShotDashboard <- function(player, team, stat, year = CurrentYear(), per.mode 
       Outcome = "",
       PORound = 0,
       PaceAdjust = 'N',
-      PerMode = per.mode,
+      PerMode = CleanParam(per.mode),
       Period = 0,
       PlusMinus = "N",
       Rank = "N",

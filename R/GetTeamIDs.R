@@ -15,18 +15,18 @@ GetTeamIDs <- function(year = CurrentYear(), source = 'NBA') {
   options(stringsAsFactors = FALSE)
   
   if (source == 'NBA') {
-    return(.GetNBATeamIDs)
+    return(.GetTeamIDsNBA(year))
     
   } else if (source == 'ESPN') {
-    return(.GetESPNTeamIDs)
+    return(.GetTeamIDsESPN(year))
     
-  } else if (source == 'Basketball-Reerence') {
-    return(.GetBRefTeamIDs)
+  } else if (source == 'Basketball-Reference') {
+    return(.GetTeamIDsBRef(year))
   
   }
 }
 
-.GetNBATeamIDs <- function(year) {
+.GetTeamIDsNBA <- function(year) {
   team.list <- GetTeamStats(year = year)
   team.list <- team.list[, c(1, 2)]      # Drop useless columns
   colnames(team.list) <- c('id', 'name')
@@ -34,7 +34,7 @@ GetTeamIDs <- function(year = CurrentYear(), source = 'NBA') {
   return(team.list)
 }
 
-.GetESPNTeamIDs <- function(year) {
+.GetTeamIDsESPN <- function(year) {
   url <- 'http://espn.go.com/nba/teams'
   lines <- readLines(url)
   lines <- unlist(strsplit(lines, '<span>'))
@@ -51,7 +51,7 @@ GetTeamIDs <- function(year = CurrentYear(), source = 'NBA') {
   return(team.list)
 }
 
-.GetBRefTeamIDs <- function(year) {
+.GetTeamIDsBRef <- function(year) {
   url <- gsub('YEAR', year, 'http://www.basketball-reference.com/leagues/NBA_YEAR.html')
   request <- GET(url, add_headers('User-Agent' = 'Mozilla/5.0'))
   html <- rawToChar(request$content)

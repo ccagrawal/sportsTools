@@ -4,8 +4,8 @@
 \alias{GetGameLog}
 \title{Get game logs.}
 \usage{
-GetGameLog(player, team, year = CurrentYear(),
-  season.type = "Regular Season", ids = NA)
+GetGameLog(player, team, year = CurrentYear(), measure.type = "Basic",
+  season.type = "Regular Season", ids = NA, source = "NBA")
 }
 \arguments{
 \item{player}{NBA player (e.g. "James Harden")}
@@ -14,9 +14,13 @@ GetGameLog(player, team, year = CurrentYear(),
 
 \item{year}{NBA season (e.g. 2008 for the 2007-08 season)}
 
+\item{measure.type}{'Basic', or 'Advanced'}
+
 \item{season.type}{either 'Preseason', 'Regular Season', or 'Playoffs'}
 
 \item{ids}{dataframe with player or team ids}
+
+\item{source}{'NBA' or 'Basketball-Reference'}
 }
 \value{
 data frame with player's or team's stats by game
