@@ -27,7 +27,7 @@ data frame with player's stats
 Player specific stats in a season.
 }
 \examples{
-GetPlayerSpecificStats('Anthony Davis', 'on-Scoring', 2015)
+GetPlayerSpecificStats('Anthony Davis', 'Scoring', 2015)
 }
 \keyword{player}
 
